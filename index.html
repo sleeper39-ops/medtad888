@@ -625,9 +625,12 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎫 แทงถูกไหมละ</h1>
+            <h1>🎫 Medtad888</h1>
             <div id="userArea">
                 <button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>
+            </div>
+            <div id="adminArea" style="margin-left: 10px;">
+                <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
             </div>
         </div>
 
@@ -635,8 +638,6 @@
         <div class="login-section" id="loginSection">
             <div class="section-title">🔐 เข้าสู่ระบบ</div>
             <div class="login-form">
-                <button class="login-btn line-btn" onclick="lineLogin()">🔵 เข้าสู่ระบบด้วย Line</button>
-                <div style="text-align: center; color: #666;">หรือ</div>
                 <input type="text" class="login-input" id="userName" placeholder="ชื่อ">
                 <input type="text" class="login-input" id="trueMoneyLink" placeholder="Link TrueMoney Wallet (https://truemoney.com/wallet/...)">
                 <button class="login-btn" onclick="manualLogin()">เข้าสู่ระบบ</button>
@@ -705,7 +706,6 @@
                     <div class="next-draw-label">งวดถัดไป</div>
                     <div class="next-draw-display" id="nextDrawDisplay">กำลังโหลด...</div>
                 </div>
-                <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: none;">ทดสอบสลากออก</button>
                 <div class="result-display" id="resultDisplay"></div>
                 <button class="history-btn" onclick="toggleHistory()">📋 ประวัติการถูกรางวัล</button>
             </div>
@@ -718,40 +718,31 @@
             <!-- Winners Management (Admin Only) -->
             <div class="winners-section" id="winnersSection" style="display: none;">
                 <div class="section-title">🏆 ผู้โชคดี (แอดมิน)</div>
-                <div class="admin-controls">
-                    <div class="admin-control-group">
-                        <label>Telegram Bot Token:</label>
-                        <input type="text" id="telegramBotToken" placeholder="123456789:ABCdefGhIJKlmNoPQRStUvWxYz">
-                    </div>
-                    <div class="admin-control-group">
-                        <label>Telegram Chat ID:</label>
-                        <input type="text" id="telegramChatId" placeholder="-100123456789">
-                    </div>
-                    <button class="login-btn" onclick="testTelegram()" style="background: #0088cc;">🧪 ทดสอบส่งข้อความ</button>
-                </div>
                 <div id="winnersList" style="margin-top: 20px;"></div>
             </div>
 
             <div class="admin-section" id="adminSection">
                 <div class="section-title">⚙️ แผงควบคุมแอดมิน</div>
                 <div id="loginForm">
-                    <div class="login-form">
+                    <form class="login-form" onsubmit="event.preventDefault(); adminLogin();">
                         <input type="text" class="login-input" id="adminUsername" placeholder="ชื่อผู้ใช้">
                         <input type="password" class="login-input" id="adminPassword" placeholder="รหัสผ่าน">
-                        <button class="login-btn" onclick="adminLogin()">เข้าสู่ระบบ</button>
-                    </div>
+                        <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
+                    </form>
                 </div>
                 <div id="adminControls" style="display: none;">
                     <div class="admin-status" id="adminStatus">ยินดีต้อนรับแอดมิน</div>
                     <div class="admin-controls">
                         <div class="admin-control-group">
-                            <button onclick="adminLogout()" style="background: #dc3545; padding: 10px 20px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px;">ออกจากระบบ</button>
-                        </div>
-                        <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (6 หลัก):</label>
-                            <input type="text" id="customWinningNumber" maxlength="6" placeholder="123456" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                            <input type="text" id="customWinningNumber" maxlength="6" placeholder="123456" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
+                            <label>ตัวเลขที่ออก (2 หลัก):</label>
+                            <input type="text" id="customWinningNumber2" maxlength="2" placeholder="12" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                        </div>
+                        <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
+                        <div class="admin-control-group" style="margin-top: 15px;">
                             <label>ลิงก์ TrueMoney:</label>
                             <input type="text" id="adminTrueMoneyLink" placeholder="https://truemoney.com/wallet/...">
                         </div>
@@ -760,13 +751,21 @@
                             <input type="file" id="adminTrueMoneyQR" accept="image/*" onchange="handleQRUpload(event)">
                         </div>
                         <div class="admin-control-group">
+                            <label>Telegram Bot Token:</label>
+                            <input type="text" id="telegramBotTokenInput" placeholder="123456789:ABCdefGhIJKlmNoPQRStUvWxYz">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>Telegram Chat ID:</label>
+                            <input type="text" id="telegramChatIdInput" placeholder="-100123456789">
+                        </div>
+                        <button class="login-btn" onclick="testTelegram()" style="background: #0088cc; margin-top: 10px;">🧪 ทดสอบส่งข้อความ</button>
+                        <div class="admin-control-group" style="margin-top: 15px;">
                             <label>เพิ่มเงินให้ผู้เล่น:</label>
                             <div style="display: flex; gap: 10px;">
                                 <input type="number" id="adminAddMoney" placeholder="100" min="10">
                                 <button onclick="adminAddMoney()" class="login-btn" style="background: #27ae60;">เพิ่มเงิน</button>
                             </div>
                         </div>
-                        <button class="login-btn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 10px;">💾 บันทึกการตั้งค่า</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>เวลาที่ออก (เช่น 1200, 1500):</label>
                             <input type="text" id="newDrawTime" maxlength="4" placeholder="0000">
@@ -776,6 +775,7 @@
                             <label>เวลาที่ตั้งไว้:</label>
                             <div id="drawTimesList" class="draw-times-list"></div>
                         </div>
+                        <button class="login-btn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 20px;">💾 บันทึกการตั้งค่า</button>
                     </div>
                 </div>
             </div>
@@ -849,6 +849,8 @@
         let lastDrawTime = null;
         let pendingTicketData = null;
         let ADMIN_CREDENTIALS = { username: '', password: '' };
+        let twoDigitWinningNumber = '';
+        let currentDrawId = null;
 
         // Constants
         const betTypes = {
@@ -858,6 +860,8 @@
         };
         let adminTrueMoneyLink = 'https://truemoney.com/wallet/demo';
         let adminTrueMoneyQR = ''; // Will store base64 QR image
+        let telegramBotToken = '';
+        let telegramChatId = '';
 
         // Initialize
         window.onload = function() {
@@ -866,6 +870,14 @@
             const infoModal = document.getElementById('infoModal');
             if (confirmModal) confirmModal.removeAttribute('style');
             if (infoModal) infoModal.removeAttribute('style');
+            
+            // Initialize user and admin areas
+            document.getElementById('userArea').innerHTML = `
+                <button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>
+            `;
+            document.getElementById('adminArea').innerHTML = `
+                <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
+            `;
             
             loadAdminCredentials();
             loadFromFirebase();
@@ -905,6 +917,8 @@
                 winners = globalData.winners || [];
                 adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
                 adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
+                telegramBotToken = globalData.telegramBotToken || '';
+                telegramChatId = globalData.telegramChatId || '';
             }
 
             if (userSnapshot && userSnapshot.exists()) {
@@ -934,7 +948,9 @@
                 winHistory,
                 winners,
                 adminTrueMoneyLink,
-                adminTrueMoneyQR
+                adminTrueMoneyQR,
+                telegramBotToken,
+                telegramChatId
             }));
 
             // Save user data
@@ -971,6 +987,9 @@
                     document.getElementById('mainContent').style.display = 'none';
                     document.getElementById('depositSection').style.display = 'none';
                     document.getElementById('userArea').innerHTML = '<button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>';
+                    document.getElementById('adminArea').innerHTML = `
+                        <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
+                    `;
                 }
             } else {
                 loginSection.style.display = loginSection.style.display === 'none' ? 'block' : 'none';
@@ -994,7 +1013,7 @@
             balance = 0;
             saveToStorage();
             showLoggedInUI();
-            showInfoModal('เข้าสู่ระบบด้วย Line สำเร็จ! 🎉', '✅');
+            showInfoModal(`สวัสดี ${user.name}! เข้าสู่ระบบสำเร็จ! 🎉`, '✅');
         }
 
         function manualLogin() {
@@ -1015,23 +1034,40 @@
             balance = 0;
             saveToStorage();
             showLoggedInUI();
-            showInfoModal('เข้าสู่ระบบสำเร็จ! 🎉', '✅');
+            showInfoModal(`สวัสดี ${user.name}! เข้าสู่ระบบสำเร็จ! 🎉`, '✅');
         }
 
         function showLoggedInUI() {
             document.getElementById('loginSection').style.display = 'none';
             document.getElementById('balanceBox').style.display = 'block';
             document.getElementById('mainContent').style.display = 'grid';
+            updateUserArea();
+            updateBalance();
+            renderTickets();
+        }
+
+        function updateUserArea() {
             document.getElementById('userArea').innerHTML = `
                 <div class="user-info">
                     <div class="user-avatar">👤</div>
                     <div class="user-name">${user.name}</div>
                     <button class="admin-btn" onclick="toggleLogin()">🚪</button>
-                    <button class="admin-btn" onclick="toggleAdmin()">🔒</button>
                 </div>
             `;
-            updateBalance();
-            renderTickets();
+            if (isAdminLoggedIn) {
+                document.getElementById('adminArea').innerHTML = `
+                    <div class="user-info">
+                        <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
+                            🔐 แอดมิน
+                        </div>
+                        <button class="admin-btn" onclick="adminLogout()">🚪</button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('adminArea').innerHTML = `
+                    <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
+                `;
+            }
         }
 
         // Deposit Functions
@@ -1223,8 +1259,8 @@
                         <div style="color: #666; font-size: 0.9rem;">${getBetTypeName(ticket.type)}</div>
                     </div>
                     <div class="ticket-info">
-                        <div>ทดลอง ${ticket.bet} บาท</div>
-                        ${ticket.prize ? `<div style="color: #27ae60; font-weight: bold;">ชนะ ${ticket.prize} บาท</div>` : ''}
+                        <div>${ticket.bet} บาท</div>
+                        ${ticket.prize ? `<div style="color: #27ae60; font-weight: bold;">ได้รับเงิน ${ticket.prize} บาท</div>` : ''}
                     </div>
                 </div>
             `).join('');
@@ -1245,8 +1281,15 @@
 
             drawn = true;
 
+            // Set current draw ID
+            currentDrawId = Date.now();
+
             // Check if admin set custom winning number
             const customNumber = document.getElementById('customWinningNumber')?.value;
+            const customNumber2 = document.getElementById('customWinningNumber2')?.value;
+            console.log('customNumber:', customNumber, 'customNumber2:', customNumber2);
+            
+            // Set 6-digit number
             if (isAdminLoggedIn && customNumber && customNumber.length === 6) {
                 winningNumber = customNumber;
             } else {
@@ -1256,22 +1299,30 @@
                     winningNumber += Math.floor(Math.random() * 10).toString();
                 }
             }
+            
+            // Set 2-digit number
+            if (isAdminLoggedIn && customNumber2 && customNumber2.length === 2) {
+                twoDigitWinningNumber = customNumber2;
+            } else {
+                // If admin didn't set 2-digit, use last 2 of 6-digit
+                twoDigitWinningNumber = winningNumber.substring(4);
+            }
+            
+            console.log('winningNumber:', winningNumber, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
 
             let totalPrize = 0;
             const newWinners = [];
 
             tickets.forEach(ticket => {
                 if (ticket.status === 'pending') {
+                    // Assign draw ID to this ticket
+                    ticket.drawId = currentDrawId;
+
                     if (checkWin(ticket, winningNumber)) {
                         const prize = ticket.bet * betTypes[ticket.type].multiplier;
                         ticket.prize = prize;
                         ticket.status = 'won';
                         totalPrize += prize;
-                        
-                        // Add to user balance
-                        if (ticket.userId === user?.id) {
-                            balance += prize;
-                        }
                         
                         // Add to winners list
             const winner = {
@@ -1317,14 +1368,23 @@
 
         function checkWin(ticket, winNum) {
             const type = betTypes[ticket.type];
-            
+            console.log('checkWin - ticket:', ticket, 'winNum:', winNum, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'type:', type);
             if (type.position === 'top') {
                 const ticketPart = ticket.number;
                 const winPart = winNum.substring(0, type.digits);
+                console.log('top - ticketPart:', ticketPart, 'winPart:', winPart, 'equal:', ticketPart === winPart);
                 return ticketPart === winPart;
             } else if (type.position === 'bottom') {
                 const ticketPart = ticket.number;
-                const winPart = winNum.substring(6 - type.digits);
+                let winPart;
+                if (twoDigitWinningNumber) {
+                    // If 2-digit is set (from admin input or random), use it
+                    winPart = twoDigitWinningNumber;
+                } else {
+                    // Otherwise, no win for bottom2/3 (since 6-digit was set without 2-digit)
+                    return false;
+                }
+                console.log('bottom - ticketPart:', ticketPart, 'winPart:', winPart, 'equal:', ticketPart === winPart);
                 return ticketPart === winPart;
             }
             return false;
@@ -1332,14 +1392,115 @@
 
         function renderResult(totalPrize) {
             const container = document.getElementById('resultDisplay');
-            const userWonTickets = tickets.filter(t => t.userId === user?.id && t.status === 'won');
+            const userWonTickets = tickets.filter(t => t.userId === user?.id && t.status === 'won' && t.drawId === currentDrawId);
+            console.log('renderResult - userWonTickets:', userWonTickets);
             const userTotalPrize = userWonTickets.reduce((sum, t) => sum + (t.prize || 0), 0);
+            console.log('renderResult - userTotalPrize:', userTotalPrize);
             const wonAny = userTotalPrize > 0;
+            const displayTwoDigits = twoDigitWinningNumber || winningNumber.substring(4);
 
             container.innerHTML = `
-                <div class="winning-number">${winningNumber}</div>
-                <div class="prize-result ${wonAny ? '' : 'lost'}">
-                    ${wonAny ? `🎉 คุณชนะ ${userTotalPrize} บาท!` : '😢 ไม่ถูก'}
+                <div style="
+                    background: linear-gradient(135deg, #0047AB 0%, #0073CF 50%, #00A3FF 100%);
+                    border-radius: 20px;
+                    padding: 40px 30px;
+                    text-align: center;
+                    box-shadow: 0 20px 60px rgba(0, 71, 171, 0.5);
+                    margin-bottom: 30px;
+                ">
+                    <div style="
+                        display: flex;
+                        justify-content: center;
+                        gap: 40px;
+                        flex-wrap: wrap;
+                    ">
+                        <!-- 6 Digit Number -->
+                        <div>
+                            <div style="
+                                font-size: 1.8rem;
+                                color: white;
+                                font-weight: bold;
+                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                margin-bottom: 15px;
+                            ">
+                                รางวัลที่ 1
+                            </div>
+                            <div style="
+                                background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
+                                border-radius: 15px;
+                                padding: 25px 50px;
+                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                            ">
+                                <div style="
+                                    font-size: 5rem;
+                                    font-weight: 900;
+                                    color: white;
+                                    letter-spacing: 15px;
+                                    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                                ">
+                                    ${winningNumber}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2 Digit Number -->
+                        ${twoDigitWinningNumber ? `
+                        <div>
+                            <div style="
+                                font-size: 1.8rem;
+                                color: white;
+                                font-weight: bold;
+                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                margin-bottom: 15px;
+                            ">
+                                รางวัลเลขท้าย 2 ตัว
+                            </div>
+                            <div style="
+                                background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
+                                border-radius: 15px;
+                                padding: 25px 70px;
+                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                            ">
+                                <div style="
+                                    font-size: 5.5rem;
+                                    font-weight: 900;
+                                    color: white;
+                                    letter-spacing: 15px;
+                                    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                                ">
+                                    ${displayTwoDigits}
+                                </div>
+                            </div>
+                        </div>
+                        ` : ''}
+                    </div>
+                </div>
+
+                <!-- Prize Result -->
+                <div style="
+                    background: white;
+                    border-radius: 20px;
+                    padding: 30px;
+                    text-align: center;
+                    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+                ">
+                    <div style="
+                        font-size: 2rem;
+                        font-weight: bold;
+                        color: ${wonAny ? '#10B981' : '#64748B'};
+                        margin-bottom: 15px;
+                    ">
+                        ${wonAny ? '🎉 สุดยอด!' : '😔 ไม่ถูกจ้า'}
+                    </div>
+                    ${wonAny ? `
+                    <div style="
+                        font-size: 2.5rem;
+                        font-weight: 900;
+                        color: #059669;
+                    ">
+                        ${userTotalPrize.toLocaleString()} บาท
+                    </div>
+                    ` : ''}
                 </div>
             `;
         }
@@ -1402,7 +1563,21 @@
                 document.getElementById('winnersSection').style.display = 'block';
                 // Load saved admin settings
                 document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
+                document.getElementById('telegramBotTokenInput').value = telegramBotToken;
+                document.getElementById('telegramChatIdInput').value = telegramChatId;
                 renderDrawTimes();
+                if (user) {
+                    updateUserArea();
+                } else {
+                    document.getElementById('adminArea').innerHTML = `
+                        <div class="user-info">
+                            <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
+                                🔐 แอดมิน
+                            </div>
+                            <button class="admin-btn" onclick="adminLogout()">🚪</button>
+                        </div>
+                    `;
+                }
             } else {
                 showInfoModal('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
             }
@@ -1422,6 +1597,8 @@
 
         function saveAdminSettings() {
             adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
+            telegramBotToken = document.getElementById('telegramBotTokenInput').value;
+            telegramChatId = document.getElementById('telegramChatIdInput').value;
             saveToStorage();
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
         }
@@ -1452,6 +1629,13 @@
             document.getElementById('winnersSection').style.display = 'none';
             document.getElementById('adminUsername').value = '';
             document.getElementById('adminPassword').value = '';
+            if (user) {
+                updateUserArea();
+            } else {
+                document.getElementById('adminArea').innerHTML = `
+                    <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
+                `;
+            }
         }
 
         function addDrawTime() {
@@ -1518,6 +1702,7 @@
         // Winners Management
         function renderWinners() {
             const container = document.getElementById('winnersList');
+            console.log('renderWinners - winners:', winners);
             if (winners.length === 0) {
                 container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">ยังไม่มีผู้โชคดี</div>';
                 return;
@@ -1527,9 +1712,9 @@
                 <div class="winner-item ${winner.paid ? 'winner-paid' : ''}">
                     <div class="winner-info">
                         <div style="font-weight: bold;">👤 ${winner.userName}</div>
-                        <div style="color: #666; word-break: break-all;">� <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
+                        <div style="color: #666; word-break: break-all;">💳 <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
                         <div style="margin-top: 5px;">🎯 เลข ${winner.number} (${winner.betType})</div>
-                        <div style="margin-top: 5px;">🏆 ทดลอง ${winner.betAmount} บาท → ชนะ ${winner.prizeAmount} บาท</div>
+                        <div style="margin-top: 5px;">🏆 ${winner.betAmount} บาท → ได้รับเงิน ${winner.prizeAmount} บาท</div>
                         <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningNumber} | ${winner.date}</div>
                     </div>
                     <button class="payout-btn ${winner.paid ? 'paid' : ''}" onclick="markAsPaid('${winner.id}')" ${winner.paid ? 'disabled' : ''}>
@@ -1555,21 +1740,92 @@
             }
         }
         
-        // Telegram Functions (Mock)
-        function testTelegram() {
-            showInfoModal('ส่งข้อความทดสอบสำเร็จ! 📱 (Mock)', '✅');
-        }
-        
-        function sendTelegramNotification(newWinners) {
-            console.log('Sending Telegram notifications:', newWinners);
-            // In real app, you would call your backend API here
-            if (newWinners.length > 0) {
-                showInfoModal(`ส่งแจ้งเตือนถึง ${newWinners.length} คนที่ถูกรางวัล! 📱`, '✅');
+        // Telegram Functions
+        async function testTelegram() {
+            if (!telegramBotToken || !telegramChatId) {
+                showInfoModal('กรุณาตั้งค่า Telegram Bot Token และ Chat ID ก่อน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: '🧪 ทดสอบส่งข้อความจากระบบสลาก!'
+                    })
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    showInfoModal('ส่งข้อความทดสอบสำเร็จ! 📱', '✅');
+                } else {
+                    showInfoModal('เกิดข้อผิดพลาดในการส่งข้อความ: ' + result.description, '❌', 'ข้อผิดพลาด');
+                }
+            } catch (error) {
+                console.error('Telegram error:', error);
+                showInfoModal('เกิดข้อผิดพลาดในการส่งข้อความ!', '❌', 'ข้อผิดพลาด');
             }
         }
         
-        function sendTelegramPayoutConfirm(winner) {
+        async function sendTelegramNotification(newWinners) {
+            console.log('Sending Telegram notifications:', newWinners);
+            if (!telegramBotToken || !telegramChatId) {
+                return;
+            }
+            try {
+                let message = '🎉 มีผู้โชคดีถูกรางวัล!\n';
+                message += `เลขที่ออก: ${winningNumber}`;
+                if (twoDigitWinningNumber) {
+                    message += ` (2 ตัวล่าง: ${twoDigitWinningNumber})`;
+                }
+                message += '\n\n';
+                newWinners.forEach(winner => {
+                    message += `👤 ${winner.userName}\n`;
+                    message += `🎯 เลข ${winner.number} (${winner.betType})\n`;
+                    message += `🏆 ${winner.betAmount} บาท → ได้รับเงิน ${winner.prizeAmount} บาท\n`;
+                    message += `💳 TrueMoney Link: ${winner.trueMoneyLink}\n\n`;
+                });
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: message
+                    })
+                });
+                const result = await response.json();
+                if (result.ok) {
+                    showInfoModal(`ส่งแจ้งเตือนถึง ${newWinners.length} คนที่ถูกรางวัล! 📱`, '✅');
+                }
+            } catch (error) {
+                console.error('Telegram notification error:', error);
+            }
+        }
+        
+        async function sendTelegramPayoutConfirm(winner) {
             console.log('Sending payout confirmation:', winner);
+            if (!telegramBotToken || !telegramChatId) {
+                return;
+            }
+            try {
+                const message = `💰 ชำระเงินสำเร็จ!\n👤 ${winner.userName}\n🏆 จำนวน ${winner.prizeAmount} บาท\n💳 TrueMoney Link: ${winner.trueMoneyLink}`;
+                await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: message
+                    })
+                });
+            } catch (error) {
+                console.error('Telegram payout error:', error);
+            }
         }
     </script>
 </body>

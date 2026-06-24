@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แทงถูกไหมละ</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h1 {
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 15px;
+            border-radius: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ffd700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        .user-name {
+            color: white;
+            font-weight: bold;
+        }
+        .admin-btn {
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .admin-btn:hover {
+            background: white;
+            color: #667eea;
+        }
+        .balance-box {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .balance {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .ticket-section, .result-section, .admin-section, .history-section, .login-section, .deposit-section, .winners-section {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        .section-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .number-input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .number-input {
+            width: 60px;
+            height: 70px;
+            font-size: 2rem;
+            text-align: center;
+            border: 3px solid #ddd;
+            border-radius: 10px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .number-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .bet-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .bet-option {
+            padding: 15px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        .bet-option:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+        .bet-option.selected {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .bet-option .bet-name {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        .bet-option .bet-multiplier {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        .bet-option.selected .bet-multiplier {
+            color: #ddd;
+        }
+        .amount-control {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .amount-btn {
+            width: 50px;
+            height: 50px;
+            font-size: 1.5rem;
+            border: none;
+            border-radius: 10px;
+            background: #667eea;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .amount-btn:hover {
+            background: #5568d3;
+        }
+        .amount-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 150px;
+            text-align: center;
+        }
+        .buy-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .buy-btn:hover {
+            transform: scale(1.02);
+        }
+        .buy-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .my-tickets {
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .ticket {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ticket-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .ticket-info {
+            text-align: right;
+            color: #666;
+        }
+        .ticket.won {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+        .ticket.lost {
+            background: #f8d7da;
+            border: 2px solid #dc3545;
+        }
+        .draw-btn {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3rem;
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .draw-time-box {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .next-draw-label {
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .next-draw-display {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .result-display {
+            text-align: center;
+        }
+        .winning-number {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #2c3e50;
+            letter-spacing: 10px;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .prize-result {
+            font-size: 1.5rem;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .prize-result.lost {
+            color: #e74c3c;
+        }
+        .history-btn {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border: none;
+            border-radius: 8px;
+            background: #3498db;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .history-btn:hover {
+            background: #2980b9;
+        }
+        .history-list {
+            max-height: 250px;
+            overflow-y: auto;
+            margin-top: 15px;
+        }
+        .history-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .history-number {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        .history-prize {
+            font-weight: bold;
+            color: #27ae60;
+        }
+        .history-prize.zero {
+            color: #666;
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        .login-form, .user-setup-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .login-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .login-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2c3e50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        .line-btn {
+            background: #06c755;
+        }
+        .line-btn:hover {
+            background: #05b04c;
+        }
+        .admin-controls {
+            display: grid;
+            gap: 15px;
+        }
+        .admin-control-group {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .admin-control-group label {
+            font-weight: bold;
+            color: #2c3e50;
+            min-width: 150px;
+        }
+        .admin-control-group input {
+            padding: 8px 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            flex: 1;
+        }
+        .admin-control-group button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 8px;
+            background: #e74c3c;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .admin-status {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 8px;
+            color: #856404;
+            text-align: center;
+            font-weight: bold;
+        }
+        .draw-times-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .draw-time-tag {
+            background: #e3f2fd;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #1976d2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .draw-time-tag button {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        
+        /* Custom Confirmation Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease-out;
+        }
+        
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .modal-title {
+            font-size: 1.5rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+        .modal-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .modal-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .modal-detail-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .modal-detail-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .modal-detail-value {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .modal-btn-cancel {
+            background: #e9ecef;
+            color: #666;
+        }
+        
+        .modal-btn-cancel:hover {
+            background: #dee2e6;
+        }
+        
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .modal-btn-confirm:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* Custom Info Modal */
+        .info-modal-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        /* QR Code Section */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        #qrcode {
+            width: 200px;
+            height: 200px;
+        }
+        
+        .deposit-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+        
+        /* Winners Section */
+        .winner-item {
+            background: #fff8e1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .winner-info {
+            text-align: left;
+        }
+        
+        .winner-paid {
+            background: #e8f5e9;
+        }
+        
+        .payout-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .payout-btn:hover {
+            background: #218838;
+        }
+        
+        .payout-btn.paid {
+            background: #6c757d;
+            cursor: not-allowed;
+        }
+        
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            .number-input {
+                width: 50px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            .winning-number {
+                font-size: 2.5rem;
+                letter-spacing: 5px;
+            }
+        }
+    </style>
+    <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎫 แทงถูกไหมละ</h1>
+            <div id="userArea">
+                <button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>
+            </div>
+        </div>
+
+        <!-- Login Section -->
+        <div class="login-section" id="loginSection">
+            <div class="section-title">🔐 เข้าสู่ระบบ</div>
+            <div class="login-form">
+                <button class="login-btn line-btn" onclick="lineLogin()">🔵 เข้าสู่ระบบด้วย Line</button>
+                <div style="text-align: center; color: #666;">หรือ</div>
+                <input type="text" class="login-input" id="userName" placeholder="ชื่อ">
+                <input type="text" class="login-input" id="trueMoneyLink" placeholder="Link TrueMoney Wallet (https://truemoney.com/wallet/...)">
+                <button class="login-btn" onclick="manualLogin()">เข้าสู่ระบบ</button>
+            </div>
+        </div>
+
+        <!-- Deposit Section -->
+        <div class="deposit-section" id="depositSection" style="display: none;">
+            <div class="section-title">💰 เติมเงิน</div>
+            <div class="qr-container">
+                <div id="qrcode"></div>
+                <div class="deposit-info">
+                    <div style="font-weight: bold; margin-bottom: 10px;">💳 TrueMoney Wallet</div>
+                    <div>Scan QR Code หรือคลิกที่ลิงก์เพื่อเติมเงิน</div>
+                </div>
+                <a id="trueMoneyDepositLink" href="https://truemoney.com" target="_blank" class="modal-btn modal-btn-confirm" style="margin-top: 15px; display: inline-block; text-decoration: none;">
+                    เปิด TrueMoney
+                </a>
+            </div>
+        </div>
+        
+        <div class="balance-box" id="balanceBox" style="display: none;">
+            <div style="color: #666; margin-bottom: 5px;">เงินคงเหลือ</div>
+            <div class="balance" id="balance">0</div>
+            <button class="history-btn" onclick="toggleDeposit()" style="margin-top: 10px;">💵 เติมเงิน</button>
+        </div>
+
+        <div class="main-content" id="mainContent" style="display: none;">
+            <div class="ticket-section">
+                <div class="section-title">📝 ซื้อสลาก</div>
+                
+                <div class="number-input-group" id="numberInputs">
+                    <input type="text" class="number-input" id="num1" maxlength="1" oninput="validateNumber(this, 1)">
+                    <input type="text" class="number-input" id="num2" maxlength="1" oninput="validateNumber(this, 2)">
+                </div>
+
+                <div class="bet-options">
+                    <div class="bet-option selected" data-type="bottom2" onclick="selectBetType(this)">
+                        <div class="bet-name">2 ตัวล่าง</div>
+                        <div class="bet-multiplier">x25</div>
+                    </div>
+                    <div class="bet-option" data-type="top3" onclick="selectBetType(this)">
+                        <div class="bet-name">3 ตัวหน้า</div>
+                        <div class="bet-multiplier">x50</div>
+                    </div>
+                    <div class="bet-option" data-type="bottom3" onclick="selectBetType(this)">
+                        <div class="bet-name">3 ตัวท้าย</div>
+                        <div class="bet-multiplier">x50</div>
+                    </div>
+                </div>
+
+                <div class="amount-control">
+                    <button class="amount-btn" onclick="changeAmount(-10)">-</button>
+                    <div class="amount-display" id="betAmount">100</div>
+                    <button class="amount-btn" onclick="changeAmount(10)">+</button>
+                </div>
+
+                <button class="buy-btn" id="buyBtn" onclick="buyTicket()">ซื้อสลาก</button>
+
+                <div class="my-tickets" id="myTickets"></div>
+            </div>
+
+            <div class="result-section">
+                <div class="section-title">🏆 ผลสลาก</div>
+                <div class="draw-time-box">
+                    <div class="next-draw-label">งวดถัดไป</div>
+                    <div class="next-draw-display" id="nextDrawDisplay">กำลังโหลด...</div>
+                </div>
+                <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: none;">ทดสอบสลากออก</button>
+                <div class="result-display" id="resultDisplay"></div>
+                <button class="history-btn" onclick="toggleHistory()">📋 ประวัติการถูกรางวัล</button>
+            </div>
+
+            <div class="history-section" id="historySection" style="display: none;">
+                <div class="section-title">📜 ประวัติการถูกรางวัล</div>
+                <div class="history-list" id="historyList"></div>
+            </div>
+
+            <!-- Winners Management (Admin Only) -->
+            <div class="winners-section" id="winnersSection" style="display: none;">
+                <div class="section-title">🏆 ผู้โชคดี (แอดมิน)</div>
+                <div class="admin-controls">
+                    <div class="admin-control-group">
+                        <label>Telegram Bot Token:</label>
+                        <input type="text" id="telegramBotToken" placeholder="123456789:ABCdefGhIJKlmNoPQRStUvWxYz">
+                    </div>
+                    <div class="admin-control-group">
+                        <label>Telegram Chat ID:</label>
+                        <input type="text" id="telegramChatId" placeholder="-100123456789">
+                    </div>
+                    <button class="login-btn" onclick="testTelegram()" style="background: #0088cc;">🧪 ทดสอบส่งข้อความ</button>
+                </div>
+                <div id="winnersList" style="margin-top: 20px;"></div>
+            </div>
+
+            <div class="admin-section" id="adminSection">
+                <div class="section-title">⚙️ แผงควบคุมแอดมิน</div>
+                <div id="loginForm">
+                    <div class="login-form">
+                        <input type="text" class="login-input" id="adminUsername" placeholder="ชื่อผู้ใช้">
+                        <input type="password" class="login-input" id="adminPassword" placeholder="รหัสผ่าน">
+                        <button class="login-btn" onclick="adminLogin()">เข้าสู่ระบบ</button>
+                    </div>
+                </div>
+                <div id="adminControls" style="display: none;">
+                    <div class="admin-status" id="adminStatus">ยินดีต้อนรับแอดมิน</div>
+                    <div class="admin-controls">
+                        <div class="admin-control-group">
+                            <button onclick="adminLogout()" style="background: #dc3545; padding: 10px 20px; border: none; border-radius: 8px; color: white; font-weight: bold; cursor: pointer; margin-bottom: 10px;">ออกจากระบบ</button>
+                        </div>
+                        <div class="admin-control-group">
+                            <label>ตัวเลขที่ออก (6 หลัก):</label>
+                            <input type="text" id="customWinningNumber" maxlength="6" placeholder="123456" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>ลิงก์ TrueMoney:</label>
+                            <input type="text" id="adminTrueMoneyLink" placeholder="https://truemoney.com/wallet/...">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>อัพโหลด QR Code TrueMoney:</label>
+                            <input type="file" id="adminTrueMoneyQR" accept="image/*" onchange="handleQRUpload(event)">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>เพิ่มเงินให้ผู้เล่น:</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="number" id="adminAddMoney" placeholder="100" min="10">
+                                <button onclick="adminAddMoney()" class="login-btn" style="background: #27ae60;">เพิ่มเงิน</button>
+                            </div>
+                        </div>
+                        <button class="login-btn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 10px;">💾 บันทึกการตั้งค่า</button>
+                        <div class="admin-control-group" style="margin-top: 15px;">
+                            <label>เวลาที่ออก (เช่น 1200, 1500):</label>
+                            <input type="text" id="newDrawTime" maxlength="4" placeholder="0000">
+                            <button onclick="addDrawTime()">เพิ่ม</button>
+                        </div>
+                        <div class="admin-control-group">
+                            <label>เวลาที่ตั้งไว้:</label>
+                            <div id="drawTimesList" class="draw-times-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Confirmation Modal -->
+        <div class="modal-overlay" id="confirmModal" onclick="if(event.target === this) closeModal()">
+            <div class="modal-content">
+                <div class="modal-title">🎫 ยืนยันการซื้อสลาก</div>
+                <div class="modal-details">
+                    <div class="modal-detail-item">
+                        <span class="modal-detail-label">เลข:</span>
+                        <span class="modal-detail-value" id="modalNumber">-</span>
+                    </div>
+                    <div class="modal-detail-item">
+                        <span class="modal-detail-label">ประเภท:</span>
+                        <span class="modal-detail-value" id="modalType">-</span>
+                    </div>
+                    <div class="modal-detail-item">
+                        <span class="modal-detail-label">จำนวนเงิน:</span>
+                        <span class="modal-detail-value" id="modalAmount">-</span>
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button class="modal-btn modal-btn-cancel" id="modalCancel" onclick="closeModal()">ยกเลิก</button>
+                    <button class="modal-btn modal-btn-confirm" id="modalConfirm" onclick="confirmPurchase()">ยืนยัน</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Custom Info Modal -->
+        <div class="modal-overlay" id="infoModal" onclick="if(event.target === this) closeInfoModal()">
+            <div class="modal-content">
+                <div class="info-modal-icon" id="infoModalIcon">ℹ️</div>
+                <div class="modal-title" id="infoModalTitle">แจ้งเตือน</div>
+                <div style="color: #666; margin-bottom: 25px; font-size: 1.1rem;" id="infoModalMessage">-</div>
+                <button class="modal-btn modal-btn-confirm" id="infoModalOk" onclick="closeInfoModal()">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
+            authDomain: "cougar2-79354.firebaseapp.com",
+            databaseURL: "https://cougar2-79354-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cougar2-79354",
+            storageBucket: "cougar2-79354.firebasestorage.app",
+            messagingSenderId: "807099695357",
+            appId: "1:807099695357:web:b8651458269fcc51c07e94",
+            measurementId: "G-528PBBFBE4"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // State
+        let user = null;
+        let balance = 0;
+        let betAmount = 100;
+        let selectedBetType = 'bottom2';
+        let tickets = [];
+        let winners = [];
+        let drawn = false;
+        let winningNumber = '';
+        let isAdminLoggedIn = false;
+        let winHistory = [];
+        let drawTimes = ['1200', '1300', '1400', '1500', '1600', '1700', '1800'];
+        let checkTimeInterval = null;
+        let lastDrawTime = null;
+        let pendingTicketData = null;
+        let ADMIN_CREDENTIALS = { username: '', password: '' };
+
+        // Constants
+        const betTypes = {
+            bottom2: { multiplier: 25, digits: 2, position: 'bottom', label: '2 ตัวล่าง' },
+            top3: { multiplier: 50, digits: 3, position: 'top', label: '3 ตัวหน้า' },
+            bottom3: { multiplier: 50, digits: 3, position: 'bottom', label: '3 ตัวท้าย' }
+        };
+        let adminTrueMoneyLink = 'https://truemoney.com/wallet/demo';
+        let adminTrueMoneyQR = ''; // Will store base64 QR image
+
+        // Initialize
+        window.onload = function() {
+            // Clear any inline styles from modals
+            const confirmModal = document.getElementById('confirmModal');
+            const infoModal = document.getElementById('infoModal');
+            if (confirmModal) confirmModal.removeAttribute('style');
+            if (infoModal) infoModal.removeAttribute('style');
+            
+            loadAdminCredentials();
+            loadFromFirebase();
+            updateDepositDisplay();
+            updateNumberInputs();
+            updateNextDrawDisplay();
+            renderHistory();
+            renderWinners();
+            startCheckTime();
+        };
+
+        // Firebase Functions
+        async function loadAdminCredentials() {
+            const snapshot = await database.ref('admin/credentials').once('value');
+            if (snapshot.exists()) {
+                ADMIN_CREDENTIALS = snapshot.val();
+            } else {
+                // Set default credentials if not exist
+                ADMIN_CREDENTIALS = { username: 'admin', password: 'admin2' };
+                await database.ref('admin/credentials').set(ADMIN_CREDENTIALS);
+            }
+        }
+
+        async function loadFromFirebase() {
+            const userId = localStorage.getItem('lotteryUserId');
+            
+            // Load global data
+            const [globalSnapshot, userSnapshot] = await Promise.all([
+                database.ref('global').once('value'),
+                userId ? database.ref('users/' + userId).once('value') : null
+            ]);
+
+            if (globalSnapshot.exists()) {
+                const globalData = globalSnapshot.val();
+                drawTimes = globalData.drawTimes || drawTimes;
+                winHistory = globalData.winHistory || [];
+                winners = globalData.winners || [];
+                adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
+                adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
+            }
+
+            if (userSnapshot && userSnapshot.exists()) {
+                const userData = userSnapshot.val();
+                user = userData.profile;
+                balance = userData.balance || 0;
+                tickets = userData.tickets || [];
+                showLoggedInUI();
+            } else {
+                // Fallback to localStorage
+                const savedUser = localStorage.getItem('lotteryUser');
+                const savedBalance = localStorage.getItem('lotteryBalance');
+                const savedTickets = localStorage.getItem('lotteryTickets');
+                if (savedUser) user = JSON.parse(savedUser);
+                if (savedBalance) balance = parseInt(savedBalance);
+                if (savedTickets) tickets = JSON.parse(savedTickets);
+                if (user) showLoggedInUI();
+            }
+        }
+
+        async function saveToFirebase() {
+            const promises = [];
+            
+            // Save global data
+            promises.push(database.ref('global').set({
+                drawTimes,
+                winHistory,
+                winners,
+                adminTrueMoneyLink,
+                adminTrueMoneyQR
+            }));
+
+            // Save user data
+            if (user) {
+                localStorage.setItem('lotteryUserId', user.id);
+                promises.push(database.ref('users/' + user.id).set({
+                    profile: user,
+                    balance,
+                    tickets
+                }));
+            }
+
+            await Promise.all(promises);
+        }
+
+        // Update old functions
+        function saveToStorage() {
+            saveToFirebase();
+        }
+
+        function loadFromStorage() {
+            // Already handled by loadFromFirebase
+        }
+
+        // Login Functions
+        function toggleLogin() {
+            const loginSection = document.getElementById('loginSection');
+            if (user) {
+                if (confirm('ต้องการออกจากระบบ?')) {
+                    user = null;
+                    saveToStorage();
+                    document.getElementById('loginSection').style.display = 'block';
+                    document.getElementById('balanceBox').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'none';
+                    document.getElementById('depositSection').style.display = 'none';
+                    document.getElementById('userArea').innerHTML = '<button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>';
+                }
+            } else {
+                loginSection.style.display = loginSection.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        function lineLogin() {
+            // Line OAuth flow
+            const lineProfile = {
+                userId: 'U' + Date.now(),
+                displayName: prompt('กรุณากรอกชื่อของคุณ:', 'ผู้เล่นใหม่') || 'ผู้เล่นใหม่',
+                trueMoneyLink: prompt('กรุณากรอก Link TrueMoney Wallet ของคุณ:', 'https://truemoney.com/wallet/xxx') || 'https://truemoney.com/wallet/user'
+            };
+            
+            user = {
+                id: lineProfile.userId,
+                name: lineProfile.displayName,
+                trueMoneyLink: lineProfile.trueMoneyLink,
+                avatar: '👤'
+            };
+            balance = 0;
+            saveToStorage();
+            showLoggedInUI();
+            showInfoModal('เข้าสู่ระบบด้วย Line สำเร็จ! 🎉', '✅');
+        }
+
+        function manualLogin() {
+            const name = document.getElementById('userName').value;
+            const trueMoneyLink = document.getElementById('trueMoneyLink').value;
+
+            if (!name || !trueMoneyLink) {
+                showInfoModal('กรุณากรอกชื่อและ Link TrueMoney Wallet!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            user = {
+                id: 'U' + Date.now(),
+                name: name,
+                trueMoneyLink: trueMoneyLink,
+                avatar: '👤'
+            };
+            balance = 0;
+            saveToStorage();
+            showLoggedInUI();
+            showInfoModal('เข้าสู่ระบบสำเร็จ! 🎉', '✅');
+        }
+
+        function showLoggedInUI() {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('balanceBox').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'grid';
+            document.getElementById('userArea').innerHTML = `
+                <div class="user-info">
+                    <div class="user-avatar">👤</div>
+                    <div class="user-name">${user.name}</div>
+                    <button class="admin-btn" onclick="toggleLogin()">🚪</button>
+                    <button class="admin-btn" onclick="toggleAdmin()">🔒</button>
+                </div>
+            `;
+            updateBalance();
+            renderTickets();
+        }
+
+        // Deposit Functions
+        function toggleDeposit() {
+            const depositSection = document.getElementById('depositSection');
+            depositSection.style.display = depositSection.style.display === 'none' ? 'block' : 'none';
+            // Update QR and link when opening deposit section
+            updateDepositDisplay();
+        }
+
+        function updateDepositDisplay() {
+            // Update TrueMoney link
+            const trueMoneyLinkEl = document.getElementById('trueMoneyDepositLink');
+            if (trueMoneyLinkEl) trueMoneyLinkEl.href = adminTrueMoneyLink;
+            
+            // Update QR Code
+            if (adminTrueMoneyQR) {
+                document.getElementById('qrcode').innerHTML = `<img src="${adminTrueMoneyQR}" style="max-width: 200px; border-radius: 8px;">`;
+            } else {
+                // Generate default QR code
+                generateQRCode();
+            }
+        }
+
+        function generateQRCode() {
+            const qrContainer = document.getElementById('qrcode');
+            if (qrContainer) {
+                qrContainer.innerHTML = '';
+                QRCode.toCanvas(qrContainer, adminTrueMoneyLink, { width: 200 }, function(error) {
+                    if (error) console.error(error);
+                });
+            }
+        }
+
+        // Number Input
+        function validateNumber(input, index) {
+            input.value = input.value.replace(/[^0-9]/g, '');
+            const maxDigits = betTypes[selectedBetType].digits;
+            if (input.value.length === 1 && index < maxDigits) {
+                document.getElementById(`num${index + 1}`).focus();
+            }
+        }
+
+        function selectBetType(element) {
+            document.querySelectorAll('.bet-option').forEach(el => el.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedBetType = element.dataset.type;
+            updateNumberInputs();
+        }
+
+        function updateNumberInputs() {
+            const container = document.getElementById('numberInputs');
+            const maxDigits = betTypes[selectedBetType].digits;
+            let html = '';
+            for (let i = 1; i <= maxDigits; i++) {
+                html += `<input type="text" class="number-input" id="num${i}" maxlength="1" oninput="validateNumber(this, ${i})">`;
+            }
+            container.innerHTML = html;
+            document.getElementById('num1').focus();
+        }
+
+        function changeAmount(change) {
+            betAmount = Math.max(10, betAmount + change);
+            document.getElementById('betAmount').textContent = betAmount;
+        }
+
+        function getSelectedNumber() {
+            const maxDigits = betTypes[selectedBetType].digits;
+            let num = '';
+            for (let i = 1; i <= maxDigits; i++) {
+                num += document.getElementById(`num${i}`).value || '0';
+            }
+            return num;
+        }
+
+        function buyTicket() {
+            if (!user) {
+                showInfoModal('กรุณาเข้าสู่ระบบก่อน!', '🔐');
+                return;
+            }
+
+            const selectedNum = getSelectedNumber();
+            const betTypeName = getBetTypeName(selectedBetType);
+            
+            if (balance < betAmount) {
+                showInfoModal('เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
+                return;
+            }
+            
+            // Store pending ticket data
+            pendingTicketData = {
+                number: selectedNum,
+                type: selectedBetType,
+                amount: betAmount,
+                userId: user.id,
+                userName: user.name,
+                trueMoneyLink: user.trueMoneyLink,
+                status: 'pending'
+            };
+            
+            // Update modal content
+            document.getElementById('modalNumber').textContent = selectedNum;
+            document.getElementById('modalType').textContent = betTypeName;
+            document.getElementById('modalAmount').textContent = `${betAmount} บาท`;
+            
+            // Show modal
+            const confirmModalEl = document.getElementById('confirmModal');
+            confirmModalEl.classList.add('active');
+        }
+        
+        function confirmPurchase() {
+            if (!pendingTicketData) return;
+            
+            balance -= pendingTicketData.amount;
+            updateBalance();
+            
+            const ticket = {
+                id: Date.now(),
+                number: pendingTicketData.number,
+                type: pendingTicketData.type,
+                bet: pendingTicketData.amount,
+                userId: pendingTicketData.userId,
+                userName: pendingTicketData.userName,
+                trueMoneyLink: pendingTicketData.trueMoneyLink,
+                status: 'pending'
+            };
+            
+            tickets.push(ticket);
+            renderTickets();
+            saveToStorage();
+            
+            // Clear inputs
+            const maxDigits = betTypes[selectedBetType].digits;
+            for (let i = 1; i <= maxDigits; i++) {
+                document.getElementById(`num${i}`).value = '';
+            }
+            document.getElementById('num1').focus();
+            
+            closeModal();
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('confirmModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+                setTimeout(() => {
+                    modal.style.display = '';
+                }, 50);
+            }
+            pendingTicketData = null;
+        }
+        
+        function showInfoModal(message, icon = 'ℹ️', title = 'แจ้งเตือน') {
+            document.getElementById('infoModalMessage').textContent = message;
+            document.getElementById('infoModalIcon').textContent = icon;
+            document.getElementById('infoModalTitle').textContent = title;
+            const infoModal = document.getElementById('infoModal');
+            infoModal.classList.add('active');
+        }
+        
+        function closeInfoModal() {
+            const modal = document.getElementById('infoModal');
+            if (modal) {
+                modal.classList.remove('active');
+                modal.style.display = 'none';
+                setTimeout(() => {
+                    modal.style.display = '';
+                }, 50);
+            }
+        }
+
+        function renderTickets() {
+            const container = document.getElementById('myTickets');
+            const userTickets = tickets.filter(t => t.userId === user?.id);
+            
+            if (userTickets.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">ยังไม่มีสลาก</div>';
+                return;
+            }
+
+            // Reverse tickets to show latest first
+            const reversedTickets = [...userTickets].reverse();
+
+            container.innerHTML = reversedTickets.map(ticket => `
+                <div class="ticket ${ticket.status}" id="ticket-${ticket.id}">
+                    <div>
+                        <div class="ticket-number">${ticket.number}</div>
+                        <div style="color: #666; font-size: 0.9rem;">${getBetTypeName(ticket.type)}</div>
+                    </div>
+                    <div class="ticket-info">
+                        <div>ทดลอง ${ticket.bet} บาท</div>
+                        ${ticket.prize ? `<div style="color: #27ae60; font-weight: bold;">ชนะ ${ticket.prize} บาท</div>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getBetTypeName(type) {
+            return betTypes[type].label;
+        }
+
+        function drawLottery(autoDraw = false) {
+            const pendingTickets = tickets.filter(t => t.status === 'pending');
+            if (pendingTickets.length === 0) {
+                if (!autoDraw) {
+                    showInfoModal('กรุณาซื้อสลากก่อนทดสอบสลากออก!', '🎫', 'แจ้งเตือน');
+                }
+                return;
+            }
+
+            drawn = true;
+
+            // Check if admin set custom winning number
+            const customNumber = document.getElementById('customWinningNumber')?.value;
+            if (isAdminLoggedIn && customNumber && customNumber.length === 6) {
+                winningNumber = customNumber;
+            } else {
+                // Generate 6-digit random winning number
+                winningNumber = '';
+                for (let i = 0; i < 6; i++) {
+                    winningNumber += Math.floor(Math.random() * 10).toString();
+                }
+            }
+
+            let totalPrize = 0;
+            const newWinners = [];
+
+            tickets.forEach(ticket => {
+                if (ticket.status === 'pending') {
+                    if (checkWin(ticket, winningNumber)) {
+                        const prize = ticket.bet * betTypes[ticket.type].multiplier;
+                        ticket.prize = prize;
+                        ticket.status = 'won';
+                        totalPrize += prize;
+                        
+                        // Add to user balance
+                        if (ticket.userId === user?.id) {
+                            balance += prize;
+                        }
+                        
+                        // Add to winners list
+            const winner = {
+                id: 'winner_' + Date.now() + '_' + Math.random(),
+                ticketId: ticket.id,
+                userName: ticket.userName,
+                trueMoneyLink: ticket.trueMoneyLink,
+                number: ticket.number,
+                betType: getBetTypeName(ticket.type),
+                betAmount: ticket.bet,
+                prizeAmount: prize,
+                winningNumber: winningNumber,
+                date: new Date().toLocaleString('th-TH'),
+                paid: false
+            };
+            winners.unshift(winner);
+            newWinners.push(winner);
+                    } else {
+                        ticket.status = 'lost';
+                    }
+                }
+            });
+
+            // Add to history
+            winHistory.unshift({
+                date: new Date().toLocaleString('th-TH'),
+                winningNumber: winningNumber,
+                totalPrize: totalPrize
+            });
+            
+            renderHistory();
+            renderWinners();
+            saveToStorage();
+            updateBalance();
+            renderTickets();
+            renderResult(totalPrize);
+            
+            // Send Telegram notification for winners
+            if (newWinners.length > 0) {
+                sendTelegramNotification(newWinners);
+            }
+        }
+
+        function checkWin(ticket, winNum) {
+            const type = betTypes[ticket.type];
+            
+            if (type.position === 'top') {
+                const ticketPart = ticket.number;
+                const winPart = winNum.substring(0, type.digits);
+                return ticketPart === winPart;
+            } else if (type.position === 'bottom') {
+                const ticketPart = ticket.number;
+                const winPart = winNum.substring(6 - type.digits);
+                return ticketPart === winPart;
+            }
+            return false;
+        }
+
+        function renderResult(totalPrize) {
+            const container = document.getElementById('resultDisplay');
+            const userWonTickets = tickets.filter(t => t.userId === user?.id && t.status === 'won');
+            const userTotalPrize = userWonTickets.reduce((sum, t) => sum + (t.prize || 0), 0);
+            const wonAny = userTotalPrize > 0;
+
+            container.innerHTML = `
+                <div class="winning-number">${winningNumber}</div>
+                <div class="prize-result ${wonAny ? '' : 'lost'}">
+                    ${wonAny ? `🎉 คุณชนะ ${userTotalPrize} บาท!` : '😢 ไม่ถูก'}
+                </div>
+            `;
+        }
+
+        function updateBalance() {
+            document.getElementById('balance').textContent = balance;
+        }
+
+        function getNextDrawTime() {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
+            const sortedTimes = [...drawTimes].sort();
+            
+            for (let time of sortedTimes) {
+                if (time > currentTime) {
+                    return time;
+                }
+            }
+            
+            return sortedTimes[0];
+        }
+
+        function updateNextDrawDisplay() {
+            const nextTime = getNextDrawTime();
+            const nextHour = parseInt(nextTime.substring(0, 2));
+            const nextMinute = nextTime.substring(2, 4);
+            document.getElementById('nextDrawDisplay').textContent = `${nextHour}:${nextMinute} น.`;
+        }
+
+        function checkDrawTime() {
+            const now = new Date();
+            const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
+            
+            if (drawTimes.includes(currentTime) && lastDrawTime !== currentTime) {
+                lastDrawTime = currentTime;
+                drawLottery(true);
+            }
+        }
+
+        function startCheckTime() {
+            checkTimeInterval = setInterval(() => {
+                checkDrawTime();
+            }, 1000);
+        }
+
+        function toggleAdmin() {
+            const adminSection = document.getElementById('adminSection');
+            adminSection.classList.toggle('active');
+        }
+
+        function adminLogin() {
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+
+            if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+                isAdminLoggedIn = true;
+                document.getElementById('loginForm').style.display = 'none';
+                document.getElementById('adminControls').style.display = 'block';
+                document.getElementById('drawBtn').style.display = 'block';
+                document.getElementById('winnersSection').style.display = 'block';
+                // Load saved admin settings
+                document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
+                renderDrawTimes();
+            } else {
+                showInfoModal('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        function handleQRUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    adminTrueMoneyQR = e.target.result;
+                    showInfoModal('อัพโหลด QR Code สำเร็จ! 📸', '✅');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveAdminSettings() {
+            adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
+            saveToStorage();
+            showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
+        }
+        
+        function adminAddMoney() {
+            if (!isAdminLoggedIn) return;
+            if (!user) {
+                showInfoModal('ยังไม่มีผู้เล่นเข้าสู่ระบบ!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+            const amount = parseInt(document.getElementById('adminAddMoney').value);
+            if (isNaN(amount) || amount < 10) {
+                showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง (ไม่น้อยกว่า 10)!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+            balance += amount;
+            updateBalance();
+            saveToStorage();
+            showInfoModal('เพิ่มเงินสำเร็จ! +' + amount + ' บาท 🎉', '✅');
+            document.getElementById('adminAddMoney').value = '';
+        }
+        
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('adminControls').style.display = 'none';
+            document.getElementById('drawBtn').style.display = 'none';
+            document.getElementById('winnersSection').style.display = 'none';
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
+        function addDrawTime() {
+            if (!isAdminLoggedIn) return;
+            const time = document.getElementById('newDrawTime').value;
+            if (time.length === 4 && /^\d+$/.test(time)) {
+                if (!drawTimes.includes(time)) {
+                    drawTimes.push(time);
+                    drawTimes.sort();
+                    renderDrawTimes();
+                    updateNextDrawDisplay();
+                    saveToStorage();
+                    document.getElementById('newDrawTime').value = '';
+                }
+            } else {
+                alert('กรุณาใส่เวลา 4 หลัก (เช่น 1200)');
+            }
+        }
+
+        function removeDrawTime(time) {
+            if (!isAdminLoggedIn) return;
+            drawTimes = drawTimes.filter(t => t !== time);
+            renderDrawTimes();
+            updateNextDrawDisplay();
+            saveToStorage();
+        }
+
+        function renderDrawTimes() {
+            const container = document.getElementById('drawTimesList');
+            drawTimes.sort();
+            container.innerHTML = drawTimes.map(time => `
+                <div class="draw-time-tag">
+                    ${time.substring(0,2)}:${time.substring(2,4)}
+                    <button onclick="removeDrawTime('${time}')">×</button>
+                </div>
+            `).join('');
+        }
+
+        function toggleHistory() {
+            const historySection = document.getElementById('historySection');
+            historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            if (winHistory.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">ยังไม่มีประวัติ</div>';
+                return;
+            }
+
+            container.innerHTML = winHistory.map(item => `
+                <div class="history-item">
+                    <div>
+                        <div class="history-number">${item.winningNumber}</div>
+                        <div style="color: #666; font-size: 0.9rem;">${item.date}</div>
+                    </div>
+                    <div class="history-prize ${item.totalPrize === 0 ? 'zero' : ''}">
+                        ${item.totalPrize > 0 ? `+${item.totalPrize} บาท` : 'ไม่ถูก'}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Winners Management
+        function renderWinners() {
+            const container = document.getElementById('winnersList');
+            if (winners.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">ยังไม่มีผู้โชคดี</div>';
+                return;
+            }
+
+            container.innerHTML = winners.map(winner => `
+                <div class="winner-item ${winner.paid ? 'winner-paid' : ''}">
+                    <div class="winner-info">
+                        <div style="font-weight: bold;">👤 ${winner.userName}</div>
+                        <div style="color: #666; word-break: break-all;">� <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
+                        <div style="margin-top: 5px;">🎯 เลข ${winner.number} (${winner.betType})</div>
+                        <div style="margin-top: 5px;">🏆 ทดลอง ${winner.betAmount} บาท → ชนะ ${winner.prizeAmount} บาท</div>
+                        <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningNumber} | ${winner.date}</div>
+                    </div>
+                    <button class="payout-btn ${winner.paid ? 'paid' : ''}" onclick="markAsPaid('${winner.id}')" ${winner.paid ? 'disabled' : ''}>
+                        ${winner.paid ? '✅ ชำระเงินแล้ว' : '💰 โอนเงิน TrueMoney'}
+                    </button>
+                </div>
+            `).join('');
+        }
+        
+        function markAsPaid(winnerId) {
+            const winner = winners.find(w => w.id == winnerId);
+            if (winner && !winner.paid) {
+                // Open TrueMoney link in new tab to make payment
+                window.open(winner.trueMoneyLink, '_blank');
+                // Ask for confirmation after payment
+                if (confirm('คุณโอนเงินให้ ' + winner.userName + ' เรียบร้อยแล้วใช่หรือไม่?')) {
+                    winner.paid = true;
+                    renderWinners();
+                    saveToStorage();
+                    showInfoModal(`ชำระเงินให้ ${winner.userName} สำเร็จ! ✅`, '✅');
+                    sendTelegramPayoutConfirm(winner);
+                }
+            }
+        }
+        
+        // Telegram Functions (Mock)
+        function testTelegram() {
+            showInfoModal('ส่งข้อความทดสอบสำเร็จ! 📱 (Mock)', '✅');
+        }
+        
+        function sendTelegramNotification(newWinners) {
+            console.log('Sending Telegram notifications:', newWinners);
+            // In real app, you would call your backend API here
+            if (newWinners.length > 0) {
+                showInfoModal(`ส่งแจ้งเตือนถึง ${newWinners.length} คนที่ถูกรางวัล! 📱`, '✅');
+            }
+        }
+        
+        function sendTelegramPayoutConfirm(winner) {
+            console.log('Sending payout confirmation:', winner);
+        }
+    </script>
+</body>
+</html>

@@ -641,8 +641,8 @@
         <div class="login-section" id="loginSection">
             <div class="section-title">🔐 เข้าสู่ระบบ</div>
             <div class="login-form">
-                <input type="text" class="login-input" id="userName" placeholder="ชื่อ">
-                <input type="text" class="login-input" id="trueMoneyLink" placeholder="Link TrueMoney Wallet (https://truemoney.com/wallet/...)">
+                <input type="text" class="login-input" id="userName" placeholder="ชื่อ" onkeypress="if(event.key === 'Enter') manualLogin()">
+                <input type="text" class="login-input" id="trueMoneyLink" placeholder="Link TrueMoney Wallet (https://truemoney.com/wallet/...)" onkeypress="if(event.key === 'Enter') manualLogin()">
                 <button class="login-btn" onclick="manualLogin()">เข้าสู่ระบบ</button>
             </div>
         </div>

@@ -734,8 +734,20 @@
                     <div class="admin-status" id="adminStatus">ยินดีต้อนรับแอดมิน</div>
                     <div class="admin-controls">
                         <div class="admin-control-group">
-                            <label>ตัวเลขที่ออก (6 หลัก):</label>
-                            <input type="text" id="customWinningNumber" maxlength="6" placeholder="123456" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว):</label>
+                            <input type="text" id="customFrontNumber1" maxlength="3" placeholder="123" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว อีกช่อง):</label>
+                            <input type="text" id="customFrontNumber2" maxlength="3" placeholder="456" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว):</label>
+                            <input type="text" id="customBackNumber1" maxlength="3" placeholder="789" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                        </div>
+                        <div class="admin-control-group">
+                            <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว อีกช่อง):</label>
+                            <input type="text" id="customBackNumber2" maxlength="3" placeholder="012" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (2 หลัก):</label>
@@ -841,7 +853,8 @@
         let tickets = [];
         let winners = [];
         let drawn = false;
-        let winningNumber = '';
+        let winningFrontNumbers = []; // Array of front 3-digit numbers
+        let winningBackNumbers = []; // Array of back 3-digit numbers
         let isAdminLoggedIn = false;
         let winHistory = [];
         let drawTimes = ['1200', '1300', '1400', '1500', '1600', '1700', '1800'];
@@ -1284,31 +1297,51 @@
             // Set current draw ID
             currentDrawId = Date.now();
 
-            // Check if admin set custom winning number
-            const customNumber = document.getElementById('customWinningNumber')?.value;
-            const customNumber2 = document.getElementById('customWinningNumber2')?.value;
-            console.log('customNumber:', customNumber, 'customNumber2:', customNumber2);
+            // Check if admin set custom winning numbers
+            const customFront1 = document.getElementById('customFrontNumber1')?.value.padStart(3, '0');
+            const customFront2 = document.getElementById('customFrontNumber2')?.value.padStart(3, '0');
+            const customBack1 = document.getElementById('customBackNumber1')?.value.padStart(3, '0');
+            const customBack2 = document.getElementById('customBackNumber2')?.value.padStart(3, '0');
+            const customNumber2 = document.getElementById('customWinningNumber2')?.value.padStart(2, '0');
+            console.log('customFront1:', customFront1, 'customFront2:', customFront2, 'customBack1:', customBack1, 'customBack2:', customBack2, 'customNumber2:', customNumber2);
             
-            // Set 6-digit number
-            if (isAdminLoggedIn && customNumber && customNumber.length === 6) {
-                winningNumber = customNumber;
+            // Set front 3-digit numbers
+            winningFrontNumbers = [];
+            if (isAdminLoggedIn && customFront1 && customFront1.length === 3) {
+                winningFrontNumbers.push(customFront1);
             } else {
-                // Generate 6-digit random winning number
-                winningNumber = '';
-                for (let i = 0; i < 6; i++) {
-                    winningNumber += Math.floor(Math.random() * 10).toString();
-                }
+                // Generate random front 3-digit
+                let num = '';
+                for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
+                winningFrontNumbers.push(num);
+            }
+            if (isAdminLoggedIn && customFront2 && customFront2.length === 3) {
+                winningFrontNumbers.push(customFront2);
+            }
+            
+            // Set back 3-digit numbers
+            winningBackNumbers = [];
+            if (isAdminLoggedIn && customBack1 && customBack1.length === 3) {
+                winningBackNumbers.push(customBack1);
+            } else {
+                // Generate random back 3-digit
+                let num = '';
+                for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
+                winningBackNumbers.push(num);
+            }
+            if (isAdminLoggedIn && customBack2 && customBack2.length === 3) {
+                winningBackNumbers.push(customBack2);
             }
             
             // Set 2-digit number
             if (isAdminLoggedIn && customNumber2 && customNumber2.length === 2) {
                 twoDigitWinningNumber = customNumber2;
             } else {
-                // If admin didn't set 2-digit, use last 2 of 6-digit
-                twoDigitWinningNumber = winningNumber.substring(4);
+                // If admin didn't set 2-digit, use last 2 of first back number
+                twoDigitWinningNumber = winningBackNumbers[0].substring(1);
             }
             
-            console.log('winningNumber:', winningNumber, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
+            console.log('winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
 
             let totalPrize = 0;
             const newWinners = [];
@@ -1318,7 +1351,7 @@
                     // Assign draw ID to this ticket
                     ticket.drawId = currentDrawId;
 
-                    if (checkWin(ticket, winningNumber)) {
+                    if (checkWin(ticket)) {
                         const prize = ticket.bet * betTypes[ticket.type].multiplier;
                         ticket.prize = prize;
                         ticket.status = 'won';
@@ -1334,7 +1367,9 @@
                 betType: getBetTypeName(ticket.type),
                 betAmount: ticket.bet,
                 prizeAmount: prize,
-                winningNumber: winningNumber,
+                winningFrontNumbers: winningFrontNumbers,
+                winningBackNumbers: winningBackNumbers,
+                twoDigitWinningNumber: twoDigitWinningNumber,
                 date: new Date().toLocaleString('th-TH'),
                 paid: false
             };
@@ -1349,7 +1384,9 @@
             // Add to history
             winHistory.unshift({
                 date: new Date().toLocaleString('th-TH'),
-                winningNumber: winningNumber,
+                winningFrontNumbers: winningFrontNumbers,
+                winningBackNumbers: winningBackNumbers,
+                twoDigitWinningNumber: twoDigitWinningNumber,
                 totalPrize: totalPrize
             });
             
@@ -1366,26 +1403,36 @@
             }
         }
 
-        function checkWin(ticket, winNum) {
+        function checkWin(ticket) {
             const type = betTypes[ticket.type];
-            console.log('checkWin - ticket:', ticket, 'winNum:', winNum, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'type:', type);
+            console.log('checkWin - ticket:', ticket, 'winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'type:', type);
             if (type.position === 'top') {
                 const ticketPart = ticket.number;
-                const winPart = winNum.substring(0, type.digits);
-                console.log('top - ticketPart:', ticketPart, 'winPart:', winPart, 'equal:', ticketPart === winPart);
-                return ticketPart === winPart;
-            } else if (type.position === 'bottom') {
-                const ticketPart = ticket.number;
-                let winPart;
-                if (twoDigitWinningNumber) {
-                    // If 2-digit is set (from admin input or random), use it
-                    winPart = twoDigitWinningNumber;
-                } else {
-                    // Otherwise, no win for bottom2/3 (since 6-digit was set without 2-digit)
-                    return false;
+                // Check if ticket part matches any front number
+                for (const frontNum of winningFrontNumbers) {
+                    if (ticketPart === frontNum) {
+                        console.log('top - ticketPart:', ticketPart, 'matches front number:', frontNum);
+                        return true;
+                    }
                 }
-                console.log('bottom - ticketPart:', ticketPart, 'winPart:', winPart, 'equal:', ticketPart === winPart);
-                return ticketPart === winPart;
+                return false;
+            } else if (type.digits === 3 && type.position === 'bottom') {
+                const ticketPart = ticket.number;
+                // Check if ticket part matches any back number (for bottom3)
+                for (const backNum of winningBackNumbers) {
+                    if (ticketPart === backNum) {
+                        console.log('bottom3 - ticketPart:', ticketPart, 'matches back number:', backNum);
+                        return true;
+                    }
+                }
+                return false;
+            } else if (type.digits === 2 && type.position === 'bottom') {
+                const ticketPart = ticket.number;
+                if (twoDigitWinningNumber) {
+                    console.log('bottom2 - ticketPart:', ticketPart, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'equal:', ticketPart === twoDigitWinningNumber);
+                    return ticketPart === twoDigitWinningNumber;
+                }
+                return false;
             }
             return false;
         }
@@ -1397,7 +1444,6 @@
             const userTotalPrize = userWonTickets.reduce((sum, t) => sum + (t.prize || 0), 0);
             console.log('renderResult - userTotalPrize:', userTotalPrize);
             const wonAny = userTotalPrize > 0;
-            const displayTwoDigits = twoDigitWinningNumber || winningNumber.substring(4);
 
             container.innerHTML = `
                 <div style="
@@ -1414,7 +1460,7 @@
                         gap: 40px;
                         flex-wrap: wrap;
                     ">
-                        <!-- 6 Digit Number -->
+                        <!-- Front 3 Digits -->
                         <div>
                             <div style="
                                 font-size: 1.8rem;
@@ -1423,23 +1469,68 @@
                                 text-shadow: 0 2px 10px rgba(0,0,0,0.3);
                                 margin-bottom: 15px;
                             ">
-                                รางวัลที่ 1
+                                รางวัลเลขหน้า 3 ตัว
                             </div>
                             <div style="
-                                background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
-                                border-radius: 15px;
-                                padding: 25px 50px;
-                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                                display: flex;
+                                gap: 15px;
+                                justify-content: center;
                             ">
-                                <div style="
-                                    font-size: 5rem;
-                                    font-weight: 900;
-                                    color: white;
-                                    letter-spacing: 15px;
-                                    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                                ">
-                                    ${winningNumber}
-                                </div>
+                                ${winningFrontNumbers.map(num => `
+                                    <div style="
+                                        background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
+                                        border-radius: 15px;
+                                        padding: 20px 30px;
+                                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                                    ">
+                                        <div style="
+                                            font-size: 4rem;
+                                            font-weight: 900;
+                                            color: white;
+                                            letter-spacing: 10px;
+                                            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                                        ">
+                                            ${num}
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <!-- Back 3 Digits -->
+                        <div>
+                            <div style="
+                                font-size: 1.8rem;
+                                color: white;
+                                font-weight: bold;
+                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                                margin-bottom: 15px;
+                            ">
+                                รางวัลเลขท้าย 3 ตัว
+                            </div>
+                            <div style="
+                                display: flex;
+                                gap: 15px;
+                                justify-content: center;
+                            ">
+                                ${winningBackNumbers.map(num => `
+                                    <div style="
+                                        background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
+                                        border-radius: 15px;
+                                        padding: 20px 30px;
+                                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+                                    ">
+                                        <div style="
+                                            font-size: 4rem;
+                                            font-weight: 900;
+                                            color: white;
+                                            letter-spacing: 10px;
+                                            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+                                        ">
+                                            ${num}
+                                        </div>
+                                    </div>
+                                `).join('')}
                             </div>
                         </div>
 
@@ -1458,17 +1549,17 @@
                             <div style="
                                 background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
                                 border-radius: 15px;
-                                padding: 25px 70px;
+                                padding: 20px 60px;
                                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                             ">
                                 <div style="
-                                    font-size: 5.5rem;
+                                    font-size: 4.5rem;
                                     font-weight: 900;
                                     color: white;
                                     letter-spacing: 15px;
                                     text-shadow: 0 3px 10px rgba(0,0,0,0.2);
                                 ">
-                                    ${displayTwoDigits}
+                                    ${twoDigitWinningNumber}
                                 </div>
                             </div>
                         </div>
@@ -1490,7 +1581,7 @@
                         color: ${wonAny ? '#10B981' : '#64748B'};
                         margin-bottom: 15px;
                     ">
-                        ${wonAny ? '🎉 สุดยอด!' : '😔 ไม่ถูกจ้า'}
+                        ${wonAny ? '🎉 สุดยอด! คุณถูกรางวัล' : '😔 คุณไม่ถูกรางวัล'}
                     </div>
                     ${wonAny ? `
                     <div style="
@@ -1566,6 +1657,7 @@
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
                 renderDrawTimes();
+                renderWinners();
                 if (user) {
                     updateUserArea();
                 } else {
@@ -1689,7 +1781,11 @@
             container.innerHTML = winHistory.map(item => `
                 <div class="history-item">
                     <div>
-                        <div class="history-number">${item.winningNumber}</div>
+                        <div class="history-number">
+                            ${item.winningFrontNumbers ? `หน้า: ${item.winningFrontNumbers.join(', ')} | ` : ''}
+                            ${item.winningBackNumbers ? `ท้าย: ${item.winningBackNumbers.join(', ')} | ` : ''}
+                            ${item.twoDigitWinningNumber ? `2 ตัว: ${item.twoDigitWinningNumber}` : ''}
+                        </div>
                         <div style="color: #666; font-size: 0.9rem;">${item.date}</div>
                     </div>
                     <div class="history-prize ${item.totalPrize === 0 ? 'zero' : ''}">
@@ -1708,20 +1804,46 @@
                 return;
             }
 
-            container.innerHTML = winners.map(winner => `
-                <div class="winner-item ${winner.paid ? 'winner-paid' : ''}">
-                    <div class="winner-info">
-                        <div style="font-weight: bold;">👤 ${winner.userName}</div>
-                        <div style="color: #666; word-break: break-all;">💳 <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
-                        <div style="margin-top: 5px;">🎯 เลข ${winner.number} (${winner.betType})</div>
-                        <div style="margin-top: 5px;">🏆 ${winner.betAmount} บาท → ได้รับเงิน ${winner.prizeAmount} บาท</div>
-                        <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningNumber} | ${winner.date}</div>
-                    </div>
-                    <button class="payout-btn ${winner.paid ? 'paid' : ''}" onclick="markAsPaid('${winner.id}')" ${winner.paid ? 'disabled' : ''}>
-                        ${winner.paid ? '✅ ชำระเงินแล้ว' : '💰 โอนเงิน TrueMoney'}
-                    </button>
+            container.innerHTML = `
+                <div style="margin-bottom: 20px; text-align: right;">
+                    <button class="login-btn" onclick="deleteAllWinners()" style="background: #e74c3c;">🗑️ ลบข้อมูลทั้งหมด</button>
                 </div>
-            `).join('');
+                ${winners.map(winner => `
+                    <div class="winner-item ${winner.paid ? 'winner-paid' : ''}">
+                        <div class="winner-info">
+                            <div style="font-weight: bold;">👤 ${winner.userName}</div>
+                            <div style="color: #666; word-break: break-all;">💳 <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
+                            <div style="margin-top: 5px;">🎯 เลข ${winner.number} (${winner.betType})</div>
+                            <div style="margin-top: 5px;">🏆 ${winner.betAmount} บาท → ได้รับเงิน ${winner.prizeAmount} บาท</div>
+                            <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningFrontNumbers ? `หน้า: ${winner.winningFrontNumbers.join(', ')} | ` : ''}${winner.winningBackNumbers ? `ท้าย: ${winner.winningBackNumbers.join(', ')} | ` : ''}${winner.twoDigitWinningNumber ? `2 ตัว: ${winner.twoDigitWinningNumber}` : ''} | ${winner.date}</div>
+                        </div>
+                        <div style="display: flex; gap: 10px; align-items: center;">
+                            <button class="payout-btn ${winner.paid ? 'paid' : ''}" onclick="markAsPaid('${winner.id}')" ${winner.paid ? 'disabled' : ''}>
+                                ${winner.paid ? '✅ ชำระเงินแล้ว' : '💰 โอนเงิน TrueMoney'}
+                            </button>
+                            <button class="payout-btn" onclick="deleteWinner('${winner.id}')" style="background: #e74c3c;">🗑️</button>
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        }
+        
+        function deleteWinner(winnerId) {
+            if (confirm('คุณต้องการลบข้อมูลผู้โชคดีคนนี้ใช่หรือไม่?')) {
+                winners = winners.filter(w => w.id != winnerId);
+                renderWinners();
+                saveToStorage();
+                showInfoModal('ลบข้อมูลสำเร็จ! ✅', '✅');
+            }
+        }
+        
+        function deleteAllWinners() {
+            if (confirm('คุณต้องการลบข้อมูลผู้โชคดีทั้งหมดใช่หรือไม่?')) {
+                winners = [];
+                renderWinners();
+                saveToStorage();
+                showInfoModal('ลบข้อมูลทั้งหมดสำเร็จ! ✅', '✅');
+            }
         }
         
         function markAsPaid(winnerId) {
@@ -1776,11 +1898,16 @@
             }
             try {
                 let message = '🎉 มีผู้โชคดีถูกรางวัล!\n';
-                message += `เลขที่ออก: ${winningNumber}`;
-                if (twoDigitWinningNumber) {
-                    message += ` (2 ตัวล่าง: ${twoDigitWinningNumber})`;
+                if (winningFrontNumbers.length > 0) {
+                    message += `เลขหน้า 3 ตัว: ${winningFrontNumbers.join(', ')}\n`;
                 }
-                message += '\n\n';
+                if (winningBackNumbers.length > 0) {
+                    message += `เลขท้าย 3 ตัว: ${winningBackNumbers.join(', ')}\n`;
+                }
+                if (twoDigitWinningNumber) {
+                    message += `เลขท้าย 2 ตัว: ${twoDigitWinningNumber}\n`;
+                }
+                message += '\n';
                 newWinners.forEach(winner => {
                     message += `👤 ${winner.userName}\n`;
                     message += `🎯 เลข ${winner.number} (${winner.betType})\n`;

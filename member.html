@@ -350,19 +350,6 @@
                 document.getElementById('loginUserId').value = savedMemberId;
             }
 
-            // Load admin settings immediately for deposit page (even without session)
-            if (tab === 'deposit') {
-                try {
-                    const globalSnapshot = await database.ref('global').once('value');
-                    if (globalSnapshot.exists()) {
-                        const globalData = globalSnapshot.val();
-                        adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
-                        adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
-                    }
-                } catch (e) {
-                    console.error('Failed to load admin settings:', e);
-                }
-            }
 
             // First, check for session and show UI immediately!
             let session = MemberAPI.getSession();
@@ -373,8 +360,8 @@
                 startBalancePolling();
                 if (tab === 'deposit') {
                     showDeposit();
-                    updateDepositDisplay(); // Call immediately!
                 }
+
             } else {
                 // No session, show auth UI!
                 showAuthUI();
@@ -404,7 +391,7 @@
                         }
                         if (tab === 'deposit') {
                             showDeposit();
-                            updateDepositDisplay(); // Refresh again!
+
                         } else {
                             showDashboard(balance); // Refresh with latest!
                         }
@@ -679,25 +666,8 @@
             window.location.href = 'index.html'; // Redirect to index.html!
         }
 
-        async function updateDepositDisplay() {
-            try {
-                // Read admin settings from Firebase directly (even without session)
-                const globalSnapshot = await database.ref('global').once('value');
-                if (globalSnapshot.exists()) {
-                    const globalData = globalSnapshot.val();
-                    adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
-                    adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
-                    telegramBotToken = globalData.telegramBotToken || '';
-                    telegramChatId = globalData.telegramChatId || '';
-                }
-                
-
-                
-
-            } catch (e) {
-                console.error('updateDepositDisplay error:', e);
-                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
-            }
+        function updateDepositDisplay() {
+            // Deposit form is ready immediately - no async loading needed
         }
 
         async function submitGiftVoucher() {

@@ -1191,7 +1191,18 @@
             startBalancePolling();
 
             try {
-                const restored = await MemberAPI.restore();
+                // Race against 10s timeout — if GAS is slow, keep cached session
+                const timeoutPromise = new Promise(resolve =>
+                    setTimeout(() => resolve({ success: true, _timeout: true }), 10000)
+                );
+                const restored = await Promise.race([MemberAPI.restore(), timeoutPromise]);
+
+                if (restored._timeout) {
+                    // GAS too slow — stay logged in with cached data
+                    console.warn('Session restore timed out — keeping cached session');
+                    return;
+                }
+
                 if (restored.success) {
                     user = restored.user;
                     sessionToken = restored.sessionToken;
@@ -1202,8 +1213,8 @@
                     if (sessionToken && user) {
                         MemberAPI.saveSession(user, sessionToken, balance);
                     }
-                } else {
-                    // Invalid session: log out completely
+                } else if (restored.reason === 'invalid_session') {
+                    // Server explicitly rejected the session — logout
                     user = null;
                     balance = 0;
                     tickets = [];
@@ -1214,10 +1225,12 @@
                     localStorage.removeItem('lotteryUserId');
                     showGuestUI();
                 }
+                // Otherwise (network error, etc.) — keep logged in
             } catch (e) {
-                console.warn('Session refresh failed:', e);
+                console.warn('Session refresh failed — keeping cached session:', e);
             }
         }
+
 
         async function syncBalanceFromSheets() {
             if (!user || !sessionToken) return;

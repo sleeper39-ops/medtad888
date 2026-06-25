@@ -246,6 +246,10 @@
                     <div class="deposit-code" id="depositCode">DEP-XXXX</div>
                     <div style="font-size: 0.85rem; color: #666;">ระบบเติมเงินอัตโนมัติภายใน 3 นาที</div>
                 </div>
+                <!-- Back button to auth UI -->
+                <button id="depositBackBtn" class="login-btn" style="background: #95a5a6; margin-top: 10px; display: none;" onclick="hideDeposit()">🔙 กลับ</button>
+                <!-- Go to lottery button (only for logged in users) -->
+                <a id="depositGoPlayBtn" href="index.html" class="login-btn purple" style="margin-top: 10px; display: none;">🎫 ไปเล่นสลาก</a>
             </div>
         </div>
     </div>
@@ -263,6 +267,7 @@
 
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="config.js"></script>
     <script src="member-api.js"></script>
     <script>
@@ -282,6 +287,7 @@
 
         let currentUser = null;
         let sessionToken = null;
+        let balance = 0;
         let balancePollInterval = null;
         let isLoggingIn = false;
         let adminTrueMoneyLink = 'https://truemoney.com/wallet/demo';
@@ -290,6 +296,20 @@
         window.onload = async function() {
             const params = new URLSearchParams(window.location.search);
             const tab = params.get('tab');
+
+            // Load admin settings immediately for deposit page (even without session)
+            if (tab === 'deposit') {
+                try {
+                    const globalSnapshot = await database.ref('global').once('value');
+                    if (globalSnapshot.exists()) {
+                        const globalData = globalSnapshot.val();
+                        adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
+                        adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
+                    }
+                } catch (e) {
+                    console.error('Failed to load admin settings:', e);
+                }
+            }
 
             // First, check for session and show UI immediately!
             let session = MemberAPI.getSession();
@@ -310,7 +330,12 @@
                 } else if (tab === 'forgot') {
                     switchAuthTab('forgot');
                 } else if (tab === 'deposit') {
-                    showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน', '🔐', 'แจ้งเตือน');
+                    // Show deposit page even if not logged in, but remind them to log in!
+                    showDeposit();
+                    // Show the info modal
+                    setTimeout(() => {
+                        showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน! 🚀 หลังจากโอนเงินแล้ว ให้เข้าสู่ระบบเพื่อตรวจสอบ!', '🔐');
+                    }, 500);
                 }
             }
 
@@ -343,7 +368,7 @@
                         } else if (tab === 'forgot') {
                             switchAuthTab('forgot');
                         } else if (tab === 'deposit') {
-                            showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน', '🔐', 'แจ้งเตือน');
+                            showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน!', '🔐');
                         }
                     }
                 } catch (e) {
@@ -353,6 +378,16 @@
         };
 
         function showAuthUI() {
+            // Reset all user-related state
+            currentUser = null;
+            sessionToken = null;
+            balance = 0;
+            if (balancePollInterval) {
+                clearInterval(balancePollInterval);
+                balancePollInterval = null;
+            }
+            
+            // Update UI
             document.getElementById('authCard').style.display = 'block';
             document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'none';
@@ -385,13 +420,26 @@
         }
 
         function showDeposit() {
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'block';
-            document.getElementById('backToIndexBtn').style.display = 'none';
+            // Show back button if not logged in
+            document.getElementById('backToIndexBtn').style.display = currentUser ? 'none' : 'inline';
+            // Show deposit back button only if not logged in
+            document.getElementById('depositBackBtn').style.display = currentUser ? 'none' : 'inline';
+            // Show "go play" button only if logged in
+            document.getElementById('depositGoPlayBtn').style.display = currentUser ? 'inline' : 'none';
             updateDepositDisplay();
         }
 
         function hideDeposit() {
             document.getElementById('depositCard').style.display = 'none';
+            // Show appropriate UI
+            if (currentUser) {
+                showDashboard(balance);
+            } else {
+                showAuthUI();
+            }
         }
 
         async function memberRegister() {
@@ -507,13 +555,18 @@
             if (balancePollInterval) clearInterval(balancePollInterval);
             currentUser = null;
             sessionToken = null;
+            balance = 0;
+            // Also clear lottery localStorage items from index.html
+            localStorage.removeItem('lotteryUser');
+            localStorage.removeItem('lotteryBalance');
+            localStorage.removeItem('lotteryTickets');
+            localStorage.removeItem('lotteryUserId');
             window.location.href = 'index.html'; // Redirect to index.html!
         }
 
         async function updateDepositDisplay() {
-            if (!currentUser || !sessionToken) return;
             try {
-                // Read admin settings from Firebase directly
+                // Read admin settings from Firebase directly (even without session)
                 const globalSnapshot = await database.ref('global').once('value');
                 if (globalSnapshot.exists()) {
                     const globalData = globalSnapshot.val();
@@ -521,7 +574,7 @@
                     adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
                 }
                 
-                // Generate deposit code
+                // Generate deposit code (doesn't require session)
                 const depositCode = 'DEP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
                 document.getElementById('depositCode').textContent = depositCode;
                 
@@ -539,9 +592,11 @@
                     img.style.height = '200px';
                     qrContainer.appendChild(img);
                 } else if (adminTrueMoneyLink) {
-                    // Otherwise generate QR from link
-                    QRCode.toCanvas(qrContainer, adminTrueMoneyLink, { width: 200 }, function(err) {
-                        if (err) console.error(err);
+                    // Otherwise generate QR from link using qrcodejs
+                    new QRCode(qrContainer, {
+                        text: adminTrueMoneyLink,
+                        width: 200,
+                        height: 200
                     });
                 }
             } catch (e) {

@@ -198,7 +198,7 @@
                     <input type="password" class="login-input" id="regPassword" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัวอักษร)" autocomplete="new-password" onfocus="this.value=''">
                     <input type="password" class="login-input" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน" autocomplete="new-password" onfocus="this.value=''">
                     <input type="email" class="login-input" id="regEmail" placeholder="อีเมล Gmail (สำหรับลืมรหัสผ่าน)" autocomplete="email">
-                    <input type="text" class="login-input" id="regTrueMoneyLink" placeholder="Link TrueMoney Wallet (ช่องทางรับเงินเมื่อถูกรางวัล)">
+                    <input type="text" class="login-input" id="regTrueMoneyLink" placeholder="Link TrueMoney Wallet">
                     <button type="submit" class="login-btn green">สมัครสมาชิก</button>
                     <div class="auth-link" onclick="switchAuthTab('login')">มีบัญชีแล้ว? เข้าสู่ระบบ</div>
                 </form>
@@ -226,8 +226,22 @@
                 <div style="color: #666;">เงินคงเหลือ</div>
                 <div class="balance-display" id="dashBalance">0</div>
             </div>
-            <div class="btn-row">
-                <a href="index.html" class="login-btn purple">🎫 ไปเล่นสลาก</a>
+            
+            <!-- ส่วนเปลี่ยนรหัสผ่าน (Change Password Section) -->
+            <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 15px; text-align: left;">
+                <button type="button" class="login-btn" style="background: #7f8c8d; margin-top: 0; display: block; width: 100%;" onclick="toggleChangePasswordForm()" id="togglePwdBtn">🔑 เปลี่ยนรหัสผ่าน</button>
+                <div id="changePasswordSection" style="display: none; margin-top: 15px; flex-direction: column; gap: 10px;">
+                    <div style="font-size: 0.95rem; font-weight: bold; color: #2c3e50; margin-bottom: 5px;">เปลี่ยนรหัสผ่านใหม่:</div>
+                    <input type="password" class="login-input" id="oldPwdInput" placeholder="รหัสผ่านเดิม" autocomplete="current-password">
+                    <input type="password" class="login-input" id="newPwdInput" placeholder="รหัสผ่านใหม่ (ไม่ต่ำกว่า 4 ตัวอักษร)" autocomplete="new-password">
+                    <input type="password" class="login-input" id="confirmNewPwdInput" placeholder="ยืนยันรหัสผ่านใหม่" autocomplete="new-password">
+                    <button type="button" class="login-btn orange" onclick="submitChangePassword()" style="margin-top: 5px;">💾 บันทึกรหัสผ่านใหม่</button>
+                </div>
+            </div>
+
+            <div class="btn-row" style="margin-top: 20px; display: flex; gap: 10px;">
+                <a href="index.html" class="login-btn purple" style="flex: 1; text-align: center; display: inline-block; text-decoration: none; padding: 12px 0; border-radius: 8px;">🎫 ไปเล่นสลาก</a>
+                <button type="button" class="login-btn" style="background: #e74c3c; flex: 1; margin-top: 0;" onclick="memberLogout()">🚪 ออกจากระบบ</button>
             </div>
         </div>
 
@@ -241,11 +255,18 @@
                 </div>
                 <div id="qrcode"></div>
                 <a id="trueMoneyDepositLink" href="#" target="_blank" class="login-btn" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);">Link TrueMoney</a>
-                <div class="deposit-code-box">
-                    <div style="font-weight: bold;">⚠️ ใส่ข้อความนี้ตอนโอนเงิน</div>
-                    <div class="deposit-code" id="depositCode">DEP-XXXX</div>
-                    <div style="font-size: 0.85rem; color: #666;">ระบบเติมเงินอัตโนมัติภายใน 3 นาที</div>
+
+                <!-- TrueMoney Gift Voucher section -->
+                <div style="margin-top: 25px; border-top: 1px dashed #ddd; padding-top: 20px; text-align: left; width: 100%;">
+                    <div style="font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-align: center;">🎁 เติมเงินด้วยซองของขวัญ (TrueMoney Gift Voucher)</div>
+                    <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px; text-align: center;">กรอกลิงก์ซองของขวัญทรูมันนี่และจำนวนเงินเพื่อส่งให้แอดมินตรวจสอบ</div>
+                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                        <input type="text" class="login-input" id="giftVoucherLink" placeholder="https://gift.truemoney.com/campaign/?v=..." style="margin-top: 0;">
+                        <input type="number" class="login-input" id="giftVoucherAmount" placeholder="จำนวนเงินในซอง (บาท)" min="10" style="margin-top: 0;">
+                        <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">📤 ส่งซองทรูมันนี่</button>
+                    </div>
                 </div>
+
                 <!-- Back button to auth UI -->
                 <button id="depositBackBtn" class="login-btn" style="background: #95a5a6; margin-top: 10px; display: none;" onclick="hideDeposit()">🔙 กลับ</button>
                 <!-- Go to lottery button (only for logged in users) -->
@@ -271,6 +292,35 @@
     <script src="config.js"></script>
     <script src="member-api.js"></script>
     <script>
+        // ป้องกันการคลิกขวาและการตรวจสอบโค้ด (Right-click & Inspect protection)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            // ป้องกัน F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // ป้องกัน Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Inspect elements, Console)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            // ป้องกัน Ctrl+U (View Source) และ Ctrl+S (Save Page)
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault();
+                return false;
+            }
+            // สำหรับ Mac OS: Cmd+Opt+I / Cmd+Opt+J / Cmd+Opt+C / Cmd+U
+            if (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.metaKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         // Initialize Firebase (same config as index.html)
         const firebaseConfig = {
             apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
@@ -292,6 +342,8 @@
         let isLoggingIn = false;
         let adminTrueMoneyLink = 'https://truemoney.com/wallet/demo';
         let adminTrueMoneyQR = '';
+        let telegramBotToken = '';
+        let telegramChatId = '';
 
         window.onload = async function() {
             const params = new URLSearchParams(window.location.search);
@@ -557,6 +609,65 @@
             }
         }
 
+        function toggleChangePasswordForm() {
+            const section = document.getElementById('changePasswordSection');
+            const btn = document.getElementById('togglePwdBtn');
+            if (section.style.display === 'none') {
+                section.style.display = 'flex';
+                btn.textContent = '❌ ยกเลิก';
+                btn.style.background = '#e74c3c';
+            } else {
+                section.style.display = 'none';
+                btn.textContent = '🔑 เปลี่ยนรหัสผ่าน';
+                btn.style.background = '#7f8c8d';
+                // Clear inputs
+                document.getElementById('oldPwdInput').value = '';
+                document.getElementById('newPwdInput').value = '';
+                document.getElementById('confirmNewPwdInput').value = '';
+            }
+        }
+
+        async function submitChangePassword() {
+            const oldPassword = document.getElementById('oldPwdInput').value;
+            const newPassword = document.getElementById('newPwdInput').value;
+            const confirmPassword = document.getElementById('confirmNewPwdInput').value;
+
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                showInfoModal('กรุณากรอกข้อมูลให้ครบถ้วน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            if (newPassword.length < 4) {
+                showInfoModal('รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            if (newPassword !== confirmPassword) {
+                showInfoModal('รหัสผ่านใหม่และยืนยันรหัสผ่านไม่ตรงกัน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            const btn = document.querySelector('#changePasswordSection button');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ กำลังบันทึก...';
+
+            try {
+                const result = await MemberAPI.changePassword(currentUser.id, sessionToken, oldPassword, newPassword);
+                if (result.success) {
+                    showInfoModal('เปลี่ยนรหัสผ่านสำเร็จแล้ว! 🎉', '✅');
+                    toggleChangePasswordForm(); // hide form & reset fields
+                } else {
+                    showInfoModal(result.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal(e.message || 'เกิดข้อผิดพลาดในการเชื่อมต่อ', '❌', 'ข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+
         function memberLogout() {
             if (!confirm('ต้องการออกจากระบบ?')) return;
             MemberAPI.clearSession();
@@ -580,11 +691,11 @@
                     const globalData = globalSnapshot.val();
                     adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
                     adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
+                    telegramBotToken = globalData.telegramBotToken || '';
+                    telegramChatId = globalData.telegramChatId || '';
                 }
                 
-                // Generate deposit code (doesn't require session)
-                const depositCode = 'DEP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
-                document.getElementById('depositCode').textContent = depositCode;
+
                 
                 // Update TrueMoney link
                 document.getElementById('trueMoneyDepositLink').href = adminTrueMoneyLink;
@@ -610,6 +721,90 @@
             } catch (e) {
                 console.error('updateDepositDisplay error:', e);
                 showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function submitGiftVoucher() {
+            if (!currentUser) {
+                showInfoModal('กรุณาเข้าสู่ระบบก่อนส่งซองของขวัญ! 🔐', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            const link = document.getElementById('giftVoucherLink').value.trim();
+            const amountInput = document.getElementById('giftVoucherAmount').value;
+            const amount = parseFloat(amountInput);
+
+            if (!link) {
+                showInfoModal('กรุณากรอกลิงก์ซองของขวัญทรูมันนี่!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            if (!link.includes('gift.truemoney.com/campaign/?v=')) {
+                showInfoModal('กรุณากรอกลิงก์ซองของขวัญทรูมันนี่ที่ถูกต้อง!\n(https://gift.truemoney.com/campaign/?v=...)', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            if (isNaN(amount) || amount <= 0) {
+                showInfoModal('กรุณากรอกจำนวนเงินในซองให้ถูกต้อง!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            const btn = document.querySelector('#depositCard button[onclick="submitGiftVoucher()"]');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ กำลังส่งข้อมูล...';
+
+            try {
+                // Ensure we have loaded Telegram settings
+                if (!telegramBotToken || !telegramChatId) {
+                    const globalSnapshot = await database.ref('global').once('value');
+                    if (globalSnapshot.exists()) {
+                        const globalData = globalSnapshot.val();
+                        telegramBotToken = globalData.telegramBotToken || '';
+                        telegramChatId = globalData.telegramChatId || '';
+                    }
+                }
+
+                if (!telegramBotToken || !telegramChatId) {
+                    showInfoModal('ระบบแจ้งเตือนแอดมินยังไม่ถูกตั้งค่า กรุณาติดต่อแอดมินโดยตรง!', '❌', 'ข้อผิดพลาด');
+                    btn.disabled = false;
+                    btn.innerHTML = originalText;
+                    return;
+                }
+
+                // Construct Telegram message
+                const message = `🎁 มีการส่งซองของขวัญทรูมันนี่!\n` +
+                                `👤 สมาชิก: ${currentUser.id}\n` +
+                                `📧 อีเมล: ${currentUser.email || '-'}\n` +
+                                `💵 จำนวนเงิน: ${amount} บาท\n` +
+                                `🔗 ลิงก์ซอง: ${link}`;
+
+                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: message
+                    })
+                });
+
+                const result = await response.json();
+                if (result.ok) {
+                    showInfoModal('ส่งซองทรูมันนี่สำเร็จ! 🎉\nแอดมินได้รับข้อมูลแล้วและกำลังตรวจสอบเพื่อเพิ่มเงินให้คุณ', '✅');
+                    // Reset inputs
+                    document.getElementById('giftVoucherLink').value = '';
+                    document.getElementById('giftVoucherAmount').value = '';
+                } else {
+                    showInfoModal('เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง Telegram: ' + result.description, '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                console.error('Telegram send error:', e);
+                showInfoModal('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์!', '❌', 'ข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 

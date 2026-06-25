@@ -705,14 +705,13 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="font-size: 1.8rem;">🎫 Medtad888</h1>
+            <h1 style="font-size: 1.8rem;"><span style="cursor: pointer; user-select: none;" onclick="toggleAdmin()">🎫</span> Medtad888</h1>
             <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
                 💬 Line OpenChat
             </a>
             <div id="userArea">
             </div>
             <div id="adminArea" style="margin-left: 10px;">
-                <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
             </div>
         </div>
 
@@ -841,10 +840,15 @@
                         </div>
                         <button class="login-btn" onclick="testTelegram()" style="background: #0088cc; margin-top: 10px;">🧪 ทดสอบส่งข้อความ</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
-                            <label>เพิ่มเงินให้ผู้เล่น:</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="number" id="adminAddMoney" placeholder="100" min="10">
-                                <button onclick="adminAddMoney()" class="login-btn" style="background: #27ae60;">เพิ่มเงิน</button>
+                            <label>เติมเงินให้สมาชิก (อ้างอิง Google Sheet):</label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <select id="adminSelectMember" style="padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; color: #333; font-size: 14px; font-weight: 500; outline: none; width: 100%;">
+                                    <option value="">-- เลือก ID สมาชิก --</option>
+                                </select>
+                                <div style="display: flex; gap: 10px;">
+                                    <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="10" style="flex: 1;">
+                                    <button onclick="adminAddMoney()" class="login-btn" style="background: #27ae60; white-space: nowrap; margin-top: 0; min-width: 90px;">เพิ่มเงิน</button>
+                                </div>
                             </div>
                         </div>
                         <div class="admin-control-group" style="margin-top: 15px;">
@@ -901,6 +905,35 @@
     <script src="config.js"></script>
     <script src="member-api.js"></script>
     <script>
+        // ป้องกันการคลิกขวาและการตรวจสอบโค้ด (Right-click & Inspect protection)
+        document.addEventListener('contextmenu', event => event.preventDefault());
+        document.addEventListener('keydown', function(e) {
+            // ป้องกัน F12
+            if (e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            // ป้องกัน Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C (Inspect elements, Console)
+            if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            // ป้องกัน Ctrl+U (View Source) และ Ctrl+S (Save Page)
+            if (e.ctrlKey && (e.keyCode === 85 || e.keyCode === 83)) {
+                e.preventDefault();
+                return false;
+            }
+            // สำหรับ Mac OS: Cmd+Opt+I / Cmd+Opt+J / Cmd+Opt+C / Cmd+U
+            if (e.metaKey && e.altKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.metaKey && e.keyCode === 85) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
         // Firebase Configuration
         const firebaseConfig = {
             apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
@@ -958,9 +991,7 @@
             if (confirmModal) confirmModal.removeAttribute('style');
             if (infoModal) infoModal.removeAttribute('style');
             
-            document.getElementById('adminArea').innerHTML = `
-                <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
-            `;
+            document.getElementById('adminArea').innerHTML = '';
             
             await restoreMemberSession();
             try {
@@ -1175,7 +1206,7 @@
             document.getElementById('balanceBox').style.display = 'none';
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('userArea').innerHTML = '';
-            document.getElementById('adminArea').innerHTML = '<button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>';
+            document.getElementById('adminArea').innerHTML = '';
         }
 
         function showLoggedInUI() {
@@ -1206,9 +1237,7 @@
                     </div>
                 `;
             } else {
-                document.getElementById('adminArea').innerHTML = `
-                    <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
-                `;
+                document.getElementById('adminArea').innerHTML = '';
             }
         }
 
@@ -1809,6 +1838,7 @@
                         </div>
                     `;
                 }
+                loadAdminMembersDropdown();
             } else {
                 showInfoModal('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
             }
@@ -1845,21 +1875,62 @@
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
         }
         
+        async function loadAdminMembersDropdown() {
+            const selectEl = document.getElementById('adminSelectMember');
+            if (!selectEl) return;
+            
+            selectEl.innerHTML = '<option value="">-- กำลังโหลดรายชื่อ... --</option>';
+            
+            try {
+                const result = await MemberAPI.getAllMembers();
+                if (result.success && result.members) {
+                    selectEl.innerHTML = '<option value="">-- เลือก ID สมาชิก --</option>';
+                    result.members.forEach(member => {
+                        const opt = document.createElement('option');
+                        opt.value = member.userId;
+                        opt.textContent = `${member.userId} (${member.email}) - ยอดเงิน: ${member.balance} บาท`;
+                        selectEl.appendChild(opt);
+                    });
+                } else {
+                    const errorMsg = result.message || 'Unknown Error';
+                    selectEl.innerHTML = `-- โหลดรายชื่อล้มเหลว (${errorMsg}) --`;
+                    // Let's create an option element properly
+                    selectEl.innerHTML = `<option value="">-- โหลดรายชื่อล้มเหลว (${errorMsg}) --</option>`;
+                }
+            } catch (e) {
+                console.error('Failed to load members:', e);
+                selectEl.innerHTML = `<option value="">-- ข้อผิดพลาดในการเชื่อมต่อ (${e.message || e}) --</option>`;
+            }
+        }
+
         async function adminAddMoney() {
             if (!isAdminLoggedIn) return;
-            if (!user) {
-                showInfoModal('ยังไม่มีผู้เล่นเข้าสู่ระบบ!', '❌', 'ข้อผิดพลาด');
+            
+            const targetUserId = document.getElementById('adminSelectMember').value;
+            if (!targetUserId) {
+                showInfoModal('กรุณาเลือก ID สมาชิกที่ต้องการเพิ่มเงิน!', '❌', 'ข้อผิดพลาด');
                 return;
             }
+            
             const amount = parseInt(document.getElementById('adminAddMoney').value);
             if (isNaN(amount) || amount < 10) {
                 showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง (ไม่น้อยกว่า 10)!', '❌', 'ข้อผิดพลาด');
                 return;
             }
-            const result = await updateMemberBalance(amount);
+            
+            const result = await MemberAPI.adminUpdateBalance(targetUserId, amount);
             if (result.success) {
                 saveToStorage();
-                showInfoModal('เพิ่มเงินสำเร็จ! +' + amount + ' บาท 🎉', '✅');
+                showInfoModal(`เพิ่มเงินให้คุณ ${targetUserId} สำเร็จ! +${amount} บาท 🎉`, '✅');
+                
+                // หากผู้เล่นปัจจุบันที่เข้าระบบอยู่คือคนที่ได้เงิน ให้ทำการอัปเดตบาลานซ์ในเพจด้วย
+                if (user && user.id === targetUserId) {
+                    balance = result.balance;
+                    updateBalance();
+                }
+                
+                // โหลดรายชื่อใหม่เพื่ออัปเดตบาลานซ์ใน Dropdown
+                loadAdminMembersDropdown();
             } else {
                 showInfoModal(result.message || 'เพิ่มเงินไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
             }
@@ -1877,9 +1948,7 @@
             if (user) {
                 updateUserArea();
             } else {
-                document.getElementById('adminArea').innerHTML = `
-                    <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
-                `;
+                document.getElementById('adminArea').innerHTML = '';
             }
         }
 

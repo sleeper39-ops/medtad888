@@ -122,9 +122,5 @@ const MemberAPI = {
 
     async changePassword(userId, sessionToken, oldPassword, newPassword) {
         return this.call('changePassword', { userId, sessionToken, oldPassword, newPassword });
-    },
-
-    async redeemGiftVoucher(userId, sessionToken, voucherLink, amount, telegramBotToken, telegramChatId) {
-        return this.call('redeemGiftVoucher', { userId, sessionToken, voucherLink, amount, telegramBotToken, telegramChatId });
     }
 };

@@ -814,8 +814,7 @@
 
         <!-- Guest Banner -->
         <div class="guest-banner" id="guestBanner" style="display: none;">
-            <div class="section-title" style="border: none; padding: 0;">🎫 ยินดีต้อนรับเข้าสู่ หวย-Medtad888</div>
-            <p>แทงได้ทุกวัน เลขออก 16:00</p>
+            <div class="section-title" style="border: none; padding: 0;">🎫 ยินดีต้อนรับ Medtad888</div>
             <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกก่อนเล่น</p>
             <a href="member.html" class="guest-btn">🔐 เข้าสู่ระบบ</a>
             <a href="member.html?tab=register" class="guest-btn outline">📝 สมัครสมาชิก</a>
@@ -1106,7 +1105,7 @@
         let isAdminLoggedIn = false;
         let autoDrawEnabled = false;
         let winHistory = [];
-        let drawTimes = ['1200', '1300', '1400', '1500', '1600', '1700', '1800'];
+        let drawTimes = ['1600'];
         let checkTimeInterval = null;
         let lastDrawTime = null;
         let pendingTicketData = null;
@@ -1133,6 +1132,9 @@
             if (infoModal) infoModal.removeAttribute('style');
 
             document.getElementById('adminArea').innerHTML = '';
+
+            // Load cached drawTimes from localStorage first for instant display
+            loadFromStorage();
 
             // Show next draw time immediately (don't wait for Firebase)
             updateNextDrawDisplay();
@@ -1311,11 +1313,22 @@
 
         // Update old functions
         function saveToStorage() {
+            // Cache drawTimes in localStorage for instant display on reload
+            localStorage.setItem('lotteryDrawTimes', JSON.stringify(drawTimes));
             saveToFirebase();
         }
 
         function loadFromStorage() {
-            // Already handled by loadFromFirebase
+            // Load cached drawTimes immediately (before Firebase loads)
+            const cached = localStorage.getItem('lotteryDrawTimes');
+            if (cached) {
+                try {
+                    const parsed = JSON.parse(cached);
+                    if (Array.isArray(parsed) && parsed.length > 0) {
+                        drawTimes = parsed;
+                    }
+                } catch (e) { /* ignore */ }
+            }
         }
 
         // Login Functions

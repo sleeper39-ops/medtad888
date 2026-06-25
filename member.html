@@ -172,11 +172,11 @@
     <div class="container">
         <div class="header">
             <h1>👤 ระบบสมาชิก</h1>
-            <a href="index.html">← กลับหน้าเล่นสลาก</a>
+            <a href="index.html" id="backToIndexBtn" style="display: none;">← กลับหน้าแรก</a>
         </div>
 
         <!-- Auth (guest) -->
-        <div class="card" id="authCard">
+        <div class="card" id="authCard" style="display: none;">
             <div class="section-title">สมาชิก Medtad888</div>
             <div class="auth-tabs">
                 <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">🔐 เข้าสู่ระบบ</button>
@@ -184,33 +184,33 @@
             </div>
 
             <div class="auth-panel active" id="panelLogin">
-                <div class="login-form">
-                    <input type="text" class="login-input" id="loginUserId" placeholder="ID สมาชิก" onkeypress="if(event.key==='Enter')memberLogin()">
-                    <input type="password" class="login-input" id="loginPassword" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')memberLogin()">
-                    <button class="login-btn" onclick="memberLogin()">เข้าสู่ระบบ</button>
+                <form class="login-form" onsubmit="event.preventDefault(); memberLogin();">
+                    <input type="text" class="login-input" id="loginUserId" placeholder="ID สมาชิก">
+                    <input type="password" class="login-input" id="loginPassword" placeholder="รหัสผ่าน">
+                    <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
                     <div class="auth-link" onclick="switchAuthTab('forgot')">ลืมรหัสผ่าน?</div>
-                </div>
+                </form>
             </div>
 
             <div class="auth-panel" id="panelRegister">
-                <div class="login-form">
+                <form class="login-form" onsubmit="event.preventDefault(); memberRegister();">
                     <input type="text" class="login-input" id="regUserId" placeholder="ID สมาชิก (อย่างน้อย 3 ตัวอักษร)">
                     <input type="password" class="login-input" id="regPassword" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัวอักษร)">
                     <input type="password" class="login-input" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน">
                     <input type="email" class="login-input" id="regEmail" placeholder="อีเมล Gmail (สำหรับลืมรหัสผ่าน)">
                     <input type="text" class="login-input" id="regTrueMoneyLink" placeholder="Link TrueMoney Wallet">
-                    <button class="login-btn green" onclick="memberRegister()">สมัครสมาชิก</button>
+                    <button type="submit" class="login-btn green">สมัครสมาชิก</button>
                     <div class="auth-link" onclick="switchAuthTab('login')">มีบัญชีแล้ว? เข้าสู่ระบบ</div>
-                </div>
+                </form>
             </div>
 
             <div class="auth-panel" id="panelForgot">
-                <div class="login-form">
+                <div class="login-form" style="gap: 15px;">
                     <input type="email" class="login-input" id="forgotEmail" placeholder="อีเมล Gmail ที่สมัครไว้">
-                    <button class="login-btn" onclick="sendResetCode()">ส่งรหัสยืนยันไปอีเมล</button>
+                    <button type="button" class="login-btn" onclick="sendResetCode()">ส่งรหัสยืนยันไปอีเมล</button>
                     <input type="text" class="login-input" id="resetCode" placeholder="รหัสยืนยัน 6 หลัก (จากอีเมล)">
                     <input type="password" class="login-input" id="newPassword" placeholder="รหัสผ่านใหม่">
-                    <button class="login-btn orange" onclick="resetMemberPassword()">เปลี่ยนรหัสผ่าน</button>
+                    <button type="button" class="login-btn orange" onclick="resetMemberPassword()">เปลี่ยนรหัสผ่าน</button>
                     <div class="auth-link" onclick="switchAuthTab('login')">← กลับไปเข้าสู่ระบบ</div>
                 </div>
             </div>
@@ -228,28 +228,24 @@
             </div>
             <div class="btn-row">
                 <a href="index.html" class="login-btn purple">🎫 ไปเล่นสลาก</a>
-                <button class="login-btn green" onclick="showDeposit()">💵 เติมเงิน</button>
             </div>
-            <button class="login-btn" onclick="memberLogout()" style="margin-top: 10px; background: #e74c3c;">🚪 ออกจากระบบ</button>
         </div>
 
         <!-- Deposit -->
         <div class="card" id="depositCard" style="display: none;">
             <div class="section-title">💰 เติมเงิน</div>
             <div class="qr-container">
+                <div class="deposit-info">
+                    <div style="font-weight: bold; margin-bottom: 8px;">💳 TrueMoney Wallet</div>
+                    <div>Scan QR Code หรือคลิกลิงก์เพื่อเติมเงิน</div>
+                </div>
+                <div id="qrcode"></div>
+                <a id="trueMoneyDepositLink" href="#" target="_blank" class="login-btn" style="background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);">Link TrueMoney</a>
                 <div class="deposit-code-box">
                     <div style="font-weight: bold;">⚠️ ใส่ข้อความนี้ตอนโอนเงิน</div>
                     <div class="deposit-code" id="depositCode">DEP-XXXX</div>
                     <div style="font-size: 0.85rem; color: #666;">ระบบเติมเงินอัตโนมัติภายใน 3 นาที</div>
                 </div>
-                <div id="qrcode"></div>
-                <div class="deposit-info">
-                    <div style="font-weight: bold; margin-bottom: 8px;">💳 TrueMoney Wallet</div>
-                    <div>Scan QR Code หรือคลิกลิงก์เพื่อเติมเงิน</div>
-                </div>
-                <a id="trueMoneyDepositLink" href="#" target="_blank" class="login-btn purple">เปิด TrueMoney</a>
-                <button class="login-btn deposit-check-btn" onclick="checkDeposits()">🔄 ตรวจสอบการเติมเงิน</button>
-                <button class="login-btn" onclick="hideDeposit()" style="background: #95a5a6;">← กลับ</button>
             </div>
         </div>
     </div>
@@ -265,35 +261,94 @@
         </div>
     </div>
 
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="config.js"></script>
     <script src="member-api.js"></script>
     <script>
+        // Initialize Firebase (same config as index.html)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
+            authDomain: "cougar2-79354.firebaseapp.com",
+            databaseURL: "https://cougar2-79354-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cougar2-79354",
+            storageBucket: "cougar2-79354.firebasestorage.app",
+            messagingSenderId: "807099695357",
+            appId: "1:807099695357:web:b8651458269fcc51c07e94",
+            measurementId: "G-528PBBFBE4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         let currentUser = null;
         let sessionToken = null;
         let balancePollInterval = null;
         let isLoggingIn = false;
+        let adminTrueMoneyLink = 'https://truemoney.com/wallet/demo';
+        let adminTrueMoneyQR = '';
 
         window.onload = async function() {
             const params = new URLSearchParams(window.location.search);
             const tab = params.get('tab');
 
-            const restored = await MemberAPI.restore();
-            if (restored.success) {
-                currentUser = restored.user;
-                sessionToken = restored.sessionToken;
-                showDashboard(restored.balance);
+            // First, check for session and show UI immediately!
+            let session = MemberAPI.getSession();
+            if (session) {
+                currentUser = MemberAPI.userFromSession(session);
+                sessionToken = session.sessionToken;
+                showDashboard(session.balance);
                 startBalancePolling();
-                if (tab === 'deposit') showDeposit();
-                return;
+                if (tab === 'deposit') {
+                    showDeposit();
+                    updateDepositDisplay(); // Call immediately!
+                }
+            } else {
+                // No session, show auth UI!
+                showAuthUI();
+                if (tab === 'register') {
+                    switchAuthTab('register');
+                } else if (tab === 'forgot') {
+                    switchAuthTab('forgot');
+                } else if (tab === 'deposit') {
+                    showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน', '🔐', 'แจ้งเตือน');
+                }
             }
 
-            showAuthUI();
-            if (tab === 'register') {
-                switchAuthTab('register');
-            } else if (tab === 'forgot') {
-                switchAuthTab('forgot');
-            } else if (tab === 'deposit') {
-                showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน', '🔐', 'แจ้งเตือน');
+            // Now try to restore session from server in the background!
+            if (session) {
+                try {
+                    const restored = await MemberAPI.restore();
+                    if (restored.success) {
+                        currentUser = restored.user;
+                        sessionToken = restored.sessionToken;
+                        if (restored.balance != null) {
+                            balance = restored.balance;
+                            showDashboard(restored.balance); // Refresh with latest!
+                        }
+                        if (tab === 'deposit') {
+                            showDeposit();
+                            updateDepositDisplay(); // Refresh again!
+                        }
+                    } else {
+                        // Server says session invalid - show auth UI!
+                        currentUser = null;
+                        sessionToken = null;
+                        if (balancePollInterval) {
+                            clearInterval(balancePollInterval);
+                            balancePollInterval = null;
+                        }
+                        showAuthUI();
+                        if (tab === 'register') {
+                            switchAuthTab('register');
+                        } else if (tab === 'forgot') {
+                            switchAuthTab('forgot');
+                        } else if (tab === 'deposit') {
+                            showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน', '🔐', 'แจ้งเตือน');
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Background session refresh failed:', e);
+                }
             }
         };
 
@@ -301,6 +356,8 @@
             document.getElementById('authCard').style.display = 'block';
             document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'none';
+            document.getElementById('backToIndexBtn').style.display = 'inline';
+            switchAuthTab('login');
         }
 
         function switchAuthTab(tab) {
@@ -319,6 +376,8 @@
         function showDashboard(bal) {
             document.getElementById('authCard').style.display = 'none';
             document.getElementById('dashboardCard').style.display = 'block';
+            document.getElementById('depositCard').style.display = 'none';
+            document.getElementById('backToIndexBtn').style.display = 'none';
             document.getElementById('dashUserId').textContent = currentUser.name;
             document.getElementById('dashEmail').textContent = currentUser.email || '-';
             document.getElementById('dashTrueMoney').textContent = currentUser.trueMoneyLink || '-';
@@ -327,6 +386,7 @@
 
         function showDeposit() {
             document.getElementById('depositCard').style.display = 'block';
+            document.getElementById('backToIndexBtn').style.display = 'none';
             updateDepositDisplay();
         }
 
@@ -335,11 +395,13 @@
         }
 
         async function memberRegister() {
+            console.log('memberRegister called!');
             const userId = document.getElementById('regUserId').value.trim();
             const password = document.getElementById('regPassword').value;
             const confirm = document.getElementById('regPasswordConfirm').value;
             const email = document.getElementById('regEmail').value.trim();
             const trueMoneyLink = document.getElementById('regTrueMoneyLink').value.trim();
+            console.log('Register data:', { userId, email, trueMoneyLink });
 
             if (password !== confirm) {
                 showInfoModal('รหัสผ่านไม่ตรงกัน!', '❌', 'ข้อผิดพลาด');
@@ -347,7 +409,9 @@
             }
 
             try {
+                console.log('Calling MemberAPI.register...');
                 const result = await MemberAPI.call('register', { userId, password, email, trueMoneyLink });
+                console.log('Register result:', result);
                 if (result.success) {
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
@@ -358,13 +422,17 @@
                     showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
                 }
             } catch (e) {
+                console.error('Register error:', e);
                 showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
             }
         }
 
         async function memberLogin() {
+            console.log('memberLogin called!');
             const userId = document.getElementById('loginUserId').value.trim();
             const password = document.getElementById('loginPassword').value;
+            const loginBtn = document.querySelector('#panelLogin button[type="submit"]');
+            console.log('userId:', userId, 'password:', password ? '(provided)' : '(empty)');
 
             if (!userId || !password) {
                 showInfoModal('กรุณากรอก ID และรหัสผ่าน!', '❌', 'ข้อผิดพลาด');
@@ -373,26 +441,35 @@
 
             if (isLoggingIn) return;
             isLoggingIn = true;
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'กำลังเข้าสู่ระบบ...';
+            console.log('Starting login process...');
 
             try {
+                console.log('Calling MemberAPI.login...');
                 const result = await MemberAPI.call('login', { userId, password });
+                console.log('Login result:', result);
                 if (result.success) {
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
                     MemberAPI.saveSession(currentUser, sessionToken, result.user.balance || 0);
                     document.getElementById('loginUserId').value = '';
                     document.getElementById('loginPassword').value = '';
-                    showDashboard(result.user.balance || 0);
-                    startBalancePolling();
+                    // Redirect to index.html after successful login
+                    window.location.href = 'index.html';
                 } else {
                     showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
                 }
             } catch (e) {
+                console.error('Login error:', e);
                 showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
             } finally {
                 isLoggingIn = false;
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'เข้าสู่ระบบ';
             }
         }
+        async function sendResetCode() {
             const email = document.getElementById('forgotEmail').value.trim();
             if (!email) {
                 showInfoModal('กรุณากรอกอีเมล!', '❌', 'ข้อผิดพลาด');
@@ -430,29 +507,45 @@
             if (balancePollInterval) clearInterval(balancePollInterval);
             currentUser = null;
             sessionToken = null;
-            document.getElementById('dashboardCard').style.display = 'none';
-            document.getElementById('depositCard').style.display = 'none';
-            document.getElementById('authCard').style.display = 'block';
-            switchAuthTab('login');
+            window.location.href = 'index.html'; // Redirect to index.html!
         }
 
         async function updateDepositDisplay() {
             if (!currentUser || !sessionToken) return;
             try {
-                const result = await MemberAPI.call('getDepositInfo', {
-                    userId: currentUser.id,
-                    sessionToken: sessionToken
-                });
-                if (result.success) {
-                    document.getElementById('depositCode').textContent = result.depositCode;
-                    document.getElementById('trueMoneyDepositLink').href = result.adminTrueMoneyLink;
-                    const qrContainer = document.getElementById('qrcode');
-                    qrContainer.innerHTML = '';
-                    QRCode.toCanvas(qrContainer, result.adminTrueMoneyLink, { width: 200 }, function(err) {
+                // Read admin settings from Firebase directly
+                const globalSnapshot = await database.ref('global').once('value');
+                if (globalSnapshot.exists()) {
+                    const globalData = globalSnapshot.val();
+                    adminTrueMoneyLink = globalData.adminTrueMoneyLink || adminTrueMoneyLink;
+                    adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
+                }
+                
+                // Generate deposit code
+                const depositCode = 'DEP-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+                document.getElementById('depositCode').textContent = depositCode;
+                
+                // Update TrueMoney link
+                document.getElementById('trueMoneyDepositLink').href = adminTrueMoneyLink;
+                
+                // Generate QR code
+                const qrContainer = document.getElementById('qrcode');
+                qrContainer.innerHTML = '';
+                if (adminTrueMoneyQR) {
+                    // If admin uploaded a QR code, display it as image
+                    const img = document.createElement('img');
+                    img.src = adminTrueMoneyQR;
+                    img.style.width = '200px';
+                    img.style.height = '200px';
+                    qrContainer.appendChild(img);
+                } else if (adminTrueMoneyLink) {
+                    // Otherwise generate QR from link
+                    QRCode.toCanvas(qrContainer, adminTrueMoneyLink, { width: 200 }, function(err) {
                         if (err) console.error(err);
                     });
                 }
             } catch (e) {
+                console.error('updateDepositDisplay error:', e);
                 showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
             }
         }

@@ -259,11 +259,12 @@
                 <!-- TrueMoney Gift Voucher section -->
                 <div style="margin-top: 25px; border-top: 1px dashed #ddd; padding-top: 20px; text-align: left; width: 100%;">
                     <div style="font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-align: center;">🎁 เติมเงินด้วยซองของขวัญ (TrueMoney Gift Voucher)</div>
-                    <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px; text-align: center;">กรอกลิงก์ซองของขวัญทรูมันนี่และจำนวนเงินเพื่อส่งให้แอดมินตรวจสอบ</div>
+                    <div style="font-size: 0.85rem; color: #27ae60; background: #e8f5e9; border-radius: 8px; padding: 10px; margin-bottom: 12px; text-align: center;">
+                        ✅ ระบบจะรับซองและเติมเงินเข้าระบบให้อัตโนมัติทันที!
+                    </div>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <input type="text" class="login-input" id="giftVoucherLink" placeholder="https://gift.truemoney.com/campaign/?v=..." style="margin-top: 0;">
-                        <input type="number" class="login-input" id="giftVoucherAmount" placeholder="จำนวนเงินในซอง (บาท)" min="10" style="margin-top: 0;">
-                        <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">📤 ส่งซองทรูมันนี่</button>
+                        <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">🤖 รับซองและเติมเงินอัตโนมัติ</button>
                     </div>
                 </div>
 
@@ -731,28 +732,22 @@
             }
 
             const link = document.getElementById('giftVoucherLink').value.trim();
-            const amountInput = document.getElementById('giftVoucherAmount').value;
-            const amount = parseFloat(amountInput);
 
             if (!link) {
                 showInfoModal('กรุณากรอกลิงก์ซองของขวัญทรูมันนี่!', '❌', 'ข้อผิดพลาด');
                 return;
             }
 
-            if (!link.includes('gift.truemoney.com/campaign/?v=')) {
+            // Support both formats: gift.truemoney.com/campaign/?v= and gift.truemoney.com/campaign?v=
+            if (!link.includes('gift.truemoney.com') || !link.includes('v=')) {
                 showInfoModal('กรุณากรอกลิงก์ซองของขวัญทรูมันนี่ที่ถูกต้อง!\n(https://gift.truemoney.com/campaign/?v=...)', '❌', 'ข้อผิดพลาด');
-                return;
-            }
-
-            if (isNaN(amount) || amount <= 0) {
-                showInfoModal('กรุณากรอกจำนวนเงินในซองให้ถูกต้อง!', '❌', 'ข้อผิดพลาด');
                 return;
             }
 
             const btn = document.querySelector('#depositCard button[onclick="submitGiftVoucher()"]');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '⏳ กำลังส่งข้อมูล...';
+            btn.innerHTML = '⏳ กำลังรับซองอัตโนมัติ...';
 
             try {
                 // Ensure we have loaded Telegram settings
@@ -765,43 +760,36 @@
                     }
                 }
 
-                if (!telegramBotToken || !telegramChatId) {
-                    showInfoModal('ระบบแจ้งเตือนแอดมินยังไม่ถูกตั้งค่า กรุณาติดต่อแอดมินโดยตรง!', '❌', 'ข้อผิดพลาด');
-                    btn.disabled = false;
-                    btn.innerHTML = originalText;
-                    return;
-                }
+                // Call GAS Backend to auto-redeem the voucher, credit balance, and send Telegram notification
+                const result = await MemberAPI.redeemGiftVoucher(
+                    currentUser.id,
+                    sessionToken,
+                    link,
+                    telegramBotToken,
+                    telegramChatId
+                );
 
-                // Construct Telegram message
-                const message = `🎁 มีการส่งซองของขวัญทรูมันนี่!\n` +
-                                `👤 สมาชิก: ${currentUser.id}\n` +
-                                `📧 อีเมล: ${currentUser.email || '-'}\n` +
-                                `💵 จำนวนเงิน: ${amount} บาท\n` +
-                                `🔗 ลิงก์ซอง: ${link}`;
-
-                const response = await fetch(`https://api.telegram.org/bot${telegramBotToken}/sendMessage`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        chat_id: telegramChatId,
-                        text: message
-                    })
-                });
-
-                const result = await response.json();
-                if (result.ok) {
-                    showInfoModal('ส่งซองทรูมันนี่สำเร็จ! 🎉\nแอดมินได้รับข้อมูลแล้วและกำลังตรวจสอบเพื่อเพิ่มเงินให้คุณ', '✅');
-                    // Reset inputs
+                if (result.success) {
+                    const newBalance = result.balance || 0;
+                    const amount = result.amount || 0;
+                    // Update displayed balance
+                    document.getElementById('dashBalance').textContent = newBalance.toLocaleString();
+                    balance = newBalance;
+                    showInfoModal(
+                        `รับซองทรูมันนี่สำเร็จ! 🎉\nได้รับเงิน: ${amount.toLocaleString()} บาท\nยอดเงินใหม่: ${newBalance.toLocaleString()} บาท`,
+                        '✅', 'เติมเงินสำเร็จ'
+                    );
+                    // Reset input
                     document.getElementById('giftVoucherLink').value = '';
-                    document.getElementById('giftVoucherAmount').value = '';
                 } else {
-                    showInfoModal('เกิดข้อผิดพลาดในการส่งข้อมูลไปยัง Telegram: ' + result.description, '❌', 'ข้อผิดพลาด');
+                    showInfoModal(
+                        (result.message || 'รับซองไม่สำเร็จ') + '\n\nหากซองยังไม่ถูกใช้ กรุณาลองใหม่อีกครั้ง หรือติดต่อแอดมิน',
+                        '❌', 'ไม่สำเร็จ'
+                    );
                 }
             } catch (e) {
-                console.error('Telegram send error:', e);
-                showInfoModal('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์!', '❌', 'ข้อผิดพลาด');
+                console.error('redeemGiftVoucher error:', e);
+                showInfoModal('เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์!\n' + e.message, '❌', 'ข้อผิดพลาด');
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมาชิก - Medtad888</title>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 500px; margin: 0 auto; }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 25px;
+        }
+        .header h1 { font-size: 1.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header a { color: #ffd700; text-decoration: none; font-size: 0.95rem; }
+        .header a:hover { text-decoration: underline; }
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 1.4rem;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        .auth-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .auth-tab {
+            padding: 10px 18px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: #f8f9fa;
+            cursor: pointer;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .auth-tab.active {
+            border-color: #667eea;
+            background: #667eea;
+            color: white;
+        }
+        .auth-panel { display: none; }
+        .auth-panel.active { display: block; }
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .login-input {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        .login-btn {
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: #2c3e50;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+            text-decoration: none;
+            display: block;
+        }
+        .login-btn:hover { opacity: 0.9; }
+        .login-btn.green { background: #27ae60; }
+        .login-btn.orange { background: #e67e22; }
+        .login-btn.purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .auth-link {
+            text-align: center;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .auth-link:hover { text-decoration: underline; }
+        .balance-display {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #27ae60;
+            text-align: center;
+            margin: 15px 0;
+        }
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #eee;
+            font-size: 0.95rem;
+        }
+        .profile-row:last-child { border-bottom: none; }
+        .profile-label { color: #666; }
+        .profile-value { font-weight: bold; color: #2c3e50; word-break: break-all; text-align: right; max-width: 60%; }
+        .deposit-code-box {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .deposit-code {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e67e22;
+            letter-spacing: 2px;
+            margin: 8px 0;
+        }
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        #qrcode { width: 200px; height: 200px; }
+        .deposit-info {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+        }
+        .deposit-check-btn { background: #27ae60; margin-top: 5px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        .btn-row .login-btn { flex: 1; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-title { font-size: 1.3rem; font-weight: bold; margin-bottom: 15px; color: #2c3e50; }
+        .info-modal-icon { font-size: 3rem; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>👤 ระบบสมาชิก</h1>
+            <a href="index.html">← กลับหน้าเล่นสลาก</a>
+        </div>
+
+        <!-- Auth (guest) -->
+        <div class="card" id="authCard">
+            <div class="section-title">สมาชิก Medtad888</div>
+            <div class="auth-tabs">
+                <button class="auth-tab active" id="tabLogin" onclick="switchAuthTab('login')">🔐 เข้าสู่ระบบ</button>
+                <button class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">📝 สมัครสมาชิก</button>
+            </div>
+
+            <div class="auth-panel active" id="panelLogin">
+                <div class="login-form">
+                    <input type="text" class="login-input" id="loginUserId" placeholder="ID สมาชิก" onkeypress="if(event.key==='Enter')memberLogin()">
+                    <input type="password" class="login-input" id="loginPassword" placeholder="รหัสผ่าน" onkeypress="if(event.key==='Enter')memberLogin()">
+                    <button class="login-btn" onclick="memberLogin()">เข้าสู่ระบบ</button>
+                    <div class="auth-link" onclick="switchAuthTab('forgot')">ลืมรหัสผ่าน?</div>
+                </div>
+            </div>
+
+            <div class="auth-panel" id="panelRegister">
+                <div class="login-form">
+                    <input type="text" class="login-input" id="regUserId" placeholder="ID สมาชิก (อย่างน้อย 3 ตัวอักษร)">
+                    <input type="password" class="login-input" id="regPassword" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัวอักษร)">
+                    <input type="password" class="login-input" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน">
+                    <input type="email" class="login-input" id="regEmail" placeholder="อีเมล Gmail (สำหรับลืมรหัสผ่าน)">
+                    <input type="text" class="login-input" id="regTrueMoneyLink" placeholder="Link TrueMoney Wallet">
+                    <button class="login-btn green" onclick="memberRegister()">สมัครสมาชิก</button>
+                    <div class="auth-link" onclick="switchAuthTab('login')">มีบัญชีแล้ว? เข้าสู่ระบบ</div>
+                </div>
+            </div>
+
+            <div class="auth-panel" id="panelForgot">
+                <div class="login-form">
+                    <input type="email" class="login-input" id="forgotEmail" placeholder="อีเมล Gmail ที่สมัครไว้">
+                    <button class="login-btn" onclick="sendResetCode()">ส่งรหัสยืนยันไปอีเมล</button>
+                    <input type="text" class="login-input" id="resetCode" placeholder="รหัสยืนยัน 6 หลัก (จากอีเมล)">
+                    <input type="password" class="login-input" id="newPassword" placeholder="รหัสผ่านใหม่">
+                    <button class="login-btn orange" onclick="resetMemberPassword()">เปลี่ยนรหัสผ่าน</button>
+                    <div class="auth-link" onclick="switchAuthTab('login')">← กลับไปเข้าสู่ระบบ</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Member Dashboard (logged in) -->
+        <div class="card" id="dashboardCard" style="display: none;">
+            <div class="section-title">ข้อมูลสมาชิก</div>
+            <div class="profile-row"><span class="profile-label">ID</span><span class="profile-value" id="dashUserId">-</span></div>
+            <div class="profile-row"><span class="profile-label">อีเมล</span><span class="profile-value" id="dashEmail">-</span></div>
+            <div class="profile-row"><span class="profile-label">TrueMoney</span><span class="profile-value" id="dashTrueMoney">-</span></div>
+            <div style="text-align: center; margin-top: 20px;">
+                <div style="color: #666;">เงินคงเหลือ</div>
+                <div class="balance-display" id="dashBalance">0</div>
+            </div>
+            <div class="btn-row">
+                <a href="index.html" class="login-btn purple">🎫 ไปเล่นสลาก</a>
+                <button class="login-btn green" onclick="showDeposit()">💵 เติมเงิน</button>
+            </div>
+            <button class="login-btn" onclick="memberLogout()" style="margin-top: 10px; background: #e74c3c;">🚪 ออกจากระบบ</button>
+        </div>
+
+        <!-- Deposit -->
+        <div class="card" id="depositCard" style="display: none;">
+            <div class="section-title">💰 เติมเงิน</div>
+            <div class="qr-container">
+                <div class="deposit-code-box">
+                    <div style="font-weight: bold;">⚠️ ใส่ข้อความนี้ตอนโอนเงิน</div>
+                    <div class="deposit-code" id="depositCode">DEP-XXXX</div>
+                    <div style="font-size: 0.85rem; color: #666;">ระบบเติมเงินอัตโนมัติภายใน 3 นาที</div>
+                </div>
+                <div id="qrcode"></div>
+                <div class="deposit-info">
+                    <div style="font-weight: bold; margin-bottom: 8px;">💳 TrueMoney Wallet</div>
+                    <div>Scan QR Code หรือคลิกลิงก์เพื่อเติมเงิน</div>
+                </div>
+                <a id="trueMoneyDepositLink" href="#" target="_blank" class="login-btn purple">เปิด TrueMoney</a>
+                <button class="login-btn deposit-check-btn" onclick="checkDeposits()">🔄 ตรวจสอบการเติมเงิน</button>
+                <button class="login-btn" onclick="hideDeposit()" style="background: #95a5a6;">← กลับ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="infoModal" onclick="if(event.target===this)closeInfoModal()">
+        <div class="modal-content">
+            <div class="info-modal-icon" id="infoModalIcon">ℹ️</div>
+            <div class="modal-title" id="infoModalTitle">แจ้งเตือน</div>
+            <div style="color: #666; margin-bottom: 20px;" id="infoModalMessage">-</div>
+            <button class="login-btn purple" onclick="closeInfoModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/member-api.js"></script>
+    <script>
+        let currentUser = null;
+        let sessionToken = null;
+        let balancePollInterval = null;
+
+        window.onload = async function() {
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+
+            const restored = await MemberAPI.restore();
+            if (restored.success) {
+                currentUser = restored.user;
+                sessionToken = restored.sessionToken;
+                showDashboard(restored.balance);
+                startBalancePolling();
+                if (tab === 'deposit') showDeposit();
+            } else if (tab === 'register') {
+                switchAuthTab('register');
+            } else if (tab === 'forgot') {
+                switchAuthTab('forgot');
+            }
+        };
+
+        function switchAuthTab(tab) {
+            document.getElementById('authCard').style.display = 'block';
+            ['login', 'register', 'forgot'].forEach(t => {
+                document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+                const tabBtn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (tabBtn) tabBtn.classList.toggle('active', t === tab);
+            });
+            if (tab === 'forgot') {
+                document.getElementById('tabLogin').classList.remove('active');
+                document.getElementById('tabRegister').classList.remove('active');
+            }
+        }
+
+        function showDashboard(bal) {
+            document.getElementById('authCard').style.display = 'none';
+            document.getElementById('dashboardCard').style.display = 'block';
+            document.getElementById('dashUserId').textContent = currentUser.name;
+            document.getElementById('dashEmail').textContent = currentUser.email || '-';
+            document.getElementById('dashTrueMoney').textContent = currentUser.trueMoneyLink || '-';
+            document.getElementById('dashBalance').textContent = (bal || 0).toLocaleString();
+        }
+
+        function showDeposit() {
+            document.getElementById('depositCard').style.display = 'block';
+            updateDepositDisplay();
+        }
+
+        function hideDeposit() {
+            document.getElementById('depositCard').style.display = 'none';
+        }
+
+        async function memberRegister() {
+            const userId = document.getElementById('regUserId').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirm = document.getElementById('regPasswordConfirm').value;
+            const email = document.getElementById('regEmail').value.trim();
+            const trueMoneyLink = document.getElementById('regTrueMoneyLink').value.trim();
+
+            if (password !== confirm) {
+                showInfoModal('รหัสผ่านไม่ตรงกัน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            try {
+                const result = await MemberAPI.call('register', { userId, password, email, trueMoneyLink });
+                if (result.success) {
+                    currentUser = MemberAPI.userFromApi(result.user);
+                    sessionToken = result.sessionToken;
+                    MemberAPI.saveSession(currentUser, sessionToken);
+                    showDashboard(0);
+                    startBalancePolling();
+                    showInfoModal('สมัครสมาชิกสำเร็จ! 🎉', '✅');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+                } else {
+                    showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function memberLogin() {
+            const userId = document.getElementById('loginUserId').value.trim();
+            const password = document.getElementById('loginPassword').value;
+
+            if (!userId || !password) {
+                showInfoModal('กรุณากรอก ID และรหัสผ่าน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            try {
+                const result = await MemberAPI.call('login', { userId, password });
+                if (result.success) {
+                    currentUser = MemberAPI.userFromApi(result.user);
+                    sessionToken = result.sessionToken;
+                    MemberAPI.saveSession(currentUser, sessionToken);
+                    showDashboard(result.user.balance || 0);
+                    startBalancePolling();
+                    showInfoModal('เข้าสู่ระบบสำเร็จ! 🎉', '✅');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1200);
+                } else {
+                    showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function sendResetCode() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            if (!email) {
+                showInfoModal('กรุณากรอกอีเมล!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+            try {
+                const result = await MemberAPI.call('forgotPassword', { email });
+                showInfoModal(result.message, result.success ? '✅' : '❌', result.success ? 'สำเร็จ' : 'ข้อผิดพลาด');
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function resetMemberPassword() {
+            const email = document.getElementById('forgotEmail').value.trim();
+            const code = document.getElementById('resetCode').value.trim();
+            const newPassword = document.getElementById('newPassword').value;
+
+            try {
+                const result = await MemberAPI.call('resetPassword', { email, code, newPassword });
+                if (result.success) {
+                    showInfoModal(result.message, '✅');
+                    switchAuthTab('login');
+                } else {
+                    showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        function memberLogout() {
+            if (!confirm('ต้องการออกจากระบบ?')) return;
+            MemberAPI.clearSession();
+            if (balancePollInterval) clearInterval(balancePollInterval);
+            currentUser = null;
+            sessionToken = null;
+            document.getElementById('dashboardCard').style.display = 'none';
+            document.getElementById('depositCard').style.display = 'none';
+            document.getElementById('authCard').style.display = 'block';
+            switchAuthTab('login');
+        }
+
+        async function updateDepositDisplay() {
+            if (!currentUser || !sessionToken) return;
+            try {
+                const result = await MemberAPI.call('getDepositInfo', {
+                    userId: currentUser.id,
+                    sessionToken: sessionToken
+                });
+                if (result.success) {
+                    document.getElementById('depositCode').textContent = result.depositCode;
+                    document.getElementById('trueMoneyDepositLink').href = result.adminTrueMoneyLink;
+                    const qrContainer = document.getElementById('qrcode');
+                    qrContainer.innerHTML = '';
+                    QRCode.toCanvas(qrContainer, result.adminTrueMoneyLink, { width: 200 }, function(err) {
+                        if (err) console.error(err);
+                    });
+                }
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function checkDeposits() {
+            if (!currentUser || !sessionToken) return;
+            try {
+                await MemberAPI.call('checkDeposits', { userId: currentUser.id, sessionToken: sessionToken });
+                const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
+                if (bal !== null) {
+                    document.getElementById('dashBalance').textContent = bal.toLocaleString();
+                }
+                showInfoModal('ตรวจสอบการเติมเงินแล้ว! ยอดคงเหลือ: ' + (bal || 0).toLocaleString() + ' บาท', '✅');
+            } catch (e) {
+                showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        function startBalancePolling() {
+            if (balancePollInterval) clearInterval(balancePollInterval);
+            balancePollInterval = setInterval(async () => {
+                if (!currentUser || !sessionToken) return;
+                const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
+                if (bal !== null) {
+                    document.getElementById('dashBalance').textContent = bal.toLocaleString();
+                }
+            }, 30000);
+        }
+
+        function showInfoModal(message, icon = 'ℹ️', title = 'แจ้งเตือน') {
+            document.getElementById('infoModalMessage').textContent = message;
+            document.getElementById('infoModalIcon').textContent = icon;
+            document.getElementById('infoModalTitle').textContent = title;
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

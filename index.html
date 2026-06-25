@@ -463,8 +463,8 @@
         .toggle-switch {
             position: relative;
             display: inline-block;
-            width: 60px;
-            height: 34px;
+            width: 56px;
+            height: 30px;
         }
         .toggle-switch input {
             opacity: 0;
@@ -480,13 +480,13 @@
             bottom: 0;
             background-color: #ccc;
             transition: .4s;
-            border-radius: 34px;
+            border-radius: 30px;
         }
         .slider:before {
             position: absolute;
             content: "";
-            height: 26px;
-            width: 26px;
+            height: 22px;
+            width: 22px;
             left: 4px;
             bottom: 4px;
             background-color: white;
@@ -756,7 +756,7 @@
 
                 <div class="amount-control">
                     <button class="amount-btn" onclick="changeAmount(-10)">-</button>
-                    <div class="amount-display" id="betAmount">100</div>
+                    <div class="amount-display" id="betAmount">50</div>
                     <button class="amount-btn" onclick="changeAmount(10)">+</button>
                 </div>
 
@@ -820,14 +820,7 @@
                         </div>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label style="display: block; margin-bottom: 8px;">ออกผลสลากอัตโนมัติตามเวลา:</label>
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span>ปิด</span>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="autoDrawToggle" onchange="toggleAutoDraw()">
-                                    <span class="slider"></span>
-                                </label>
-                                <span>เปิด</span>
-                            </div>
+                            <button class="login-btn" id="autoDrawBtn" onclick="toggleAutoDraw()" style="min-width: 120px;">🔴 ปิด</button>
                         </div>
                         <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
@@ -863,7 +856,7 @@
                             <label>เวลาที่ตั้งไว้:</label>
                             <div id="drawTimesList" class="draw-times-list"></div>
                         </div>
-                        <button class="login-btn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 20px;">💾 บันทึกการตั้งค่า</button>
+                        <button class="login-btn" id="saveAdminSettingsBtn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 20px;">💾 บันทึกการตั้งค่า</button>
                     </div>
                 </div>
             </div>
@@ -929,7 +922,7 @@
         // State
         let user = null;
         let balance = 0;
-        let betAmount = 100;
+        let betAmount = 50;
         let selectedBetType = 'bottom2';
         let tickets = [];
         let winners = [];
@@ -1131,7 +1124,7 @@
                     tickets
                 }));
                 if (sessionToken) {
-                    MemberAPI.saveSession(user, sessionToken);
+                    MemberAPI.saveSession(user, sessionToken, balance);
                 }
             }
 
@@ -1167,6 +1160,17 @@
         }
 
         function showGuestUI() {
+            // Reset all user-related state
+            user = null;
+            balance = 0;
+            tickets = [];
+            sessionToken = null;
+            if (balancePollInterval) {
+                clearInterval(balancePollInterval);
+                balancePollInterval = null;
+            }
+            
+            // Update UI
             document.getElementById('guestBanner').style.display = 'block';
             document.getElementById('balanceBox').style.display = 'none';
             document.getElementById('mainContent').style.display = 'none';
@@ -1236,7 +1240,7 @@
         }
 
         function changeAmount(change) {
-            betAmount = Math.max(10, betAmount + change);
+            betAmount = Math.max(10, Math.min(100, betAmount + change));
             document.getElementById('betAmount').textContent = betAmount;
         }
 
@@ -1382,60 +1386,69 @@
 
         function drawLottery(autoDraw = false) {
             const pendingTickets = tickets.filter(t => t.status === 'pending');
-            if (pendingTickets.length === 0) {
-                if (!autoDraw) {
-                    showInfoModal('กรุณาซื้อสลากก่อนทดสอบสลากออก!', '🎫', 'แจ้งเตือน');
-                }
+            if (pendingTickets.length === 0 && !autoDraw) {
+                showInfoModal('กรุณาซื้อสลากก่อนทดสอบสลากออก!', '🎫', 'แจ้งเตือน');
                 return;
             }
 
+            console.log('Starting draw, autoDraw=', autoDraw);
             drawn = true;
 
             // Set current draw ID
             currentDrawId = Date.now();
 
             // Check if admin set custom winning numbers
-            const customFront1 = document.getElementById('customFrontNumber1')?.value.padStart(3, '0');
-            const customFront2 = document.getElementById('customFrontNumber2')?.value.padStart(3, '0');
-            const customBack1 = document.getElementById('customBackNumber1')?.value.padStart(3, '0');
-            const customBack2 = document.getElementById('customBackNumber2')?.value.padStart(3, '0');
-            const customNumber2 = document.getElementById('customWinningNumber2')?.value.padStart(2, '0');
+            const customFront1 = document.getElementById('customFrontNumber1')?.value.trim();
+            const customFront2 = document.getElementById('customFrontNumber2')?.value.trim();
+            const customBack1 = document.getElementById('customBackNumber1')?.value.trim();
+            const customBack2 = document.getElementById('customBackNumber2')?.value.trim();
+            const customNumber2 = document.getElementById('customWinningNumber2')?.value.trim();
             console.log('customFront1:', customFront1, 'customFront2:', customFront2, 'customBack1:', customBack1, 'customBack2:', customBack2, 'customNumber2:', customNumber2);
             
-            // Set front 3-digit numbers
+            // Set front 3-digit numbers (2 sets)
             winningFrontNumbers = [];
             if (isAdminLoggedIn && customFront1 && customFront1.length === 3) {
-                winningFrontNumbers.push(customFront1);
+                winningFrontNumbers.push(customFront1.padStart(3, '0'));
             } else {
-                // Generate random front 3-digit
+                // Generate random front 3-digit set 1
                 let num = '';
                 for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
                 winningFrontNumbers.push(num);
             }
             if (isAdminLoggedIn && customFront2 && customFront2.length === 3) {
-                winningFrontNumbers.push(customFront2);
+                winningFrontNumbers.push(customFront2.padStart(3, '0'));
+            } else {
+                // Generate random front 3-digit set 2
+                let num = '';
+                for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
+                winningFrontNumbers.push(num);
             }
             
-            // Set back 3-digit numbers
+            // Set back 3-digit numbers (2 sets)
             winningBackNumbers = [];
             if (isAdminLoggedIn && customBack1 && customBack1.length === 3) {
-                winningBackNumbers.push(customBack1);
+                winningBackNumbers.push(customBack1.padStart(3, '0'));
             } else {
-                // Generate random back 3-digit
+                // Generate random back 3-digit set 1
                 let num = '';
                 for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
                 winningBackNumbers.push(num);
             }
             if (isAdminLoggedIn && customBack2 && customBack2.length === 3) {
-                winningBackNumbers.push(customBack2);
+                winningBackNumbers.push(customBack2.padStart(3, '0'));
+            } else {
+                // Generate random back 3-digit set 2
+                let num = '';
+                for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
+                winningBackNumbers.push(num);
             }
             
             // Set 2-digit number
             if (isAdminLoggedIn && customNumber2 && customNumber2.length === 2) {
-                twoDigitWinningNumber = customNumber2;
+                twoDigitWinningNumber = customNumber2.padStart(2, '0');
             } else {
                 // If admin didn't set 2-digit, use last 2 of first back number
-                twoDigitWinningNumber = winningBackNumbers[0].substring(1);
+                twoDigitWinningNumber = winningBackNumbers[0].slice(-2);
             }
             
             console.log('winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
@@ -1694,7 +1707,7 @@
         }
 
         function updateBalance() {
-            document.getElementById('balance').textContent = balance;
+            document.getElementById('balance').textContent = (balance || 0).toLocaleString();
         }
 
         function getNextDrawTime() {
@@ -1719,11 +1732,16 @@
         }
 
         function checkDrawTime() {
-            if (!autoDrawEnabled) return;
+            if (!autoDrawEnabled) {
+                console.log('Auto-draw disabled');
+                return;
+            }
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
+            console.log(`Checking draw time: currentTime=${currentTime}, lastDrawTime=${lastDrawTime}, drawTimes=${drawTimes}`);
             
             if (drawTimes.includes(currentTime) && lastDrawTime !== currentTime) {
+                console.log(`Draw time reached! Drawing lottery...`);
                 lastDrawTime = currentTime;
                 drawLottery(true);
             }
@@ -1741,7 +1759,15 @@
         }
 
         function toggleAutoDraw() {
-            autoDrawEnabled = document.getElementById('autoDrawToggle').checked;
+            autoDrawEnabled = !autoDrawEnabled;
+            const btn = document.getElementById('autoDrawBtn');
+            if (autoDrawEnabled) {
+                btn.innerHTML = '🟢 เปิด';
+                btn.style.background = '#27ae60';
+            } else {
+                btn.innerHTML = '🔴 ปิด';
+                btn.style.background = '#e74c3c';
+            }
             saveToFirebase();
             showInfoModal(`ออกผลสลากอัตโนมัติ ${autoDrawEnabled ? 'เปิดแล้ว' : 'ปิดแล้ว'}`, autoDrawEnabled ? '✅' : '🔴', 'แจ้งเตือน');
         }
@@ -1760,7 +1786,15 @@
                 document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
-                document.getElementById('autoDrawToggle').checked = autoDrawEnabled;
+                // Set auto-draw button state
+                const autoDrawBtn = document.getElementById('autoDrawBtn');
+                if (autoDrawEnabled) {
+                    autoDrawBtn.innerHTML = '🟢 เปิด';
+                    autoDrawBtn.style.background = '#27ae60';
+                } else {
+                    autoDrawBtn.innerHTML = '🔴 ปิด';
+                    autoDrawBtn.style.background = '#e74c3c';
+                }
                 renderDrawTimes();
                 renderWinners();
                 if (user) {
@@ -1793,6 +1827,11 @@
         }
 
         async function saveAdminSettings() {
+            const btn = document.getElementById('saveAdminSettingsBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ กำลังบันทึก...';
+            
             adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
             telegramBotToken = document.getElementById('telegramBotTokenInput').value;
             telegramChatId = document.getElementById('telegramChatIdInput').value;
@@ -1800,6 +1839,9 @@
             try {
                 await MemberAPI.call('setAdminLink', { link: adminTrueMoneyLink });
             } catch (e) { /* optional sync */ }
+            
+            btn.disabled = false;
+            btn.innerHTML = originalText;
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
         }
         
@@ -1893,9 +1935,9 @@
                 <div class="history-item">
                     <div>
                         <div class="history-number">
-                            ${item.winningFrontNumbers ? `หน้า: ${item.winningFrontNumbers.join(', ')} | ` : ''}
-                            ${item.winningBackNumbers ? `ท้าย: ${item.winningBackNumbers.join(', ')} | ` : ''}
-                            ${item.twoDigitWinningNumber ? `2 ตัว: ${item.twoDigitWinningNumber}` : ''}
+                            ${item.winningFrontNumbers ? `เลขหน้า: ${item.winningFrontNumbers.join(', ')} | ` : ''}
+                            ${item.winningBackNumbers ? `เลขท้าย: ${item.winningBackNumbers.join(', ')} | ` : ''}
+                            ${item.twoDigitWinningNumber ? `เลข 2 ตัว: ${item.twoDigitWinningNumber}` : ''}
                         </div>
                         <div style="color: #666; font-size: 0.9rem;">${item.date}</div>
                     </div>
@@ -1926,7 +1968,7 @@
                             <div style="color: #666; word-break: break-all;">💳 <a href="${winner.trueMoneyLink}" target="_blank" style="color: #06c755;">${winner.trueMoneyLink}</a></div>
                             <div style="margin-top: 5px;">🎯 เลข ${winner.number} (${winner.betType})</div>
                             <div style="margin-top: 5px;">🏆 ${winner.betAmount} บาท → ได้รับเงิน ${winner.prizeAmount} บาท</div>
-                            <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningFrontNumbers ? `หน้า: ${winner.winningFrontNumbers.join(', ')} | ` : ''}${winner.winningBackNumbers ? `ท้าย: ${winner.winningBackNumbers.join(', ')} | ` : ''}${winner.twoDigitWinningNumber ? `2 ตัว: ${winner.twoDigitWinningNumber}` : ''} | ${winner.date}</div>
+                            <div style="color: #666; font-size: 0.9rem; margin-top: 5px;">เลขที่ออก: ${winner.winningFrontNumbers ? `เลขหน้า: ${winner.winningFrontNumbers.join(', ')} | ` : ''}${winner.winningBackNumbers ? `เลขท้าย: ${winner.winningBackNumbers.join(', ')} | ` : ''}${winner.twoDigitWinningNumber ? `เลข 2 ตัว: ${winner.twoDigitWinningNumber}` : ''} | ${winner.date}</div>
                         </div>
                         <div style="display: flex; gap: 10px; align-items: center;">
                             <button class="payout-btn ${winner.paid ? 'paid' : ''}" onclick="markAsPaid('${winner.id}')" ${winner.paid ? 'disabled' : ''}>

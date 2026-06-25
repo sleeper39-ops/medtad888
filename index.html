@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,16 +11,19 @@
             margin: 0;
             box-sizing: border-box;
         }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
+
         .container {
             max-width: 900px;
             margin: 0 auto;
         }
+
         .header {
             text-align: center;
             color: white;
@@ -28,18 +32,21 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .header h1 {
             font-size: 2.5rem;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
+
         .user-info {
             display: flex;
             align-items: center;
             gap: 15px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             padding: 10px 15px;
             border-radius: 10px;
         }
+
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -50,13 +57,15 @@
             justify-content: center;
             font-size: 1.5rem;
         }
+
         .user-name {
             color: white;
             font-weight: bold;
         }
+
         .admin-btn {
             padding: 10px 20px;
-            background: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.2);
             border: 2px solid white;
             color: white;
             border-radius: 8px;
@@ -64,23 +73,27 @@
             font-weight: bold;
             transition: all 0.3s;
         }
+
         .admin-btn:hover {
             background: white;
             color: #667eea;
         }
+
         .guest-banner {
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
             text-align: center;
         }
+
         .guest-banner p {
             color: #666;
             margin: 15px 0 20px;
             font-size: 1.05rem;
         }
+
         .guest-btn {
             display: inline-block;
             padding: 14px 28px;
@@ -92,12 +105,17 @@
             font-size: 1rem;
             margin: 5px;
         }
-        .guest-btn:hover { opacity: 0.9; }
+
+        .guest-btn:hover {
+            opacity: 0.9;
+        }
+
         .guest-btn.outline {
             background: white;
             color: #667eea;
             border: 2px solid #667eea;
         }
+
         .deposit-link-btn {
             display: inline-block;
             padding: 10px 20px;
@@ -108,30 +126,41 @@
             font-weight: bold;
             margin-top: 10px;
         }
+
         .balance-box {
             background: white;
             padding: 20px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             margin-bottom: 20px;
             text-align: center;
         }
+
         .balance {
             font-size: 2rem;
             font-weight: bold;
             color: #27ae60;
         }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr;
             gap: 20px;
         }
-        .ticket-section, .result-section, .admin-section, .history-section, .login-section, .deposit-section, .winners-section {
+
+        .ticket-section,
+        .result-section,
+        .admin-section,
+        .history-section,
+        .login-section,
+        .deposit-section,
+        .winners-section {
             background: white;
             padding: 25px;
             border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
         }
+
         .section-title {
             font-size: 1.5rem;
             color: #2c3e50;
@@ -140,12 +169,14 @@
             border-bottom: 2px solid #eee;
             padding-bottom: 10px;
         }
+
         .number-input-group {
             display: flex;
             gap: 10px;
             justify-content: center;
             margin-bottom: 20px;
         }
+
         .number-input {
             width: 60px;
             height: 70px;
@@ -156,16 +187,19 @@
             font-weight: bold;
             color: #2c3e50;
         }
+
         .number-input:focus {
             outline: none;
             border-color: #667eea;
         }
+
         .bet-options {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
+
         .bet-option {
             padding: 15px;
             border: 2px solid #eee;
@@ -174,27 +208,33 @@
             text-align: center;
             transition: all 0.3s;
         }
+
         .bet-option:hover {
             border-color: #667eea;
             background: #f0f3ff;
         }
+
         .bet-option.selected {
             border-color: #667eea;
             background: #667eea;
             color: white;
         }
+
         .bet-option .bet-name {
             font-weight: bold;
             font-size: 1.1rem;
             margin-bottom: 5px;
         }
+
         .bet-option .bet-multiplier {
             font-size: 0.9rem;
             color: #666;
         }
+
         .bet-option.selected .bet-multiplier {
             color: #ddd;
         }
+
         .amount-control {
             display: flex;
             align-items: center;
@@ -202,6 +242,7 @@
             gap: 15px;
             margin-bottom: 20px;
         }
+
         .amount-btn {
             width: 50px;
             height: 50px;
@@ -213,9 +254,11 @@
             cursor: pointer;
             transition: background 0.3s;
         }
+
         .amount-btn:hover {
             background: #5568d3;
         }
+
         .amount-display {
             font-size: 2rem;
             font-weight: bold;
@@ -223,6 +266,7 @@
             min-width: 150px;
             text-align: center;
         }
+
         .buy-btn {
             width: 100%;
             padding: 18px;
@@ -235,19 +279,23 @@
             cursor: pointer;
             transition: transform 0.2s;
         }
+
         .buy-btn:hover {
             transform: scale(1.02);
         }
+
         .buy-btn:disabled {
             background: #ccc;
             cursor: not-allowed;
             transform: none;
         }
+
         .my-tickets {
             margin-top: 20px;
             max-height: 300px;
             overflow-y: auto;
         }
+
         .ticket {
             background: #f9f9f9;
             padding: 15px;
@@ -257,23 +305,28 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .ticket-number {
             font-size: 1.5rem;
             font-weight: bold;
             color: #2c3e50;
         }
+
         .ticket-info {
             text-align: right;
             color: #666;
         }
+
         .ticket.won {
             background: #d4edda;
             border: 2px solid #28a745;
         }
+
         .ticket.lost {
             background: #f8d7da;
             border: 2px solid #dc3545;
         }
+
         .draw-btn {
             width: 100%;
             padding: 18px;
@@ -286,22 +339,27 @@
             cursor: pointer;
             margin-bottom: 20px;
         }
+
         .draw-time-box {
             text-align: center;
             margin-bottom: 20px;
         }
+
         .next-draw-label {
             color: #666;
             margin-bottom: 10px;
         }
+
         .next-draw-display {
             font-size: 2rem;
             font-weight: bold;
             color: #2c3e50;
         }
+
         .result-display {
             text-align: center;
         }
+
         .winning-number {
             font-size: 4rem;
             font-weight: bold;
@@ -313,14 +371,17 @@
             margin-bottom: 20px;
             display: inline-block;
         }
+
         .prize-result {
             font-size: 1.5rem;
             color: #27ae60;
             font-weight: bold;
         }
+
         .prize-result.lost {
             color: #e74c3c;
         }
+
         .history-btn {
             width: 100%;
             padding: 15px;
@@ -333,14 +394,17 @@
             cursor: pointer;
             transition: background 0.3s;
         }
+
         .history-btn:hover {
             background: #2980b9;
         }
+
         .history-list {
             max-height: 250px;
             overflow-y: auto;
             margin-top: 15px;
         }
+
         .history-item {
             background: #f8f9fa;
             padding: 12px;
@@ -350,36 +414,45 @@
             justify-content: space-between;
             align-items: center;
         }
+
         .history-number {
             font-weight: bold;
             color: #2c3e50;
         }
+
         .history-prize {
             font-weight: bold;
             color: #27ae60;
         }
+
         .history-prize.zero {
             color: #666;
         }
+
         .admin-section {
             display: none;
         }
+
         .admin-section.active {
             display: block;
         }
-        .login-form, .user-setup-form {
+
+        .login-form,
+        .user-setup-form {
             display: flex;
             flex-direction: column;
             gap: 15px;
             max-width: 400px;
             margin: 0 auto;
         }
+
         .login-input {
             padding: 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1rem;
         }
+
         .login-btn {
             padding: 12px;
             border: none;
@@ -390,32 +463,39 @@
             cursor: pointer;
             font-size: 1rem;
         }
+
         .line-btn {
             background: #06c755;
         }
+
         .line-btn:hover {
             background: #05b04c;
         }
+
         .admin-controls {
             display: grid;
             gap: 15px;
         }
+
         .admin-control-group {
             display: flex;
             gap: 10px;
             align-items: center;
         }
+
         .admin-control-group label {
             font-weight: bold;
             color: #2c3e50;
             min-width: 150px;
         }
+
         .admin-control-group input {
             padding: 8px 12px;
             border: 2px solid #ddd;
             border-radius: 8px;
             flex: 1;
         }
+
         .admin-control-group button {
             padding: 8px 20px;
             border: none;
@@ -425,6 +505,7 @@
             font-weight: bold;
             cursor: pointer;
         }
+
         .admin-status {
             background: #fff3cd;
             padding: 10px;
@@ -433,12 +514,14 @@
             text-align: center;
             font-weight: bold;
         }
+
         .draw-times-list {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-top: 10px;
         }
+
         .draw-time-tag {
             background: #e3f2fd;
             padding: 6px 12px;
@@ -449,6 +532,7 @@
             align-items: center;
             gap: 8px;
         }
+
         .draw-time-tag button {
             background: none;
             border: none;
@@ -466,11 +550,13 @@
             width: 56px;
             height: 30px;
         }
+
         .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
+
         .slider {
             position: absolute;
             cursor: pointer;
@@ -482,6 +568,7 @@
             transition: .4s;
             border-radius: 30px;
         }
+
         .slider:before {
             position: absolute;
             content: "";
@@ -493,13 +580,15 @@
             transition: .4s;
             border-radius: 50%;
         }
-        input:checked + .slider {
+
+        input:checked+.slider {
             background-color: #667eea;
         }
-        input:checked + .slider:before {
+
+        input:checked+.slider:before {
             transform: translateX(26px);
         }
-        
+
         /* Custom Confirmation Modal */
         .modal-overlay {
             display: none;
@@ -513,11 +602,11 @@
             align-items: center;
             z-index: 1000;
         }
-        
+
         .modal-overlay.active {
             display: flex;
         }
-        
+
         .modal-content {
             background: white;
             padding: 30px;
@@ -528,25 +617,26 @@
             text-align: center;
             animation: modalSlideIn 0.3s ease-out;
         }
-        
+
         @keyframes modalSlideIn {
             from {
                 opacity: 0;
                 transform: translateY(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-        
+
         .modal-title {
             font-size: 1.5rem;
             color: #2c3e50;
             margin-bottom: 20px;
             font-weight: bold;
         }
-        
+
         .modal-details {
             background: #f8f9fa;
             padding: 20px;
@@ -554,33 +644,33 @@
             margin-bottom: 25px;
             text-align: left;
         }
-        
+
         .modal-detail-item {
             display: flex;
             justify-content: space-between;
             margin-bottom: 10px;
         }
-        
+
         .modal-detail-item:last-child {
             margin-bottom: 0;
         }
-        
+
         .modal-detail-label {
             color: #666;
             font-weight: 500;
         }
-        
+
         .modal-detail-value {
             color: #2c3e50;
             font-weight: bold;
         }
-        
+
         .modal-buttons {
             display: flex;
             gap: 15px;
             justify-content: center;
         }
-        
+
         .modal-btn {
             padding: 12px 30px;
             border: none;
@@ -590,32 +680,32 @@
             cursor: pointer;
             transition: all 0.3s;
         }
-        
+
         .modal-btn-cancel {
             background: #e9ecef;
             color: #666;
         }
-        
+
         .modal-btn-cancel:hover {
             background: #dee2e6;
         }
-        
+
         .modal-btn-confirm {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
         }
-        
+
         .modal-btn-confirm:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
         }
-        
+
         /* Custom Info Modal */
         .info-modal-icon {
             font-size: 4rem;
             margin-bottom: 20px;
         }
-        
+
         /* QR Code Section */
         .qr-container {
             display: flex;
@@ -623,19 +713,19 @@
             align-items: center;
             gap: 15px;
         }
-        
+
         #qrcode {
             width: 200px;
             height: 200px;
         }
-        
+
         .deposit-info {
             background: #e8f5e9;
             padding: 15px;
             border-radius: 10px;
             margin-top: 15px;
         }
-        
+
         /* Winners Section */
         .winner-item {
             background: #fff8e1;
@@ -648,15 +738,15 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .winner-info {
             text-align: left;
         }
-        
+
         .winner-paid {
             background: #e8f5e9;
         }
-        
+
         .payout-btn {
             background: #28a745;
             color: white;
@@ -667,29 +757,32 @@
             cursor: pointer;
             transition: background 0.3s;
         }
-        
+
         .payout-btn:hover {
             background: #218838;
         }
-        
+
         .payout-btn.paid {
             background: #6c757d;
             cursor: not-allowed;
         }
-        
+
         @media (max-width: 768px) {
             .header {
                 flex-direction: column;
                 gap: 15px;
             }
+
             .header h1 {
                 font-size: 1.8rem;
             }
+
             .number-input {
                 width: 50px;
                 height: 60px;
                 font-size: 1.5rem;
             }
+
             .winning-number {
                 font-size: 2.5rem;
                 letter-spacing: 5px;
@@ -702,11 +795,15 @@
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
+
 <body>
     <div class="container">
         <div class="header">
-            <h1 style="font-size: 1.8rem;"><span style="cursor: pointer; user-select: none;" onclick="toggleAdmin()">🎫</span> Medtad888</h1>
-            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
+            <h1 style="font-size: 1.8rem;"><span style="cursor: pointer; user-select: none;"
+                    onclick="toggleAdmin()">🎫</span> Medtad888</h1>
+            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+                target="_blank"
+                style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
                 💬 Line OpenChat
             </a>
             <div id="userArea">
@@ -722,7 +819,7 @@
             <a href="member.html" class="guest-btn">🔐 เข้าสู่ระบบ</a>
             <a href="member.html?tab=register" class="guest-btn outline">📝 สมัครสมาชิก</a>
         </div>
-        
+
         <div class="balance-box" id="balanceBox" style="display: none;">
             <div style="color: #666; margin-bottom: 5px;">เงินคงเหลือ</div>
             <div class="balance" id="balance">0</div>
@@ -732,7 +829,7 @@
         <div class="main-content" id="mainContent" style="display: none;">
             <div class="ticket-section">
                 <div class="section-title">📝 ซื้อสลาก</div>
-                
+
                 <div class="number-input-group" id="numberInputs">
                     <input type="text" class="number-input" id="num1" maxlength="1" oninput="validateNumber(this, 1)">
                     <input type="text" class="number-input" id="num2" maxlength="1" oninput="validateNumber(this, 2)">
@@ -778,6 +875,26 @@
                 <div class="section-title">📜 ประวัติการถูกรางวัล</div>
                 <div class="history-list" id="historyList"></div>
             </div>
+        </div>
+
+        <!-- Admin View Container (sibling of mainContent, NOT inside it) -->
+        <div id="adminPageContainer" style="display: none; margin-top: 20px;">
+            <!-- Tab/Navigation Header inside Admin View -->
+            <div
+                style="display: flex; gap: 10px; margin-bottom: 20px; justify-content: space-between; align-items: center; background: white; padding: 15px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                <div
+                    style="font-weight: bold; color: #2c3e50; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;">
+                    <span>🔐</span> แผงควบคุมผู้ดูแลระบบ
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="login-btn purple" onclick="switchView('player')"
+                        style="margin: 0; padding: 8px 16px; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer;">🎫
+                        เล่นสลาก</button>
+                    <button type="button" class="login-btn" onclick="adminLogout()"
+                        style="margin: 0; background: #e74c3c; padding: 8px 16px; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer; color: white;">🚪
+                        ออกระบบแอดมิน</button>
+                </div>
+            </div>
 
             <!-- Winners Management (Admin Only) -->
             <div class="winners-section" id="winnersSection" style="display: none;">
@@ -785,69 +902,77 @@
                 <div id="winnersList" style="margin-top: 20px;"></div>
             </div>
 
-            <div class="admin-section" id="adminSection">
+            <!-- Admin Controls -->
+            <div class="admin-section" id="adminSection" style="display: block;">
                 <div class="section-title">⚙️ แผงควบคุมแอดมิน</div>
-                <div id="loginForm">
-                    <form class="login-form" onsubmit="event.preventDefault(); adminLogin();">
-                        <input type="text" class="login-input" id="adminUsername" placeholder="ชื่อผู้ใช้">
-                        <input type="password" class="login-input" id="adminPassword" placeholder="รหัสผ่าน">
-                        <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
-                    </form>
-                </div>
-                <div id="adminControls" style="display: none;">
+                <div id="adminControls">
                     <div class="admin-status" id="adminStatus">ยินดีต้อนรับแอดมิน</div>
                     <div class="admin-controls">
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว):</label>
-                            <input type="text" id="customFrontNumber1" maxlength="3" placeholder="123" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input type="text" id="customFrontNumber1" maxlength="3" placeholder="123"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว อีกช่อง):</label>
-                            <input type="text" id="customFrontNumber2" maxlength="3" placeholder="456" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input type="text" id="customFrontNumber2" maxlength="3" placeholder="456"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว):</label>
-                            <input type="text" id="customBackNumber1" maxlength="3" placeholder="789" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input type="text" id="customBackNumber1" maxlength="3" placeholder="789"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว อีกช่อง):</label>
-                            <input type="text" id="customBackNumber2" maxlength="3" placeholder="012" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input type="text" id="customBackNumber2" maxlength="3" placeholder="012"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (2 หลัก):</label>
-                            <input type="text" id="customWinningNumber2" maxlength="2" placeholder="12" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <input type="text" id="customWinningNumber2" maxlength="2" placeholder="12"
+                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label style="display: block; margin-bottom: 8px;">ออกผลสลากอัตโนมัติตามเวลา:</label>
-                            <button class="login-btn" id="autoDrawBtn" onclick="toggleAutoDraw()" style="min-width: 120px;">🔴 ปิด</button>
+                            <button class="login-btn" id="autoDrawBtn" onclick="toggleAutoDraw()"
+                                style="min-width: 120px;">🔴 ปิด</button>
                         </div>
-                        <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
+                        <button class="draw-btn" id="drawBtn" onclick="drawLottery()"
+                            style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>ลิงก์ TrueMoney:</label>
-                            <input type="text" id="adminTrueMoneyLink" placeholder="https://truemoney.com/wallet/...">
+                            <input type="text" id="adminTrueMoneyLink"
+                                placeholder="https://truemoney.com/wallet/...">
                         </div>
                         <div class="admin-control-group">
                             <label>อัพโหลด QR Code TrueMoney:</label>
-                            <input type="file" id="adminTrueMoneyQR" accept="image/*" onchange="handleQRUpload(event)">
+                            <input type="file" id="adminTrueMoneyQR" accept="image/*"
+                                onchange="handleQRUpload(event)">
                         </div>
                         <div class="admin-control-group">
                             <label>Telegram Bot Token:</label>
-                            <input type="text" id="telegramBotTokenInput" placeholder="123456789:ABCdefGhIJKlmNoPQRStUvWxYz">
+                            <input type="text" id="telegramBotTokenInput"
+                                placeholder="123456789:ABCdefGhIJKlmNoPQRStUvWxYz">
                         </div>
                         <div class="admin-control-group">
                             <label>Telegram Chat ID:</label>
                             <input type="text" id="telegramChatIdInput" placeholder="-100123456789">
                         </div>
-                        <button class="login-btn" onclick="testTelegram()" style="background: #0088cc; margin-top: 10px;">🧪 ทดสอบส่งข้อความ</button>
+                        <button class="login-btn" onclick="testTelegram()"
+                            style="background: #0088cc; margin-top: 10px;">🧪 ทดสอบส่งข้อความ</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>เติมเงินให้สมาชิก (อ้างอิง Google Sheet):</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <select id="adminSelectMember" style="padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; color: #333; font-size: 14px; font-weight: 500; outline: none; width: 100%;">
+                                <select id="adminSelectMember"
+                                    style="padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; color: #333; font-size: 14px; font-weight: 500; outline: none; width: 100%;">
                                     <option value="">-- เลือก ID สมาชิก --</option>
                                 </select>
                                 <div style="display: flex; gap: 10px;">
-                                    <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="10" style="flex: 1;">
-                                    <button onclick="adminAddMoney()" class="login-btn" style="background: #27ae60; white-space: nowrap; margin-top: 0; min-width: 90px;">เพิ่มเงิน</button>
+                                    <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="10"
+                                        style="flex: 1;">
+                                    <button onclick="adminAddMoney()" class="login-btn"
+                                        style="background: #27ae60; white-space: nowrap; margin-top: 0; min-width: 90px;">เพิ่มเงิน</button>
                                 </div>
                             </div>
                         </div>
@@ -860,46 +985,71 @@
                             <label>เวลาที่ตั้งไว้:</label>
                             <div id="drawTimesList" class="draw-times-list"></div>
                         </div>
-                        <button class="login-btn" id="saveAdminSettingsBtn" onclick="saveAdminSettings()" style="background: #27ae60; margin-top: 20px;">💾 บันทึกการตั้งค่า</button>
+                        <button class="login-btn" id="saveAdminSettingsBtn" onclick="saveAdminSettings()"
+                            style="background: #27ae60; margin-top: 20px;">💾 บันทึกการตั้งค่า</button>
                     </div>
                 </div>
             </div>
         </div>
-        
-        <!-- Custom Confirmation Modal -->
-        <div class="modal-overlay" id="confirmModal" onclick="if(event.target === this) closeModal()">
-            <div class="modal-content">
-                <div class="modal-title">🎫 ยืนยันการซื้อสลาก</div>
-                <div class="modal-details">
-                    <div class="modal-detail-item">
-                        <span class="modal-detail-label">เลข:</span>
-                        <span class="modal-detail-value" id="modalNumber">-</span>
-                    </div>
-                    <div class="modal-detail-item">
-                        <span class="modal-detail-label">ประเภท:</span>
-                        <span class="modal-detail-value" id="modalType">-</span>
-                    </div>
-                    <div class="modal-detail-item">
-                        <span class="modal-detail-label">จำนวนเงิน:</span>
-                        <span class="modal-detail-value" id="modalAmount">-</span>
-                    </div>
+    </div>
+
+    <!-- Custom Confirmation Modal -->
+    <div class="modal-overlay" id="confirmModal" onclick="if(event.target === this) closeModal()">
+        <div class="modal-content">
+            <div class="modal-title">🎫 ยืนยันการซื้อสลาก</div>
+            <div class="modal-details">
+                <div class="modal-detail-item">
+                    <span class="modal-detail-label">เลข:</span>
+                    <span class="modal-detail-value" id="modalNumber">-</span>
                 </div>
-                <div class="modal-buttons">
-                    <button class="modal-btn modal-btn-cancel" id="modalCancel" onclick="closeModal()">ยกเลิก</button>
-                    <button class="modal-btn modal-btn-confirm" id="modalConfirm" onclick="confirmPurchase()">ยืนยัน</button>
+                <div class="modal-detail-item">
+                    <span class="modal-detail-label">ประเภท:</span>
+                    <span class="modal-detail-value" id="modalType">-</span>
+                </div>
+                <div class="modal-detail-item">
+                    <span class="modal-detail-label">จำนวนเงิน:</span>
+                    <span class="modal-detail-value" id="modalAmount">-</span>
                 </div>
             </div>
-        </div>
-        
-        <!-- Custom Info Modal -->
-        <div class="modal-overlay" id="infoModal" onclick="if(event.target === this) closeInfoModal()">
-            <div class="modal-content">
-                <div class="info-modal-icon" id="infoModalIcon">ℹ️</div>
-                <div class="modal-title" id="infoModalTitle">แจ้งเตือน</div>
-                <div style="color: #666; margin-bottom: 25px; font-size: 1.1rem;" id="infoModalMessage">-</div>
-                <button class="modal-btn modal-btn-confirm" id="infoModalOk" onclick="closeInfoModal()">ตกลง</button>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-cancel" id="modalCancel" onclick="closeModal()">ยกเลิก</button>
+                <button class="modal-btn modal-btn-confirm" id="modalConfirm"
+                    onclick="confirmPurchase()">ยืนยัน</button>
             </div>
         </div>
+    </div>
+
+    <!-- Custom Info Modal -->
+    <div class="modal-overlay" id="infoModal" onclick="if(event.target === this) closeInfoModal()">
+        <div class="modal-content">
+            <div class="info-modal-icon" id="infoModalIcon">ℹ️</div>
+            <div class="modal-title" id="infoModalTitle">แจ้งเตือน</div>
+            <div style="color: #666; margin-bottom: 25px; font-size: 1.1rem;" id="infoModalMessage">-</div>
+            <button class="modal-btn modal-btn-confirm" id="infoModalOk" onclick="closeInfoModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div class="modal-overlay" id="adminLoginModal" onclick="if(event.target === this) closeAdminLoginModal()">
+        <div class="modal-content" style="max-width: 400px; padding: 25px;">
+            <div class="info-modal-icon">🔐</div>
+            <div class="modal-title" style="font-size: 1.4rem; color: #2c3e50; margin-bottom: 20px;">เข้าสู่ระบบแอดมิน
+            </div>
+            <form class="login-form" onsubmit="event.preventDefault(); adminLogin();">
+                <input type="text" class="login-input" id="adminUsername" placeholder="ชื่อผู้ใช้"
+                    style="width: 100%; padding: 12px; margin-bottom: 12px; border: 2px solid #ddd; border-radius: 8px;">
+                <input type="password" class="login-input" id="adminPassword" placeholder="รหัสผ่าน"
+                    style="width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 8px;">
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="login-btn purple"
+                        style="flex: 1; margin: 0; padding: 12px 0;">เข้าสู่ระบบ</button>
+                    <button type="button" class="login-btn"
+                        style="flex: 1; margin: 0; background: #95a5a6; padding: 12px 0; color: white;"
+                        onclick="closeAdminLoginModal()">ยกเลิก</button>
+                </div>
+            </form>
+        </div>
+    </div>
     </div>
 
     <script src="config.js"></script>
@@ -907,7 +1057,7 @@
     <script>
         // ป้องกันการคลิกขวาและการตรวจสอบโค้ด (Right-click & Inspect protection)
         document.addEventListener('contextmenu', event => event.preventDefault());
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             // ป้องกัน F12
             if (e.keyCode === 123) {
                 e.preventDefault();
@@ -985,14 +1135,14 @@
         let telegramChatId = '';
 
         // Initialize
-        window.onload = async function() {
+        window.onload = async function () {
             const confirmModal = document.getElementById('confirmModal');
             const infoModal = document.getElementById('infoModal');
             if (confirmModal) confirmModal.removeAttribute('style');
             if (infoModal) infoModal.removeAttribute('style');
-            
+
             document.getElementById('adminArea').innerHTML = '';
-            
+
             await restoreMemberSession();
             try {
                 await loadAdminCredentials();
@@ -1103,7 +1253,7 @@
         async function loadFromFirebase() {
             const memberSession = MemberAPI.getSession();
             const userId = memberSession ? memberSession.userId : localStorage.getItem('lotteryUserId');
-            
+
             const [globalSnapshot, userSnapshot] = await Promise.all([
                 database.ref('global').once('value'),
                 userId ? database.ref('users/' + userId).once('value') : null
@@ -1133,7 +1283,7 @@
 
         async function saveToFirebase() {
             const promises = [];
-            
+
             // Save global data
             promises.push(database.ref('global').set({
                 drawTimes,
@@ -1200,7 +1350,7 @@
                 clearInterval(balancePollInterval);
                 balancePollInterval = null;
             }
-            
+
             // Update UI
             document.getElementById('guestBanner').style.display = 'block';
             document.getElementById('balanceBox').style.display = 'none';
@@ -1290,12 +1440,12 @@
 
             const selectedNum = getSelectedNumber();
             const betTypeName = getBetTypeName(selectedBetType);
-            
+
             if (balance < betAmount) {
                 showInfoModal('เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
                 return;
             }
-            
+
             // Store pending ticket data
             pendingTicketData = {
                 number: selectedNum,
@@ -1306,17 +1456,17 @@
                 trueMoneyLink: user.trueMoneyLink,
                 status: 'pending'
             };
-            
+
             // Update modal content
             document.getElementById('modalNumber').textContent = selectedNum;
             document.getElementById('modalType').textContent = betTypeName;
             document.getElementById('modalAmount').textContent = `${betAmount} บาท`;
-            
+
             // Show modal
             const confirmModalEl = document.getElementById('confirmModal');
             confirmModalEl.classList.add('active');
         }
-        
+
         async function confirmPurchase() {
             if (!pendingTicketData) return;
 
@@ -1326,7 +1476,7 @@
                 closeModal();
                 return;
             }
-            
+
             const ticket = {
                 id: Date.now(),
                 number: pendingTicketData.number,
@@ -1337,21 +1487,21 @@
                 trueMoneyLink: pendingTicketData.trueMoneyLink,
                 status: 'pending'
             };
-            
+
             tickets.push(ticket);
             renderTickets();
             saveToStorage();
-            
+
             // Clear inputs
             const maxDigits = betTypes[selectedBetType].digits;
             for (let i = 1; i <= maxDigits; i++) {
                 document.getElementById(`num${i}`).value = '';
             }
             document.getElementById('num1').focus();
-            
+
             closeModal();
         }
-        
+
         function closeModal() {
             const modal = document.getElementById('confirmModal');
             if (modal) {
@@ -1363,7 +1513,7 @@
             }
             pendingTicketData = null;
         }
-        
+
         function showInfoModal(message, icon = 'ℹ️', title = 'แจ้งเตือน') {
             document.getElementById('infoModalMessage').textContent = message;
             document.getElementById('infoModalIcon').textContent = icon;
@@ -1371,7 +1521,7 @@
             const infoModal = document.getElementById('infoModal');
             infoModal.classList.add('active');
         }
-        
+
         function closeInfoModal() {
             const modal = document.getElementById('infoModal');
             if (modal) {
@@ -1386,7 +1536,7 @@
         function renderTickets() {
             const container = document.getElementById('myTickets');
             const userTickets = tickets.filter(t => t.userId === user?.id);
-            
+
             if (userTickets.length === 0) {
                 container.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">ยังไม่มีสลาก</div>';
                 return;
@@ -1433,7 +1583,7 @@
             const customBack2 = document.getElementById('customBackNumber2')?.value.trim();
             const customNumber2 = document.getElementById('customWinningNumber2')?.value.trim();
             console.log('customFront1:', customFront1, 'customFront2:', customFront2, 'customBack1:', customBack1, 'customBack2:', customBack2, 'customNumber2:', customNumber2);
-            
+
             // Set front 3-digit numbers (2 sets)
             winningFrontNumbers = [];
             if (isAdminLoggedIn && customFront1 && customFront1.length === 3) {
@@ -1452,7 +1602,7 @@
                 for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
                 winningFrontNumbers.push(num);
             }
-            
+
             // Set back 3-digit numbers (2 sets)
             winningBackNumbers = [];
             if (isAdminLoggedIn && customBack1 && customBack1.length === 3) {
@@ -1471,7 +1621,7 @@
                 for (let i = 0; i < 3; i++) num += Math.floor(Math.random() * 10);
                 winningBackNumbers.push(num);
             }
-            
+
             // Set 2-digit number
             if (isAdminLoggedIn && customNumber2 && customNumber2.length === 2) {
                 twoDigitWinningNumber = customNumber2.padStart(2, '0');
@@ -1479,7 +1629,7 @@
                 // If admin didn't set 2-digit, use last 2 of first back number
                 twoDigitWinningNumber = winningBackNumbers[0].slice(-2);
             }
-            
+
             console.log('winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
 
             let totalPrize = 0;
@@ -1495,25 +1645,25 @@
                         ticket.prize = prize;
                         ticket.status = 'won';
                         totalPrize += prize;
-                        
+
                         // Add to winners list
-            const winner = {
-                id: 'winner_' + Date.now() + '_' + Math.random(),
-                ticketId: ticket.id,
-                userName: ticket.userName,
-                trueMoneyLink: ticket.trueMoneyLink,
-                number: ticket.number,
-                betType: getBetTypeName(ticket.type),
-                betAmount: ticket.bet,
-                prizeAmount: prize,
-                winningFrontNumbers: winningFrontNumbers,
-                winningBackNumbers: winningBackNumbers,
-                twoDigitWinningNumber: twoDigitWinningNumber,
-                date: new Date().toLocaleString('th-TH'),
-                paid: false
-            };
-            winners.unshift(winner);
-            newWinners.push(winner);
+                        const winner = {
+                            id: 'winner_' + Date.now() + '_' + Math.random(),
+                            ticketId: ticket.id,
+                            userName: ticket.userName,
+                            trueMoneyLink: ticket.trueMoneyLink,
+                            number: ticket.number,
+                            betType: getBetTypeName(ticket.type),
+                            betAmount: ticket.bet,
+                            prizeAmount: prize,
+                            winningFrontNumbers: winningFrontNumbers,
+                            winningBackNumbers: winningBackNumbers,
+                            twoDigitWinningNumber: twoDigitWinningNumber,
+                            date: new Date().toLocaleString('th-TH'),
+                            paid: false
+                        };
+                        winners.unshift(winner);
+                        newWinners.push(winner);
                     } else {
                         ticket.status = 'lost';
                     }
@@ -1528,14 +1678,14 @@
                 twoDigitWinningNumber: twoDigitWinningNumber,
                 totalPrize: totalPrize
             });
-            
+
             renderHistory();
             renderWinners();
             saveToStorage();
             updateBalance();
             renderTickets();
             renderResult(totalPrize);
-            
+
             // Send Telegram notification for winners
             if (newWinners.length > 0) {
                 sendTelegramNotification(newWinners);
@@ -1743,13 +1893,13 @@
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
             const sortedTimes = [...drawTimes].sort();
-            
+
             for (let time of sortedTimes) {
                 if (time > currentTime) {
                     return time;
                 }
             }
-            
+
             return sortedTimes[0];
         }
 
@@ -1768,7 +1918,7 @@
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
             console.log(`Checking draw time: currentTime=${currentTime}, lastDrawTime=${lastDrawTime}, drawTimes=${drawTimes}`);
-            
+
             if (drawTimes.includes(currentTime) && lastDrawTime !== currentTime) {
                 console.log(`Draw time reached! Drawing lottery...`);
                 lastDrawTime = currentTime;
@@ -1782,9 +1932,76 @@
             }, 1000);
         }
 
+        function openAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('active');
+        }
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeAdminLoginModal();
+            }
+        });
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.remove('active');
+            document.getElementById('adminUsername').value = '';
+            document.getElementById('adminPassword').value = '';
+        }
+
         function toggleAdmin() {
-            const adminSection = document.getElementById('adminSection');
-            adminSection.classList.toggle('active');
+            if (!isAdminLoggedIn) {
+                openAdminLoginModal();
+            } else {
+                const container = document.getElementById('adminPageContainer');
+                if (container.style.display === 'none') {
+                    switchView('admin');
+                } else {
+                    switchView('player');
+                }
+            }
+        }
+
+        function switchView(view) {
+            if (view === 'admin') {
+                if (!isAdminLoggedIn) {
+                    openAdminLoginModal();
+                    return;
+                }
+                // Hide player UI
+                document.getElementById('guestBanner').style.display = 'none';
+                document.getElementById('balanceBox').style.display = 'none';
+                document.getElementById('mainContent').style.display = 'none';
+                if (document.getElementById('historySection')) {
+                    document.getElementById('historySection').style.display = 'none';
+                }
+                // Show admin UI
+                document.getElementById('adminPageContainer').style.display = 'block';
+                document.getElementById('winnersSection').style.display = 'block';
+            } else {
+                // Show player UI
+                document.getElementById('adminPageContainer').style.display = 'none';
+                if (user) {
+                    document.getElementById('guestBanner').style.display = 'none';
+                    document.getElementById('balanceBox').style.display = 'block';
+                    document.getElementById('mainContent').style.display = 'grid';
+                } else {
+                    document.getElementById('guestBanner').style.display = 'block';
+                    document.getElementById('balanceBox').style.display = 'none';
+                    document.getElementById('mainContent').style.display = 'none';
+                }
+            }
+        }
+
+        function updateAdminBadge() {
+            if (isAdminLoggedIn) {
+                document.getElementById('adminArea').innerHTML = `
+                    <div class="user-info">
+                        <button type="button" class="admin-btn" onclick="switchView('admin')" style="background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; padding: 6px 12px; cursor: pointer;">🔐 แผงแอดมิน</button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('adminArea').innerHTML = '';
+            }
         }
 
         function toggleAutoDraw() {
@@ -1807,14 +2024,13 @@
 
             if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
                 isAdminLoggedIn = true;
-                document.getElementById('loginForm').style.display = 'none';
-                document.getElementById('adminControls').style.display = 'block';
-                document.getElementById('drawBtn').style.display = 'block';
-                document.getElementById('winnersSection').style.display = 'block';
+                closeAdminLoginModal();
+
                 // Load saved admin settings
                 document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
+
                 // Set auto-draw button state
                 const autoDrawBtn = document.getElementById('autoDrawBtn');
                 if (autoDrawEnabled) {
@@ -1824,21 +2040,12 @@
                     autoDrawBtn.innerHTML = '🔴 ปิด';
                     autoDrawBtn.style.background = '#e74c3c';
                 }
+
                 renderDrawTimes();
                 renderWinners();
-                if (user) {
-                    updateUserArea();
-                } else {
-                    document.getElementById('adminArea').innerHTML = `
-                        <div class="user-info">
-                            <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
-                                🔐 แอดมิน
-                            </div>
-                            <button class="admin-btn" onclick="adminLogout()">🚪</button>
-                        </div>
-                    `;
-                }
+                updateAdminBadge();
                 loadAdminMembersDropdown();
+                switchView('admin');
             } else {
                 showInfoModal('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
             }
@@ -1848,7 +2055,7 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = function(e) {
+                reader.onload = function (e) {
                     adminTrueMoneyQR = e.target.result;
                     showInfoModal('อัพโหลด QR Code สำเร็จ! 📸', '✅');
                 };
@@ -1861,7 +2068,7 @@
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '⏳ กำลังบันทึก...';
-            
+
             adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
             telegramBotToken = document.getElementById('telegramBotTokenInput').value;
             telegramChatId = document.getElementById('telegramChatIdInput').value;
@@ -1869,18 +2076,18 @@
             try {
                 await MemberAPI.call('setAdminLink', { link: adminTrueMoneyLink });
             } catch (e) { /* optional sync */ }
-            
+
             btn.disabled = false;
             btn.innerHTML = originalText;
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
         }
-        
+
         async function loadAdminMembersDropdown() {
             const selectEl = document.getElementById('adminSelectMember');
             if (!selectEl) return;
-            
+
             selectEl.innerHTML = '<option value="">-- กำลังโหลดรายชื่อ... --</option>';
-            
+
             try {
                 const result = await MemberAPI.getAllMembers();
                 if (result.success && result.members) {
@@ -1893,8 +2100,6 @@
                     });
                 } else {
                     const errorMsg = result.message || 'Unknown Error';
-                    selectEl.innerHTML = `-- โหลดรายชื่อล้มเหลว (${errorMsg}) --`;
-                    // Let's create an option element properly
                     selectEl.innerHTML = `<option value="">-- โหลดรายชื่อล้มเหลว (${errorMsg}) --</option>`;
                 }
             } catch (e) {
@@ -1905,51 +2110,40 @@
 
         async function adminAddMoney() {
             if (!isAdminLoggedIn) return;
-            
+
             const targetUserId = document.getElementById('adminSelectMember').value;
             if (!targetUserId) {
                 showInfoModal('กรุณาเลือก ID สมาชิกที่ต้องการเพิ่มเงิน!', '❌', 'ข้อผิดพลาด');
                 return;
             }
-            
+
             const amount = parseInt(document.getElementById('adminAddMoney').value);
             if (isNaN(amount) || amount < 10) {
                 showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง (ไม่น้อยกว่า 10)!', '❌', 'ข้อผิดพลาด');
                 return;
             }
-            
+
             const result = await MemberAPI.adminUpdateBalance(targetUserId, amount);
             if (result.success) {
                 saveToStorage();
                 showInfoModal(`เพิ่มเงินให้คุณ ${targetUserId} สำเร็จ! +${amount} บาท 🎉`, '✅');
-                
-                // หากผู้เล่นปัจจุบันที่เข้าระบบอยู่คือคนที่ได้เงิน ให้ทำการอัปเดตบาลานซ์ในเพจด้วย
+
                 if (user && user.id === targetUserId) {
                     balance = result.balance;
                     updateBalance();
                 }
-                
-                // โหลดรายชื่อใหม่เพื่ออัปเดตบาลานซ์ใน Dropdown
+
                 loadAdminMembersDropdown();
             } else {
                 showInfoModal(result.message || 'เพิ่มเงินไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
             }
             document.getElementById('adminAddMoney').value = '';
         }
-        
+
         function adminLogout() {
             isAdminLoggedIn = false;
-            document.getElementById('loginForm').style.display = 'block';
-            document.getElementById('adminControls').style.display = 'none';
-            document.getElementById('drawBtn').style.display = 'none';
-            document.getElementById('winnersSection').style.display = 'none';
-            document.getElementById('adminUsername').value = '';
-            document.getElementById('adminPassword').value = '';
-            if (user) {
-                updateUserArea();
-            } else {
-                document.getElementById('adminArea').innerHTML = '';
-            }
+            updateAdminBadge();
+            switchView('player');
         }
 
         function addDrawTime() {
@@ -1982,7 +2176,7 @@
             drawTimes.sort();
             container.innerHTML = drawTimes.map(time => `
                 <div class="draw-time-tag">
-                    ${time.substring(0,2)}:${time.substring(2,4)}
+                    ${time.substring(0, 2)}:${time.substring(2, 4)}
                     <button onclick="removeDrawTime('${time}')">×</button>
                 </div>
             `).join('');
@@ -2016,7 +2210,7 @@
                 </div>
             `).join('');
         }
-        
+
         // Winners Management
         function renderWinners() {
             const container = document.getElementById('winnersList');
@@ -2049,7 +2243,7 @@
                 `).join('')}
             `;
         }
-        
+
         function deleteWinner(winnerId) {
             if (confirm('คุณต้องการลบข้อมูลผู้โชคดีคนนี้ใช่หรือไม่?')) {
                 winners = winners.filter(w => w.id != winnerId);
@@ -2058,7 +2252,7 @@
                 showInfoModal('ลบข้อมูลสำเร็จ! ✅', '✅');
             }
         }
-        
+
         function deleteAllWinners() {
             if (confirm('คุณต้องการลบข้อมูลผู้โชคดีทั้งหมดใช่หรือไม่?')) {
                 winners = [];
@@ -2067,7 +2261,7 @@
                 showInfoModal('ลบข้อมูลทั้งหมดสำเร็จ! ✅', '✅');
             }
         }
-        
+
         function markAsPaid(winnerId) {
             const winner = winners.find(w => w.id == winnerId);
             if (winner && !winner.paid) {
@@ -2083,7 +2277,7 @@
                 }
             }
         }
-        
+
         // Telegram Functions
         async function testTelegram() {
             if (!telegramBotToken || !telegramChatId) {
@@ -2112,7 +2306,7 @@
                 showInfoModal('เกิดข้อผิดพลาดในการส่งข้อความ!', '❌', 'ข้อผิดพลาด');
             }
         }
-        
+
         async function sendTelegramNotification(newWinners) {
             console.log('Sending Telegram notifications:', newWinners);
             if (!telegramBotToken || !telegramChatId) {
@@ -2154,7 +2348,7 @@
                 console.error('Telegram notification error:', error);
             }
         }
-        
+
         async function sendTelegramPayoutConfirm(winner) {
             console.log('Sending payout confirmation:', winner);
             if (!telegramBotToken || !telegramChatId) {
@@ -2178,4 +2372,5 @@
         }
     </script>
 </body>
+
 </html>

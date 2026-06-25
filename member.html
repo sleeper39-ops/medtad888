@@ -283,9 +283,6 @@
                 sessionToken = restored.sessionToken;
                 showDashboard(restored.balance);
                 startBalancePolling();
-                if (restored.offline) {
-                    showInfoModal('โหลดข้อมูลจากเซสชันที่บันทึกไว้ (ออฟไลน์)', '⚠️', 'แจ้งเตือน');
-                }
                 if (tab === 'deposit') showDeposit();
                 return;
             }
@@ -354,10 +351,9 @@
                 if (result.success) {
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
-                    MemberAPI.saveSession(currentUser, sessionToken);
+                    MemberAPI.saveSession(currentUser, sessionToken, 0);
                     showDashboard(0);
                     startBalancePolling();
-                    showSuccessModal('สมัครสมาชิกสำเร็จ! ยินดีต้อนรับ 🎉');
                 } else {
                     showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
                 }
@@ -383,12 +379,11 @@
                 if (result.success) {
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
-                    MemberAPI.saveSession(currentUser, sessionToken);
+                    MemberAPI.saveSession(currentUser, sessionToken, result.user.balance || 0);
                     document.getElementById('loginUserId').value = '';
                     document.getElementById('loginPassword').value = '';
                     showDashboard(result.user.balance || 0);
                     startBalancePolling();
-                    showSuccessModal('เข้าสู่ระบบสำเร็จ! 🎉');
                 } else {
                     showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
                 }
@@ -398,8 +393,6 @@
                 isLoggingIn = false;
             }
         }
-
-        async function sendResetCode() {
             const email = document.getElementById('forgotEmail').value.trim();
             if (!email) {
                 showInfoModal('กรุณากรอกอีเมล!', '❌', 'ข้อผิดพลาด');
@@ -490,22 +483,9 @@
         }
 
         function showInfoModal(message, icon = 'ℹ️', title = 'แจ้งเตือน') {
-            document.getElementById('infoModalButtons').innerHTML =
-                '<button class="login-btn purple" onclick="closeInfoModal()">ตกลง</button>';
             document.getElementById('infoModalMessage').textContent = message;
             document.getElementById('infoModalIcon').textContent = icon;
             document.getElementById('infoModalTitle').textContent = title;
-            document.getElementById('infoModal').classList.add('active');
-        }
-
-        function showSuccessModal(message) {
-            document.getElementById('infoModalButtons').innerHTML = `
-                <button class="login-btn purple" onclick="closeInfoModal()">อยู่หน้านี้</button>
-                <a href="index.html" class="login-btn green">🎫 ไปเล่นสลาก</a>
-            `;
-            document.getElementById('infoModalMessage').textContent = message;
-            document.getElementById('infoModalIcon').textContent = '✅';
-            document.getElementById('infoModalTitle').textContent = 'สำเร็จ';
             document.getElementById('infoModal').classList.add('active');
         }
 

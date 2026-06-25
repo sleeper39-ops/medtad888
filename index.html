@@ -1136,6 +1136,16 @@
             // Load cached drawTimes from localStorage first for instant display
             loadFromStorage();
 
+            // *** INSTANT UI: restore from cached session BEFORE any await ***
+            // This prevents flash of guest state when navigating from member.html
+            const cachedSession = MemberAPI.getSession();
+            if (cachedSession) {
+                user = MemberAPI.userFromSession(cachedSession);
+                sessionToken = cachedSession.sessionToken;
+                balance = cachedSession.balance || 0;
+                showLoggedInUI();
+            }
+
             // Show next draw time immediately (don't wait for Firebase)
             updateNextDrawDisplay();
             // Keep updating every 30 seconds

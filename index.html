@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medtad888</title>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -68,6 +67,46 @@
         .admin-btn:hover {
             background: white;
             color: #667eea;
+        }
+        .guest-banner {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .guest-banner p {
+            color: #666;
+            margin: 15px 0 20px;
+            font-size: 1.05rem;
+        }
+        .guest-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1rem;
+            margin: 5px;
+        }
+        .guest-btn:hover { opacity: 0.9; }
+        .guest-btn.outline {
+            background: white;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        .deposit-link-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #27ae60;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            margin-top: 10px;
         }
         .balance-box {
             background: white;
@@ -630,42 +669,25 @@
                 💬 เข้าร่วมกลุ่ม Line OpenChat
             </a>
             <div id="userArea">
-                <button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>
+                <a href="member.html" class="admin-btn" id="loginBtn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>
             </div>
             <div id="adminArea" style="margin-left: 10px;">
                 <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
             </div>
         </div>
 
-        <!-- Login Section -->
-        <div class="login-section" id="loginSection">
-            <div class="section-title">🔐 เข้าสู่ระบบ</div>
-            <div class="login-form">
-                <input type="text" class="login-input" id="userName" placeholder="ชื่อ" onkeypress="if(event.key === 'Enter') manualLogin()">
-                <input type="text" class="login-input" id="trueMoneyLink" placeholder="Link TrueMoney Wallet (https://truemoney.com/wallet/...)" onkeypress="if(event.key === 'Enter') manualLogin()">
-                <button class="login-btn" onclick="manualLogin()">เข้าสู่ระบบ</button>
-            </div>
-        </div>
-
-        <!-- Deposit Section -->
-        <div class="deposit-section" id="depositSection" style="display: none;">
-            <div class="section-title">💰 เติมเงิน</div>
-            <div class="qr-container">
-                <div id="qrcode"></div>
-                <div class="deposit-info">
-                    <div style="font-weight: bold; margin-bottom: 10px;">💳 TrueMoney Wallet</div>
-                    <div>Scan QR Code หรือคลิกที่ลิงก์เพื่อเติมเงิน</div>
-                </div>
-                <a id="trueMoneyDepositLink" href="https://truemoney.com" target="_blank" class="modal-btn modal-btn-confirm" style="margin-top: 15px; display: inline-block; text-decoration: none;">
-                    เปิด TrueMoney
-                </a>
-            </div>
+        <!-- Guest Banner -->
+        <div class="guest-banner" id="guestBanner">
+            <div class="section-title" style="border: none; padding: 0;">🎫 ยินดีต้อนรับ Medtad888</div>
+            <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกก่อนเล่น</p>
+            <a href="member.html" class="guest-btn">🔐 เข้าสู่ระบบ</a>
+            <a href="member.html?tab=register" class="guest-btn outline">📝 สมัครสมาชิก</a>
         </div>
         
         <div class="balance-box" id="balanceBox" style="display: none;">
             <div style="color: #666; margin-bottom: 5px;">เงินคงเหลือ</div>
             <div class="balance" id="balance">0</div>
-            <button class="history-btn" onclick="toggleDeposit()" style="margin-top: 10px;">💵 เติมเงิน</button>
+            <a href="member.html?tab=deposit" class="deposit-link-btn">💵 เติมเงิน</a>
         </div>
 
         <div class="main-content" id="mainContent" style="display: none;">
@@ -832,6 +854,8 @@
         </div>
     </div>
 
+    <script src="js/config.js"></script>
+    <script src="js/member-api.js"></script>
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -847,6 +871,9 @@
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
+
+        let sessionToken = null;
+        let balancePollInterval = null;
 
         // State
         let user = null;
@@ -880,30 +907,79 @@
         let telegramChatId = '';
 
         // Initialize
-        window.onload = function() {
-            // Clear any inline styles from modals
+        window.onload = async function() {
             const confirmModal = document.getElementById('confirmModal');
             const infoModal = document.getElementById('infoModal');
             if (confirmModal) confirmModal.removeAttribute('style');
             if (infoModal) infoModal.removeAttribute('style');
             
-            // Initialize user and admin areas
             document.getElementById('userArea').innerHTML = `
-                <button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>
+                <a href="member.html" class="admin-btn" id="loginBtn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>
             `;
             document.getElementById('adminArea').innerHTML = `
                 <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
             `;
             
-            loadAdminCredentials();
-            loadFromFirebase();
-            updateDepositDisplay();
+            await loadAdminCredentials();
+            await loadFromFirebase();
+            await restoreMemberSession();
             updateNumberInputs();
             updateNextDrawDisplay();
             renderHistory();
             renderWinners();
             startCheckTime();
         };
+
+        // ===== Member Session (ใช้ member.html + MemberAPI) =====
+        function clearMemberSession() {
+            MemberAPI.clearSession();
+            sessionToken = null;
+            if (balancePollInterval) {
+                clearInterval(balancePollInterval);
+                balancePollInterval = null;
+            }
+        }
+
+        async function restoreMemberSession() {
+            const restored = await MemberAPI.restore();
+            if (restored.success) {
+                sessionToken = restored.sessionToken;
+                user = restored.user;
+                balance = restored.balance;
+                showLoggedInUI();
+                startBalancePolling();
+            } else {
+                showGuestUI();
+            }
+        }
+
+        async function syncBalanceFromSheets() {
+            if (!user || !sessionToken) return;
+            try {
+                const bal = await MemberAPI.syncBalance(user.id, sessionToken);
+                if (bal !== null) {
+                    balance = bal;
+                    updateBalance();
+                }
+            } catch (e) {
+                console.warn('Balance sync failed:', e);
+            }
+        }
+
+        function startBalancePolling() {
+            if (balancePollInterval) clearInterval(balancePollInterval);
+            balancePollInterval = setInterval(syncBalanceFromSheets, 30000);
+        }
+
+        async function updateMemberBalance(amount) {
+            if (!user || !sessionToken) return { success: false };
+            const result = await MemberAPI.updateBalance(user.id, sessionToken, amount);
+            if (result.success) {
+                balance = result.balance;
+                updateBalance();
+            }
+            return result;
+        }
 
         // Firebase Functions
         async function loadAdminCredentials() {
@@ -918,9 +994,9 @@
         }
 
         async function loadFromFirebase() {
-            const userId = localStorage.getItem('lotteryUserId');
+            const memberSession = MemberAPI.getSession();
+            const userId = memberSession ? memberSession.userId : localStorage.getItem('lotteryUserId');
             
-            // Load global data
             const [globalSnapshot, userSnapshot] = await Promise.all([
                 database.ref('global').once('value'),
                 userId ? database.ref('users/' + userId).once('value') : null
@@ -935,6 +1011,13 @@
                 adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
                 telegramBotToken = globalData.telegramBotToken || '';
                 telegramChatId = globalData.telegramChatId || '';
+            }
+
+            if (memberSession) {
+                if (userSnapshot && userSnapshot.exists()) {
+                    tickets = userSnapshot.val().tickets || [];
+                }
+                return;
             }
 
             if (userSnapshot && userSnapshot.exists()) {
@@ -977,6 +1060,9 @@
                     balance,
                     tickets
                 }));
+                if (sessionToken) {
+                    MemberAPI.saveSession(user, sessionToken);
+                }
             }
 
             await Promise.all(promises);
@@ -993,68 +1079,28 @@
 
         // Login Functions
         function toggleLogin() {
-            const loginSection = document.getElementById('loginSection');
             if (user) {
                 if (confirm('ต้องการออกจากระบบ?')) {
                     user = null;
+                    clearMemberSession();
                     saveToStorage();
-                    document.getElementById('loginSection').style.display = 'block';
-                    document.getElementById('balanceBox').style.display = 'none';
-                    document.getElementById('mainContent').style.display = 'none';
-                    document.getElementById('depositSection').style.display = 'none';
-                    document.getElementById('userArea').innerHTML = '<button class="admin-btn" id="loginBtn" onclick="toggleLogin()">🔑 เข้าสู่ระบบ</button>';
-                    document.getElementById('adminArea').innerHTML = `
-                        <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
-                    `;
+                    showGuestUI();
                 }
             } else {
-                loginSection.style.display = loginSection.style.display === 'none' ? 'block' : 'none';
+                window.location.href = 'member.html';
             }
         }
 
-        function lineLogin() {
-            // Line OAuth flow
-            const lineProfile = {
-                userId: 'U' + Date.now(),
-                displayName: prompt('กรุณากรอกชื่อของคุณ:', 'ผู้เล่นใหม่') || 'ผู้เล่นใหม่',
-                trueMoneyLink: prompt('กรุณากรอก Link TrueMoney Wallet ของคุณ:', 'https://truemoney.com/wallet/xxx') || 'https://truemoney.com/wallet/user'
-            };
-            
-            user = {
-                id: lineProfile.userId,
-                name: lineProfile.displayName,
-                trueMoneyLink: lineProfile.trueMoneyLink,
-                avatar: '👤'
-            };
-            balance = 0;
-            saveToStorage();
-            showLoggedInUI();
-            showInfoModal(`สวัสดี ${user.name}! เข้าสู่ระบบสำเร็จ! 🎉`, '✅');
-        }
-
-        function manualLogin() {
-            const name = document.getElementById('userName').value;
-            const trueMoneyLink = document.getElementById('trueMoneyLink').value;
-
-            if (!name || !trueMoneyLink) {
-                showInfoModal('กรุณากรอกชื่อและ Link TrueMoney Wallet!', '❌', 'ข้อผิดพลาด');
-                return;
-            }
-
-            user = {
-                id: 'U' + Date.now(),
-                name: name,
-                trueMoneyLink: trueMoneyLink,
-                avatar: '👤'
-            };
-            balance = 0;
-            saveToStorage();
-            showLoggedInUI();
-            showInfoModal(`สวัสดี ${user.name}! เข้าสู่ระบบสำเร็จ! 🎉`, '✅');
+        function showGuestUI() {
+            document.getElementById('guestBanner').style.display = 'block';
+            document.getElementById('balanceBox').style.display = 'none';
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('userArea').innerHTML = '<a href="member.html" class="admin-btn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>';
+            document.getElementById('adminArea').innerHTML = '<button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>';
         }
 
         function showLoggedInUI() {
-            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('guestBanner').style.display = 'none';
             document.getElementById('balanceBox').style.display = 'block';
             document.getElementById('mainContent').style.display = 'grid';
             updateUserArea();
@@ -1067,6 +1113,7 @@
                 <div class="user-info">
                     <div class="user-avatar">👤</div>
                     <div class="user-name">${user.name}</div>
+                    <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
                     <button class="admin-btn" onclick="toggleLogin()">🚪</button>
                 </div>
             `;
@@ -1083,38 +1130,6 @@
                 document.getElementById('adminArea').innerHTML = `
                     <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
                 `;
-            }
-        }
-
-        // Deposit Functions
-        function toggleDeposit() {
-            const depositSection = document.getElementById('depositSection');
-            depositSection.style.display = depositSection.style.display === 'none' ? 'block' : 'none';
-            // Update QR and link when opening deposit section
-            updateDepositDisplay();
-        }
-
-        function updateDepositDisplay() {
-            // Update TrueMoney link
-            const trueMoneyLinkEl = document.getElementById('trueMoneyDepositLink');
-            if (trueMoneyLinkEl) trueMoneyLinkEl.href = adminTrueMoneyLink;
-            
-            // Update QR Code
-            if (adminTrueMoneyQR) {
-                document.getElementById('qrcode').innerHTML = `<img src="${adminTrueMoneyQR}" style="max-width: 200px; border-radius: 8px;">`;
-            } else {
-                // Generate default QR code
-                generateQRCode();
-            }
-        }
-
-        function generateQRCode() {
-            const qrContainer = document.getElementById('qrcode');
-            if (qrContainer) {
-                qrContainer.innerHTML = '';
-                QRCode.toCanvas(qrContainer, adminTrueMoneyLink, { width: 200 }, function(error) {
-                    if (error) console.error(error);
-                });
             }
         }
 
@@ -1194,11 +1209,15 @@
             confirmModalEl.classList.add('active');
         }
         
-        function confirmPurchase() {
+        async function confirmPurchase() {
             if (!pendingTicketData) return;
-            
-            balance -= pendingTicketData.amount;
-            updateBalance();
+
+            const result = await updateMemberBalance(-pendingTicketData.amount);
+            if (!result.success) {
+                showInfoModal(result.message || 'เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
+                closeModal();
+                return;
+            }
             
             const ticket = {
                 id: Date.now(),
@@ -1690,15 +1709,18 @@
             }
         }
 
-        function saveAdminSettings() {
+        async function saveAdminSettings() {
             adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
             telegramBotToken = document.getElementById('telegramBotTokenInput').value;
             telegramChatId = document.getElementById('telegramChatIdInput').value;
             saveToStorage();
+            try {
+                await MemberAPI.call('setAdminLink', { link: adminTrueMoneyLink });
+            } catch (e) { /* optional sync */ }
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
         }
         
-        function adminAddMoney() {
+        async function adminAddMoney() {
             if (!isAdminLoggedIn) return;
             if (!user) {
                 showInfoModal('ยังไม่มีผู้เล่นเข้าสู่ระบบ!', '❌', 'ข้อผิดพลาด');
@@ -1709,10 +1731,13 @@
                 showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง (ไม่น้อยกว่า 10)!', '❌', 'ข้อผิดพลาด');
                 return;
             }
-            balance += amount;
-            updateBalance();
-            saveToStorage();
-            showInfoModal('เพิ่มเงินสำเร็จ! +' + amount + ' บาท 🎉', '✅');
+            const result = await updateMemberBalance(amount);
+            if (result.success) {
+                saveToStorage();
+                showInfoModal('เพิ่มเงินสำเร็จ! +' + amount + ' บาท 🎉', '✅');
+            } else {
+                showInfoModal(result.message || 'เพิ่มเงินไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+            }
             document.getElementById('adminAddMoney').value = '';
         }
         

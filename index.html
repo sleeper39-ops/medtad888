@@ -2097,10 +2097,10 @@
                 const result = await MemberAPI.getAllMembers();
                 if (result.success && result.members) {
                     selectEl.innerHTML = '<option value="">-- เลือก ID สมาชิก --</option>';
-                    result.members.forEach(member => {
+                    result.members.forEach((member, index) => {
                         const opt = document.createElement('option');
                         opt.value = member.userId;
-                        opt.textContent = `${member.userId} (${member.email}) - ยอดเงิน: ${member.balance} บาท`;
+                        opt.textContent = `${index + 1}. ${member.userId} - ยอดเงิน: ${member.balance} บาท`;
                         selectEl.appendChild(opt);
                     });
                 } else {

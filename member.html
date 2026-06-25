@@ -185,8 +185,8 @@
 
             <div class="auth-panel active" id="panelLogin">
                 <form class="login-form" onsubmit="event.preventDefault(); memberLogin();">
-                    <input type="text" class="login-input" id="loginUserId" placeholder="ID สมาชิก">
-                    <input type="password" class="login-input" id="loginPassword" placeholder="รหัสผ่าน">
+                    <input type="text" class="login-input" id="loginUserId" placeholder="ID สมาชิก" autocomplete="username">
+                    <input type="password" class="login-input" id="loginPassword" placeholder="รหัสผ่าน" autocomplete="new-password" onfocus="this.value=''">
                     <button type="submit" class="login-btn">เข้าสู่ระบบ</button>
                     <div class="auth-link" onclick="switchAuthTab('forgot')">ลืมรหัสผ่าน?</div>
                 </form>
@@ -194,10 +194,10 @@
 
             <div class="auth-panel" id="panelRegister">
                 <form class="login-form" onsubmit="event.preventDefault(); memberRegister();">
-                    <input type="text" class="login-input" id="regUserId" placeholder="ID สมาชิก (อย่างน้อย 3 ตัวอักษร)">
-                    <input type="password" class="login-input" id="regPassword" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัวอักษร)">
-                    <input type="password" class="login-input" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน">
-                    <input type="email" class="login-input" id="regEmail" placeholder="อีเมล Gmail (สำหรับลืมรหัสผ่าน)">
+                    <input type="text" class="login-input" id="regUserId" placeholder="ID สมาชิก (อย่างน้อย 3 ตัวอักษร)" autocomplete="username">
+                    <input type="password" class="login-input" id="regPassword" placeholder="รหัสผ่าน (อย่างน้อย 4 ตัวอักษร)" autocomplete="new-password" onfocus="this.value=''">
+                    <input type="password" class="login-input" id="regPasswordConfirm" placeholder="ยืนยันรหัสผ่าน" autocomplete="new-password" onfocus="this.value=''">
+                    <input type="email" class="login-input" id="regEmail" placeholder="อีเมล Gmail (สำหรับลืมรหัสผ่าน)" autocomplete="email">
                     <input type="text" class="login-input" id="regTrueMoneyLink" placeholder="Link TrueMoney Wallet">
                     <button type="submit" class="login-btn green">สมัครสมาชิก</button>
                     <div class="auth-link" onclick="switchAuthTab('login')">มีบัญชีแล้ว? เข้าสู่ระบบ</div>
@@ -206,10 +206,10 @@
 
             <div class="auth-panel" id="panelForgot">
                 <div class="login-form" style="gap: 15px;">
-                    <input type="email" class="login-input" id="forgotEmail" placeholder="อีเมล Gmail ที่สมัครไว้">
+                    <input type="email" class="login-input" id="forgotEmail" placeholder="อีเมล Gmail ที่สมัครไว้" autocomplete="email">
                     <button type="button" class="login-btn" onclick="sendResetCode()">ส่งรหัสยืนยันไปอีเมล</button>
                     <input type="text" class="login-input" id="resetCode" placeholder="รหัสยืนยัน 6 หลัก (จากอีเมล)">
-                    <input type="password" class="login-input" id="newPassword" placeholder="รหัสผ่านใหม่">
+                    <input type="password" class="login-input" id="newPassword" placeholder="รหัสผ่านใหม่" autocomplete="new-password" onfocus="this.value=''">
                     <button type="button" class="login-btn orange" onclick="resetMemberPassword()">เปลี่ยนรหัสผ่าน</button>
                     <div class="auth-link" onclick="switchAuthTab('login')">← กลับไปเข้าสู่ระบบ</div>
                 </div>
@@ -296,6 +296,12 @@
         window.onload = async function() {
             const params = new URLSearchParams(window.location.search);
             const tab = params.get('tab');
+
+            // Load saved member ID
+            const savedMemberId = localStorage.getItem('savedMemberId');
+            if (savedMemberId) {
+                document.getElementById('loginUserId').value = savedMemberId;
+            }
 
             // Load admin settings immediately for deposit page (even without session)
             if (tab === 'deposit') {
@@ -501,7 +507,9 @@
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
                     MemberAPI.saveSession(currentUser, sessionToken, result.user.balance || 0);
-                    document.getElementById('loginUserId').value = '';
+                    // Save member ID to localStorage
+                    localStorage.setItem('savedMemberId', userId);
+                    // Don't clear userId - keep it remembered
                     document.getElementById('loginPassword').value = '';
                     // Redirect to index.html after successful login
                     window.location.href = 'index.html';

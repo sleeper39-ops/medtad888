@@ -110,5 +110,17 @@ const MemberAPI = {
 
     async updateBalance(userId, sessionToken, amount) {
         return this.call('updateBalance', { userId, sessionToken, amount });
+    },
+
+    async getAllMembers() {
+        return this.call('getAllMembers');
+    },
+
+    async adminUpdateBalance(userId, amount) {
+        return this.call('adminUpdateBalance', { userId, amount });
+    },
+
+    async changePassword(userId, sessionToken, oldPassword, newPassword) {
+        return this.call('changePassword', { userId, sessionToken, oldPassword, newPassword });
     }
 };

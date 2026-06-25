@@ -940,16 +940,6 @@
                         </div>
                         <button class="draw-btn" id="drawBtn" onclick="drawLottery()"
                             style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
-                        <div class="admin-control-group" style="margin-top: 15px;">
-                            <label>ลิงก์ TrueMoney:</label>
-                            <input type="text" id="adminTrueMoneyLink"
-                                placeholder="https://truemoney.com/wallet/...">
-                        </div>
-                        <div class="admin-control-group">
-                            <label>อัพโหลด QR Code TrueMoney:</label>
-                            <input type="file" id="adminTrueMoneyQR" accept="image/*"
-                                onchange="handleQRUpload(event)">
-                        </div>
                         <div class="admin-control-group">
                             <label>Telegram Bot Token:</label>
                             <input type="text" id="telegramBotTokenInput"
@@ -1143,16 +1133,22 @@
 
             document.getElementById('adminArea').innerHTML = '';
 
+            // Show next draw time immediately (don't wait for Firebase)
+            updateNextDrawDisplay();
+            // Keep updating every 30 seconds
+            setInterval(updateNextDrawDisplay, 30000);
+
             await restoreMemberSession();
             try {
                 await loadAdminCredentials();
                 await loadFromFirebase();
+                // Update again after Firebase loads (drawTimes may have changed)
+                updateNextDrawDisplay();
             } catch (e) {
                 console.warn('Firebase load failed:', e);
             }
             syncBalanceFromSheets();
             updateNumberInputs();
-            updateNextDrawDisplay();
             renderHistory();
             renderWinners();
             startCheckTime();
@@ -1996,7 +1992,7 @@
             if (isAdminLoggedIn) {
                 document.getElementById('adminArea').innerHTML = `
                     <div class="user-info">
-                        <button type="button" class="admin-btn" onclick="switchView('admin')" style="background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; padding: 6px 12px; cursor: pointer;">🔐 แผงแอดมิน</button>
+                        <button type="button" class="admin-btn" onclick="switchView('admin')" style="background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; padding: 6px 12px; cursor: pointer;">🔐 แอดมิน</button>
                     </div>
                 `;
             } else {
@@ -2027,7 +2023,6 @@
                 closeAdminLoginModal();
 
                 // Load saved admin settings
-                document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
 
@@ -2069,13 +2064,9 @@
             btn.disabled = true;
             btn.innerHTML = '⏳ กำลังบันทึก...';
 
-            adminTrueMoneyLink = document.getElementById('adminTrueMoneyLink').value;
             telegramBotToken = document.getElementById('telegramBotTokenInput').value;
             telegramChatId = document.getElementById('telegramChatIdInput').value;
             saveToStorage();
-            try {
-                await MemberAPI.call('setAdminLink', { link: adminTrueMoneyLink });
-            } catch (e) { /* optional sync */ }
 
             btn.disabled = false;
             btn.innerHTML = originalText;

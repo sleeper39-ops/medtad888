@@ -91,12 +91,9 @@ const MemberAPI = {
                     balance: result.user.balance || 0
                 };
             }
-            // If server says session invalid, clear it and return false
-            this.clearSession();
-            return { success: false };
+            return { success: false, reason: 'invalid_session' };
         } catch (e) {
             console.warn('getProfile failed (offline/error):', e);
-            // Return cached local session to avoid kicking user out on network failure
             return {
                 success: true,
                 user: this.userFromSession(session),

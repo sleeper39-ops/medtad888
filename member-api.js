@@ -1,6 +1,6 @@
 const MemberAPI = {
     async call(action, extraData = {}) {
-        if (!GAS_API_URL || GAS_API_URL === 'YOUR_GAS_WEB_APP_URL_HERE') {
+        if (!GAS_API_URL || GAS_API_URL === 'https://script.google.com/macros/s/AKfycbw0xjdROlMR5_Hydcc4fHqufVqMeGtRtbqwRMCZQ-qlwCmSLyTLAmkengO8_1YsnI0/exec') {
             throw new Error('กรุณาตั้งค่า GAS_API_URL ใน js/config.js ก่อน (Deploy Google Apps Script)');
         }
         const response = await fetch(GAS_API_URL, {

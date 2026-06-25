@@ -458,6 +458,47 @@
             padding: 0;
             line-height: 1;
         }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
         
         /* Custom Confirmation Modal */
         .modal-overlay {
@@ -666,10 +707,9 @@
         <div class="header">
             <h1 style="font-size: 1.8rem;">🎫 Medtad888</h1>
             <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default" target="_blank" style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
-                💬 เข้าร่วมกลุ่ม Line OpenChat
+                💬 Line OpenChat
             </a>
             <div id="userArea">
-                <a href="member.html" class="admin-btn" id="loginBtn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>
             </div>
             <div id="adminArea" style="margin-left: 10px;">
                 <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
@@ -778,6 +818,17 @@
                             <label>ตัวเลขที่ออก (2 หลัก):</label>
                             <input type="text" id="customWinningNumber2" maxlength="2" placeholder="12" oninput="this.value = this.value.replace(/[^0-9]/g, '');">
                         </div>
+                        <div class="admin-control-group" style="margin-top: 15px;">
+                            <label style="display: block; margin-bottom: 8px;">ออกผลสลากอัตโนมัติตามเวลา:</label>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span>ปิด</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="autoDrawToggle" onchange="toggleAutoDraw()">
+                                    <span class="slider"></span>
+                                </label>
+                                <span>เปิด</span>
+                            </div>
+                        </div>
                         <button class="draw-btn" id="drawBtn" onclick="drawLottery()" style="display: block; margin-top: 10px;">ทดสอบออกผลสลาก</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>ลิงก์ TrueMoney:</label>
@@ -854,8 +905,8 @@
         </div>
     </div>
 
-    <script src="js/config.js"></script>
-    <script src="js/member-api.js"></script>
+    <script src="config.js"></script>
+    <script src="member-api.js"></script>
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -886,6 +937,7 @@
         let winningFrontNumbers = []; // Array of front 3-digit numbers
         let winningBackNumbers = []; // Array of back 3-digit numbers
         let isAdminLoggedIn = false;
+        let autoDrawEnabled = false;
         let winHistory = [];
         let drawTimes = ['1200', '1300', '1400', '1500', '1600', '1700', '1800'];
         let checkTimeInterval = null;
@@ -913,16 +965,18 @@
             if (confirmModal) confirmModal.removeAttribute('style');
             if (infoModal) infoModal.removeAttribute('style');
             
-            document.getElementById('userArea').innerHTML = `
-                <a href="member.html" class="admin-btn" id="loginBtn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>
-            `;
             document.getElementById('adminArea').innerHTML = `
                 <button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>
             `;
             
-            await loadAdminCredentials();
-            await loadFromFirebase();
             await restoreMemberSession();
+            try {
+                await loadAdminCredentials();
+                await loadFromFirebase();
+            } catch (e) {
+                console.warn('Firebase load failed:', e);
+            }
+            syncBalanceFromSheets();
             updateNumberInputs();
             updateNextDrawDisplay();
             renderHistory();
@@ -941,15 +995,44 @@
         }
 
         async function restoreMemberSession() {
-            const restored = await MemberAPI.restore();
-            if (restored.success) {
-                sessionToken = restored.sessionToken;
-                user = restored.user;
-                balance = restored.balance;
-                showLoggedInUI();
-                startBalancePolling();
-            } else {
+            const session = MemberAPI.getSession();
+            if (!session) {
                 showGuestUI();
+                return;
+            }
+
+            sessionToken = session.sessionToken;
+            user = MemberAPI.userFromSession(session);
+            balance = session.balance || 0;
+            showLoggedInUI();
+            startBalancePolling();
+
+            try {
+                const restored = await MemberAPI.restore();
+                if (restored.success) {
+                    user = restored.user;
+                    sessionToken = restored.sessionToken;
+                    if (restored.balance != null) {
+                        balance = restored.balance;
+                        updateBalance();
+                    }
+                    if (sessionToken && user) {
+                        MemberAPI.saveSession(user, sessionToken, balance);
+                    }
+                } else {
+                    // Invalid session: log out completely
+                    user = null;
+                    balance = 0;
+                    tickets = [];
+                    clearMemberSession();
+                    localStorage.removeItem('lotteryUser');
+                    localStorage.removeItem('lotteryBalance');
+                    localStorage.removeItem('lotteryTickets');
+                    localStorage.removeItem('lotteryUserId');
+                    showGuestUI();
+                }
+            } catch (e) {
+                console.warn('Session refresh failed:', e);
             }
         }
 
@@ -1011,30 +1094,16 @@
                 adminTrueMoneyQR = globalData.adminTrueMoneyQR || '';
                 telegramBotToken = globalData.telegramBotToken || '';
                 telegramChatId = globalData.telegramChatId || '';
+                autoDrawEnabled = globalData.autoDrawEnabled || false;
             }
 
             if (memberSession) {
                 if (userSnapshot && userSnapshot.exists()) {
                     tickets = userSnapshot.val().tickets || [];
                 }
-                return;
-            }
-
-            if (userSnapshot && userSnapshot.exists()) {
-                const userData = userSnapshot.val();
-                user = userData.profile;
-                balance = userData.balance || 0;
-                tickets = userData.tickets || [];
-                showLoggedInUI();
             } else {
-                // Fallback to localStorage
-                const savedUser = localStorage.getItem('lotteryUser');
-                const savedBalance = localStorage.getItem('lotteryBalance');
-                const savedTickets = localStorage.getItem('lotteryTickets');
-                if (savedUser) user = JSON.parse(savedUser);
-                if (savedBalance) balance = parseInt(savedBalance);
-                if (savedTickets) tickets = JSON.parse(savedTickets);
-                if (user) showLoggedInUI();
+                // No valid memberSession: show guest UI
+                showGuestUI();
             }
         }
 
@@ -1049,7 +1118,8 @@
                 adminTrueMoneyLink,
                 adminTrueMoneyQR,
                 telegramBotToken,
-                telegramChatId
+                telegramChatId,
+                autoDrawEnabled
             }));
 
             // Save user data
@@ -1082,8 +1152,13 @@
             if (user) {
                 if (confirm('ต้องการออกจากระบบ?')) {
                     user = null;
+                    balance = 0;
+                    tickets = [];
                     clearMemberSession();
-                    saveToStorage();
+                    localStorage.removeItem('lotteryUser');
+                    localStorage.removeItem('lotteryBalance');
+                    localStorage.removeItem('lotteryTickets');
+                    localStorage.removeItem('lotteryUserId');
                     showGuestUI();
                 }
             } else {
@@ -1095,7 +1170,7 @@
             document.getElementById('guestBanner').style.display = 'block';
             document.getElementById('balanceBox').style.display = 'none';
             document.getElementById('mainContent').style.display = 'none';
-            document.getElementById('userArea').innerHTML = '<a href="member.html" class="admin-btn" style="text-decoration: none;">🔑 เข้าสู่ระบบ</a>';
+            document.getElementById('userArea').innerHTML = '';
             document.getElementById('adminArea').innerHTML = '<button class="admin-btn" onclick="toggleAdmin()">🔒 แอดมิน</button>';
         }
 
@@ -1114,7 +1189,7 @@
                     <div class="user-avatar">👤</div>
                     <div class="user-name">${user.name}</div>
                     <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
-                    <button class="admin-btn" onclick="toggleLogin()">🚪</button>
+                    <button class="admin-btn" onclick="toggleLogin()" style="background: #e74c3c;">ออกจากระบบ</button>
                 </div>
             `;
             if (isAdminLoggedIn) {
@@ -1123,7 +1198,7 @@
                         <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
                             🔐 แอดมิน
                         </div>
-                        <button class="admin-btn" onclick="adminLogout()">🚪</button>
+                        <button class="admin-btn" onclick="adminLogout()" style="background: #e74c3c;">ออกจากระบบ</button>
                     </div>
                 `;
             } else {
@@ -1644,6 +1719,7 @@
         }
 
         function checkDrawTime() {
+            if (!autoDrawEnabled) return;
             const now = new Date();
             const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
             
@@ -1664,6 +1740,12 @@
             adminSection.classList.toggle('active');
         }
 
+        function toggleAutoDraw() {
+            autoDrawEnabled = document.getElementById('autoDrawToggle').checked;
+            saveToFirebase();
+            showInfoModal(`ออกผลสลากอัตโนมัติ ${autoDrawEnabled ? 'เปิดแล้ว' : 'ปิดแล้ว'}`, autoDrawEnabled ? '✅' : '🔴', 'แจ้งเตือน');
+        }
+
         function adminLogin() {
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
@@ -1678,6 +1760,7 @@
                 document.getElementById('adminTrueMoneyLink').value = adminTrueMoneyLink;
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
+                document.getElementById('autoDrawToggle').checked = autoDrawEnabled;
                 renderDrawTimes();
                 renderWinners();
                 if (user) {

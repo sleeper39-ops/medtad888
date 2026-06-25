@@ -259,12 +259,13 @@
                 <!-- TrueMoney Gift Voucher section -->
                 <div style="margin-top: 25px; border-top: 1px dashed #ddd; padding-top: 20px; text-align: left; width: 100%;">
                     <div style="font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-align: center;">🎁 เติมเงินด้วยซองของขวัญ (TrueMoney Gift Voucher)</div>
-                    <div style="font-size: 0.85rem; color: #27ae60; background: #e8f5e9; border-radius: 8px; padding: 10px; margin-bottom: 12px; text-align: center;">
-                        ✅ ระบบจะรับซองและเติมเงินเข้าระบบให้อัตโนมัติทันที!
+                    <div style="font-size: 0.85rem; color: #2980b9; background: #eaf2f8; border-radius: 8px; padding: 10px; margin-bottom: 12px; text-align: center;">
+                        📢 เมื่อส่งซองแล้ว แอดมินจะกดรับและเติมเงินเข้าระบบให้โดยเร็วที่สุด!
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         <input type="text" class="login-input" id="giftVoucherLink" placeholder="https://gift.truemoney.com/campaign/?v=..." style="margin-top: 0;">
-                        <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">🤖 รับซองและเติมเงินอัตโนมัติ</button>
+                        <input type="number" class="login-input" id="giftVoucherAmount" placeholder="ระบุจำนวนเงินในซอง (บาท)" style="margin-top: 0;" min="1">
+                        <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">✉️ ส่งข้อมูลซองของขวัญ</button>
                     </div>
                 </div>
 
@@ -731,7 +732,13 @@
                 return;
             }
 
+            const amountStr = document.getElementById('giftVoucherAmount').value.trim();
             const link = document.getElementById('giftVoucherLink').value.trim();
+
+            if (!amountStr || isNaN(amountStr) || parseFloat(amountStr) <= 0) {
+                showInfoModal('กรุณากรอกจำนวนเงินในซองให้ถูกต้อง!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
 
             if (!link) {
                 showInfoModal('กรุณากรอกลิงก์ซองของขวัญทรูมันนี่!', '❌', 'ข้อผิดพลาด');
@@ -747,7 +754,7 @@
             const btn = document.querySelector('#depositCard button[onclick="submitGiftVoucher()"]');
             const originalText = btn.innerHTML;
             btn.disabled = true;
-            btn.innerHTML = '⏳ กำลังรับซองอัตโนมัติ...';
+            btn.innerHTML = '⏳ กำลังส่งข้อมูลซอง...';
 
             try {
                 // Ensure we have loaded Telegram settings
@@ -765,25 +772,22 @@
                     currentUser.id,
                     sessionToken,
                     link,
+                    parseFloat(amountStr),
                     telegramBotToken,
                     telegramChatId
                 );
 
                 if (result.success) {
-                    const newBalance = result.balance || 0;
-                    const amount = result.amount || 0;
-                    // Update displayed balance
-                    document.getElementById('dashBalance').textContent = newBalance.toLocaleString();
-                    balance = newBalance;
                     showInfoModal(
-                        `รับซองทรูมันนี่สำเร็จ! 🎉\nได้รับเงิน: ${amount.toLocaleString()} บาท\nยอดเงินใหม่: ${newBalance.toLocaleString()} บาท`,
-                        '✅', 'เติมเงินสำเร็จ'
+                        result.message || 'ส่งซองของขวัญสำเร็จ! แอดมินกำลังตรวจสอบและเติมเงินให้ระบบของคุณ',
+                        '✅', 'ส่งซองสำเร็จ'
                     );
                     // Reset input
                     document.getElementById('giftVoucherLink').value = '';
+                    document.getElementById('giftVoucherAmount').value = '';
                 } else {
                     showInfoModal(
-                        (result.message || 'รับซองไม่สำเร็จ') + '\n\nหากซองยังไม่ถูกใช้ กรุณาลองใหม่อีกครั้ง หรือติดต่อแอดมิน',
+                        (result.message || 'ส่งซองไม่สำเร็จ') + '\n\nหากซองยังไม่ถูกใช้ กรุณาลองใหม่อีกครั้ง หรือติดต่อแอดมิน',
                         '❌', 'ไม่สำเร็จ'
                     );
                 }

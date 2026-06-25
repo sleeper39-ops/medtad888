@@ -95,11 +95,16 @@ const MemberAPI = {
             this.clearSession();
             return { success: false };
         } catch (e) {
-            console.warn('getProfile failed:', e);
+            console.warn('getProfile failed (offline/error):', e);
+            // Return cached local session to avoid kicking user out on network failure
+            return {
+                success: true,
+                user: this.userFromSession(session),
+                sessionToken: session.sessionToken,
+                balance: session.balance || 0,
+                isOffline: true
+            };
         }
-
-        // If offline or error, still return false to force login
-        return { success: false };
     },
 
     async syncBalance(userId, sessionToken) {

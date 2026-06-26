@@ -278,9 +278,9 @@
             <div class="section-title">💸 ถอนเงิน</div>
             <div style="padding: 20px; text-align: left; width: 100%;">
                 <div style="font-weight: bold; margin-bottom: 8px; color: #2c3e50; text-align: center;">ถอนเงินเข้าบัญชีทรูมันนี่วอลเล็ท</div>
-                <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px; text-align: center;">ขั้นต่ำในการถอน 50 บาท (บัญชี: <span id="withdrawAccountDisplay" style="color: #e67e22; font-weight: bold;">-</span>)</div>
+                <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px; text-align: center;">ขั้นต่ำในการถอน 10 บาท (บัญชี: <span id="withdrawAccountDisplay" style="color: #e67e22; font-weight: bold;">-</span>)</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <input type="number" class="login-input" id="withdrawAmount" placeholder="จำนวนเงินที่ต้องการถอน (บาท)" min="50" style="margin-top: 0;">
+                    <input type="number" class="login-input" id="withdrawAmount" placeholder="จำนวนเงินที่ต้องการถอน (บาท)" min="10" style="margin-top: 0;">
                     <button type="button" class="login-btn orange" onclick="submitWithdrawal()" style="margin-top: 5px;">📤 ยืนยันการถอนเงิน</button>
                 </div>
             </div>
@@ -549,8 +549,8 @@
                     currentUser = MemberAPI.userFromApi(result.user);
                     sessionToken = result.sessionToken;
                     MemberAPI.saveSession(currentUser, sessionToken, 0);
-                    showDashboard(0);
-                    startBalancePolling();
+                    // Redirect to index.html after successful registration
+                    window.location.href = 'index.html';
                 } else {
                     showInfoModal(result.message, '❌', 'ข้อผิดพลาด');
                 }
@@ -822,8 +822,8 @@
             const amountInput = document.getElementById('withdrawAmount').value;
             const amount = parseFloat(amountInput);
 
-            if (isNaN(amount) || amount < 50) {
-                showInfoModal('กรุณากรอกจำนวนเงินขั้นต่ำ 50 บาท', '❌', 'ข้อผิดพลาด');
+            if (isNaN(amount) || amount < 10) {
+                showInfoModal('กรุณากรอกจำนวนเงินขั้นต่ำ 10 บาท', '❌', 'ข้อผิดพลาด');
                 return;
             }
 

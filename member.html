@@ -256,7 +256,7 @@
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" class="login-input" id="giftVoucherLink" placeholder="https://gift.truemoney.com/campaign/?v=..." style="margin-top: 0;">
                     <input type="number" class="login-input" id="giftVoucherAmount" placeholder="จำนวนเงินในซอง (บาท)" min="10" style="margin-top: 0;">
-                    <button type="button" class="login-btn green" onclick="submitGiftVoucher()" style="margin-top: 5px;">📤 ส่งซองทรูมันนี่</button>
+                    <button type="button" class="login-btn green" onclick="confirmGiftVoucher()" style="margin-top: 5px;">📤 ส่งซองทรูมันนี่</button>
                 </div>
             </div>
 
@@ -277,6 +277,18 @@
             <div style="color: #666; margin-bottom: 20px;" id="infoModalMessage">-</div>
             <div class="modal-btn-row" id="infoModalButtons">
                 <button class="login-btn purple" onclick="closeInfoModal()">ตกลง</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="confirmModal" onclick="if(event.target===this)closeConfirmModal()">
+        <div class="modal-content">
+            <div class="info-modal-icon">⚠️</div>
+            <div class="modal-title">ตรวจสอบความถูกต้อง</div>
+            <div style="color: #666; margin-bottom: 20px; line-height: 1.5;" id="confirmModalMessage">-</div>
+            <div class="modal-btn-row">
+                <button class="login-btn" style="background: #95a5a6;" onclick="closeConfirmModal()">ยกเลิก</button>
+                <button class="login-btn green" onclick="proceedSubmitGiftVoucher()">ยืนยันการส่ง</button>
             </div>
         </div>
     </div>
@@ -670,7 +682,7 @@
             // Deposit form is ready immediately - no async loading needed
         }
 
-        async function submitGiftVoucher() {
+        function confirmGiftVoucher() {
             if (!currentUser) {
                 showInfoModal('กรุณาเข้าสู่ระบบก่อนส่งซองของขวัญ! 🔐', '❌', 'ข้อผิดพลาด');
                 return;
@@ -695,7 +707,22 @@
                 return;
             }
 
-            const btn = document.querySelector('#depositCard button[onclick="submitGiftVoucher()"]');
+            // Show confirmation modal
+            const msgHtml = `คุณได้ระบุจำนวนเงินในซองคือ <b>${amount.toLocaleString()} บาท</b><br><br>กรุณาตรวจสอบให้แน่ใจว่า <b>ตรงกับจำนวนเงินในลิงก์ซองของขวัญจริงๆ</b><br>(หากจำนวนเงินไม่ตรง แอดมินจะปฏิเสธรายการนี้และต้องทำรายการใหม่)`;
+            document.getElementById('confirmModalMessage').innerHTML = msgHtml;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        async function proceedSubmitGiftVoucher() {
+            closeConfirmModal();
+            const link = document.getElementById('giftVoucherLink').value.trim();
+            const amount = parseFloat(document.getElementById('giftVoucherAmount').value);
+
+            const btn = document.querySelector('#depositCard button[onclick="confirmGiftVoucher()"]');
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '⏳ กำลังส่งข้อมูล...';

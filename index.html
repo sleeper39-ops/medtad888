@@ -630,6 +630,11 @@
             }
         }
 
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .modal-title {
             font-size: 1.5rem;
             color: #2c3e50;
@@ -910,28 +915,46 @@
                     <div class="admin-controls">
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว):</label>
-                            <input type="text" id="customFrontNumber1" maxlength="3" placeholder="123"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-                        </div>
-                        <div class="admin-control-group">
-                            <label>ตัวเลขที่ออก (เลขหน้า 3 ตัว อีกช่อง):</label>
-                            <input type="text" id="customFrontNumber2" maxlength="3" placeholder="456"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="customFrontNumber1" maxlength="3" placeholder="รางวัลที่ 1"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="flex: 1;">
+                                <input type="text" id="customFrontNumber2" maxlength="3" placeholder="รางวัลที่ 2"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="flex: 1;">
+                            </div>
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว):</label>
-                            <input type="text" id="customBackNumber1" maxlength="3" placeholder="789"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
-                        </div>
-                        <div class="admin-control-group">
-                            <label>ตัวเลขที่ออก (เลขท้าย 3 ตัว อีกช่อง):</label>
-                            <input type="text" id="customBackNumber2" maxlength="3" placeholder="012"
-                                oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="customBackNumber1" maxlength="3" placeholder="รางวัลที่ 1"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="flex: 1;">
+                                <input type="text" id="customBackNumber2" maxlength="3" placeholder="รางวัลที่ 2"
+                                    oninput="this.value = this.value.replace(/[^0-9]/g, '');" style="flex: 1;">
+                            </div>
                         </div>
                         <div class="admin-control-group">
                             <label>ตัวเลขที่ออก (2 หลัก):</label>
                             <input type="text" id="customWinningNumber2" maxlength="2" placeholder="12"
                                 oninput="this.value = this.value.replace(/[^0-9]/g, '');">
+                        </div>
+                        <div class="admin-control-group" style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 15px;">
+                            <label style="display: block; margin-bottom: 8px;">ตั้งค่าอัตราจ่าย (ตัวคูณ):</label>
+                            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 4px;">2 ตัวล่าง</label>
+                                    <input type="number" id="multiplierBottom2" placeholder="25" min="1"
+                                        style="padding: 6px; width: 100%; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 4px;">3 ตัวหน้า</label>
+                                    <input type="number" id="multiplierTop3" placeholder="50" min="1"
+                                        style="padding: 6px; width: 100%; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                </div>
+                                <div style="flex: 1;">
+                                    <label style="font-size: 0.75rem; color: #666; display: block; margin-bottom: 4px;">3 ตัวท้าย</label>
+                                    <input type="number" id="multiplierBottom3" placeholder="50" min="1"
+                                        style="padding: 6px; width: 100%; border: 1px solid #ddd; border-radius: 6px; font-size: 14px;">
+                                </div>
+                            </div>
                         </div>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label style="display: block; margin-bottom: 8px;">ออกผลสลากอัตโนมัติตามเวลา:</label>
@@ -959,10 +982,12 @@
                                     <option value="">-- เลือก ID สมาชิก --</option>
                                 </select>
                                 <div style="display: flex; gap: 10px;">
-                                    <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="10"
+                                    <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="1"
                                         style="flex: 1;">
-                                    <button onclick="adminAddMoney()" class="login-btn"
+                                    <button id="adminAddMoneyBtn" onclick="adminAddMoney()" class="login-btn"
                                         style="background: #27ae60; white-space: nowrap; margin-top: 0; min-width: 90px;">เพิ่มเงิน</button>
+                                    <button id="adminDeductMoneyBtn" onclick="adminDeductMoney()" class="login-btn"
+                                        style="background: #e74c3c; white-space: nowrap; margin-top: 0; min-width: 90px;">หักเงิน</button>
                                 </div>
                             </div>
                         </div>
@@ -1091,6 +1116,7 @@
 
         let sessionToken = null;
         let balancePollInterval = null;
+        let realtimeListeners = []; // Firebase realtime listeners
 
         // State
         let user = null;
@@ -1114,7 +1140,7 @@
         let currentDrawId = null;
 
         // Constants
-        const betTypes = {
+        let betTypes = {
             bottom2: { multiplier: 25, digits: 2, position: 'bottom', label: '2 ตัวล่าง' },
             top3: { multiplier: 50, digits: 3, position: 'top', label: '3 ตัวหน้า' },
             bottom3: { multiplier: 50, digits: 3, position: 'bottom', label: '3 ตัวท้าย' }
@@ -1144,6 +1170,7 @@
                 sessionToken = cachedSession.sessionToken;
                 balance = cachedSession.balance || 0;
                 showLoggedInUI();
+                startRealtimeSync(); // start listening immediately from cache
             }
 
             // Show next draw time immediately (don't wait for Firebase)
@@ -1157,6 +1184,8 @@
                 await loadFromFirebase();
                 // Update again after Firebase loads (drawTimes may have changed)
                 updateNextDrawDisplay();
+                renderTickets(); // Re-render with latest Firebase tickets
+                renderLastResult(); // แสดงผลสลากล่าสุดค้างไว้
             } catch (e) {
                 console.warn('Firebase load failed:', e);
             }
@@ -1166,6 +1195,7 @@
             renderWinners();
             startCheckTime();
         };
+
 
         // ===== Member Session (ใช้ member.html + MemberAPI) =====
         function clearMemberSession() {
@@ -1212,6 +1242,7 @@
                     }
                     if (sessionToken && user) {
                         MemberAPI.saveSession(user, sessionToken, balance);
+                        startRealtimeSync(); // start realtime after session confirmed
                     }
                 } else if (restored.reason === 'invalid_session') {
                     // Server explicitly rejected the session — logout
@@ -1236,9 +1267,12 @@
             if (!user || !sessionToken) return;
             try {
                 const bal = await MemberAPI.syncBalance(user.id, sessionToken);
-                if (bal !== null) {
+                if (bal !== null && bal !== balance) {
                     balance = bal;
                     updateBalance();
+                    if (sessionToken) MemberAPI.saveSession(user, sessionToken, balance);
+                    // Push updated balance to Firebase so realtime listener picks it up
+                    try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
                 }
             } catch (e) {
                 console.warn('Balance sync failed:', e);
@@ -1260,7 +1294,44 @@
             return result;
         }
 
-        // Firebase Functions
+        // ===== Realtime Firebase Sync =====
+        function startRealtimeSync() {
+            if (!user) return;
+            stopRealtimeSync(); // clear old listeners first
+
+            // 1. Realtime listener for user tickets
+            const ticketRef = database.ref('users/' + user.id + '/tickets');
+            const ticketListener = ticketRef.on('value', (snap) => {
+                const newTickets = snap.exists() ? snap.val() : [];
+                if (JSON.stringify(newTickets) !== JSON.stringify(tickets)) {
+                    tickets = newTickets;
+                    renderTickets();
+                }
+            });
+            realtimeListeners.push({ ref: ticketRef, listener: ticketListener, event: 'value' });
+
+            // 2. Realtime listener for balance in Firebase (synced from Sheets)
+            const balRef = database.ref('users/' + user.id + '/balance');
+            const balListener = balRef.on('value', (snap) => {
+                if (snap.exists()) {
+                    const fbBal = Number(snap.val()) || 0;
+                    if (fbBal !== balance) {
+                        balance = fbBal;
+                        updateBalance();
+                        if (sessionToken) MemberAPI.saveSession(user, sessionToken, balance);
+                    }
+                }
+            });
+            realtimeListeners.push({ ref: balRef, listener: balListener, event: 'value' });
+        }
+
+        function stopRealtimeSync() {
+            realtimeListeners.forEach(({ ref, listener, event }) => {
+                try { ref.off(event, listener); } catch (e) {}
+            });
+            realtimeListeners = [];
+        }
+
         async function loadAdminCredentials() {
             const snapshot = await database.ref('admin/credentials').once('value');
             if (snapshot.exists()) {
@@ -1291,6 +1362,27 @@
                 telegramBotToken = globalData.telegramBotToken || '';
                 telegramChatId = globalData.telegramChatId || '';
                 autoDrawEnabled = globalData.autoDrawEnabled || false;
+
+                if (globalData.betMultipliers) {
+                    betTypes.bottom2.multiplier = globalData.betMultipliers.bottom2 || 25;
+                    betTypes.top3.multiplier = globalData.betMultipliers.top3 || 50;
+                    betTypes.bottom3.multiplier = globalData.betMultipliers.bottom3 || 50;
+                }
+                
+                // อัพเดต input field
+                if (document.getElementById('multiplierBottom2')) {
+                    document.getElementById('multiplierBottom2').value = betTypes.bottom2.multiplier;
+                    document.getElementById('multiplierTop3').value = betTypes.top3.multiplier;
+                    document.getElementById('multiplierBottom3').value = betTypes.bottom3.multiplier;
+                }
+                updateBetMultipliersUI();
+
+                // โหลดผลสลากล่าสุดมาเก็บไว้
+                if (globalData.lastResult) {
+                    winningFrontNumbers = globalData.lastResult.winningFrontNumbers || [];
+                    winningBackNumbers = globalData.lastResult.winningBackNumbers || [];
+                    twoDigitWinningNumber = globalData.lastResult.twoDigitWinningNumber || '';
+                }
             }
 
             if (memberSession) {
@@ -1315,7 +1407,24 @@
                 adminTrueMoneyQR,
                 telegramBotToken,
                 telegramChatId,
-                autoDrawEnabled
+                autoDrawEnabled,
+                betMultipliers: {
+                    bottom2: betTypes.bottom2.multiplier,
+                    top3: betTypes.top3.multiplier,
+                    bottom3: betTypes.bottom3.multiplier
+                },
+                // บันทึกผลสลากล่าสุดแยก เพื่อโหลดมาแสดงได้ทันที
+                lastResult: (winningFrontNumbers.length > 0 || winningBackNumbers.length > 0) ? {
+                    winningFrontNumbers,
+                    winningBackNumbers,
+                    twoDigitWinningNumber,
+                    drawId: currentDrawId
+                } : (winHistory.length > 0 ? {
+                    winningFrontNumbers: winHistory[0].winningFrontNumbers || [],
+                    winningBackNumbers: winHistory[0].winningBackNumbers || [],
+                    twoDigitWinningNumber: winHistory[0].twoDigitWinningNumber || '',
+                    drawId: null
+                } : null)
             }));
 
             // Save user data
@@ -1379,6 +1488,7 @@
             balance = 0;
             tickets = [];
             sessionToken = null;
+            stopRealtimeSync();
             if (balancePollInterval) {
                 clearInterval(balancePollInterval);
                 balancePollInterval = null;
@@ -1438,6 +1548,18 @@
             element.classList.add('selected');
             selectedBetType = element.dataset.type;
             updateNumberInputs();
+        }
+
+        function updateBetMultipliersUI() {
+            // อัพเดตตัวหนังสือ x25, x50 บนหน้าเว็บ
+            const options = document.querySelectorAll('.bet-option');
+            options.forEach(opt => {
+                const type = opt.dataset.type;
+                if (betTypes[type]) {
+                    const multDiv = opt.querySelector('.bet-multiplier');
+                    if (multDiv) multDiv.textContent = 'x' + betTypes[type].multiplier;
+                }
+            });
         }
 
         function updateNumberInputs() {
@@ -1503,7 +1625,23 @@
         async function confirmPurchase() {
             if (!pendingTicketData) return;
 
+            const confirmBtn = document.getElementById('modalConfirm');
+            const cancelBtn = document.getElementById('modalCancel');
+
+            // Show loading state
+            confirmBtn.disabled = true;
+            cancelBtn.disabled = true;
+            confirmBtn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">⏳</span> กำลังทำรายการ...';
+            confirmBtn.style.opacity = '0.8';
+
             const result = await updateMemberBalance(-pendingTicketData.amount);
+
+            // Restore button state
+            confirmBtn.disabled = false;
+            cancelBtn.disabled = false;
+            confirmBtn.innerHTML = 'ยืนยัน';
+            confirmBtn.style.opacity = '';
+
             if (!result.success) {
                 showInfoModal(result.message || 'เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
                 closeModal();
@@ -1533,6 +1671,7 @@
             document.getElementById('num1').focus();
 
             closeModal();
+            showInfoModal('ซื้อสลากสำเร็จ! 🎉', '✅', 'สำเร็จ');
         }
 
         function closeModal() {
@@ -1759,6 +1898,12 @@
             return false;
         }
 
+        // แสดงผลสลากล่าสุด (ไม่คำนวณรางวัลสรุป, ใช้สำหรับแสดงเพียงตัวเลข)
+        function renderLastResult() {
+            if (winningFrontNumbers.length === 0 && winningBackNumbers.length === 0) return;
+            renderResult(null);
+        }
+
         function renderResult(totalPrize) {
             const container = document.getElementById('resultDisplay');
             const userWonTickets = tickets.filter(t => t.userId === user?.id && t.status === 'won' && t.drawId === currentDrawId);
@@ -1766,6 +1911,9 @@
             const userTotalPrize = userWonTickets.reduce((sum, t) => sum + (t.prize || 0), 0);
             console.log('renderResult - userTotalPrize:', userTotalPrize);
             const wonAny = userTotalPrize > 0;
+
+            // ถ้าเรียกด้วย null = แค่แสดงตัวเลข ไม่แสดงผล ถูก/ไม่ถูก
+            const showPrizeSection = totalPrize !== null;
 
             container.innerHTML = `
                 <div style="
@@ -1890,6 +2038,7 @@
                 </div>
 
                 <!-- Prize Result -->
+                ${showPrizeSection ? `
                 <div style="
                     background: white;
                     border-radius: 20px;
@@ -1915,6 +2064,7 @@
                     </div>
                     ` : ''}
                 </div>
+                ` : ''}
             `;
         }
 
@@ -2103,6 +2253,17 @@
 
             telegramBotToken = document.getElementById('telegramBotTokenInput').value;
             telegramChatId = document.getElementById('telegramChatIdInput').value;
+
+            // อ่านค่าตัวคูณอัตราจ่าย
+            const mBottom2 = parseInt(document.getElementById('multiplierBottom2').value);
+            const mTop3 = parseInt(document.getElementById('multiplierTop3').value);
+            const mBottom3 = parseInt(document.getElementById('multiplierBottom3').value);
+
+            if (!isNaN(mBottom2) && mBottom2 > 0) betTypes.bottom2.multiplier = mBottom2;
+            if (!isNaN(mTop3) && mTop3 > 0) betTypes.top3.multiplier = mTop3;
+            if (!isNaN(mBottom3) && mBottom3 > 0) betTypes.bottom3.multiplier = mBottom3;
+
+            updateBetMultipliersUI();
             saveToStorage();
 
             btn.disabled = false;
@@ -2146,12 +2307,21 @@
             }
 
             const amount = parseInt(document.getElementById('adminAddMoney').value);
-            if (isNaN(amount) || amount < 10) {
-                showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง (ไม่น้อยกว่า 10)!', '❌', 'ข้อผิดพลาด');
+            if (isNaN(amount) || amount < 1) {
+                showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
                 return;
             }
 
+            const btn = document.getElementById('adminAddMoneyBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">⏳</span> กำลังทำรายการ...';
+
             const result = await MemberAPI.adminUpdateBalance(targetUserId, amount);
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
             if (result.success) {
                 saveToStorage();
                 showInfoModal(`เพิ่มเงินให้คุณ ${targetUserId} สำเร็จ! +${amount} บาท 🎉`, '✅');
@@ -2164,6 +2334,47 @@
                 loadAdminMembersDropdown();
             } else {
                 showInfoModal(result.message || 'เพิ่มเงินไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+            }
+            document.getElementById('adminAddMoney').value = '';
+        }
+
+        async function adminDeductMoney() {
+            if (!isAdminLoggedIn) return;
+
+            const targetUserId = document.getElementById('adminSelectMember').value;
+            if (!targetUserId) {
+                showInfoModal('กรุณาเลือก ID สมาชิกที่ต้องการหักเงิน!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            const amount = parseInt(document.getElementById('adminAddMoney').value);
+            if (isNaN(amount) || amount < 1) {
+                showInfoModal('กรุณาใส่จำนวนเงินที่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            const btn = document.getElementById('adminDeductMoneyBtn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">⏳</span> กำลังทำรายการ...';
+
+            const result = await MemberAPI.adminUpdateBalance(targetUserId, -amount);
+
+            btn.disabled = false;
+            btn.innerHTML = originalText;
+
+            if (result.success) {
+                saveToStorage();
+                showInfoModal(`หักเงินคุณ ${targetUserId} สำเร็จ! -${amount} บาท`, '✅');
+
+                if (user && user.id === targetUserId) {
+                    balance = result.balance;
+                    updateBalance();
+                }
+
+                loadAdminMembersDropdown();
+            } else {
+                showInfoModal(result.message || 'หักเงินไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
             }
             document.getElementById('adminAddMoney').value = '';
         }

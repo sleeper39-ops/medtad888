@@ -1735,12 +1735,21 @@
             return betTypes[type].label;
         }
 
-        function drawLottery(autoDraw = false) {
+        async function drawLottery(autoDraw = false) {
             const pendingTickets = tickets.filter(t => t.status === 'pending');
-            if (pendingTickets.length === 0 && !autoDraw) {
+            if (!isAdminLoggedIn && pendingTickets.length === 0 && !autoDraw) {
                 showInfoModal('กรุณาซื้อสลากก่อนทดสอบสลากออก!', '🎫', 'แจ้งเตือน');
                 return;
             }
+
+            const drawBtn = document.querySelector('.admin-btn-row button.green');
+            const originalBtnText = drawBtn ? drawBtn.innerHTML : '';
+            if (drawBtn && isAdminLoggedIn) {
+                drawBtn.disabled = true;
+                drawBtn.innerHTML = '⏳ กำลังออกผล...';
+            }
+
+            try {
 
             console.log('Starting draw, autoDraw=', autoDraw);
             drawn = true;
@@ -1804,43 +1813,109 @@
 
             console.log('winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'currentDrawId:', currentDrawId);
 
-            let totalPrize = 0;
+            let adminTotalPrize = 0;
             const newWinners = [];
 
-            tickets.forEach(ticket => {
-                if (ticket.status === 'pending') {
-                    // Assign draw ID to this ticket
-                    ticket.drawId = currentDrawId;
+            if (isAdminLoggedIn) {
+                // Fetch all users
+                const snapshot = await database.ref('users').once('value');
+                const allUsers = snapshot.val() || {};
+                const updatePromises = [];
 
-                    if (checkWin(ticket)) {
-                        const prize = ticket.bet * betTypes[ticket.type].multiplier;
-                        ticket.prize = prize;
-                        ticket.status = 'won';
-                        totalPrize += prize;
+                for (const uid in allUsers) {
+                    const userData = allUsers[uid];
+                    if (!userData.tickets || !Array.isArray(userData.tickets)) continue;
 
-                        // Add to winners list
-                        const winner = {
-                            id: 'winner_' + Date.now() + '_' + Math.random(),
-                            ticketId: ticket.id,
-                            userName: ticket.userName,
-                            trueMoneyLink: ticket.trueMoneyLink,
-                            number: ticket.number,
-                            betType: getBetTypeName(ticket.type),
-                            betAmount: ticket.bet,
-                            prizeAmount: prize,
-                            winningFrontNumbers: winningFrontNumbers,
-                            winningBackNumbers: winningBackNumbers,
-                            twoDigitWinningNumber: twoDigitWinningNumber,
-                            date: new Date().toLocaleString('th-TH'),
-                            paid: false
-                        };
-                        winners.unshift(winner);
-                        newWinners.push(winner);
-                    } else {
-                        ticket.status = 'lost';
+                    let userWonPrize = 0;
+                    let userTicketsChanged = false;
+                    const userTickets = userData.tickets;
+
+                    userTickets.forEach(ticket => {
+                        if (ticket.status === 'pending') {
+                            ticket.drawId = currentDrawId;
+                            userTicketsChanged = true;
+
+                            if (checkWin(ticket)) {
+                                const prize = ticket.bet * betTypes[ticket.type].multiplier;
+                                ticket.prize = prize;
+                                ticket.status = 'won';
+                                userWonPrize += prize;
+                                
+                                if (user && uid === user.id) {
+                                    adminTotalPrize += prize;
+                                }
+
+                                const winner = {
+                                    id: 'winner_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                    ticketId: ticket.id,
+                                    userId: uid,
+                                    userName: ticket.userName || userData.profile?.name || uid,
+                                    trueMoneyLink: ticket.trueMoneyLink || userData.profile?.trueMoneyLink || '',
+                                    number: ticket.number,
+                                    betType: getBetTypeName(ticket.type),
+                                    betAmount: ticket.bet,
+                                    prizeAmount: prize,
+                                    winningFrontNumbers: winningFrontNumbers,
+                                    winningBackNumbers: winningBackNumbers,
+                                    twoDigitWinningNumber: twoDigitWinningNumber,
+                                    date: new Date().toLocaleString('th-TH'),
+                                    paid: false
+                                };
+                                winners.unshift(winner);
+                                newWinners.push(winner);
+                            } else {
+                                ticket.status = 'lost';
+                            }
+                        }
+                    });
+
+                    if (userTicketsChanged) {
+                        updatePromises.push(database.ref('users/' + uid + '/tickets').set(userTickets));
+                    }
+                    if (userWonPrize > 0) {
+                        updatePromises.push(MemberAPI.adminUpdateBalance(uid, userWonPrize));
                     }
                 }
-            });
+
+                await Promise.all(updatePromises);
+
+                if (user && allUsers[user.id] && allUsers[user.id].tickets) {
+                    tickets = allUsers[user.id].tickets;
+                }
+            } else {
+                // Local user test mode
+                tickets.forEach(ticket => {
+                    if (ticket.status === 'pending') {
+                        ticket.drawId = currentDrawId;
+                        if (checkWin(ticket)) {
+                            const prize = ticket.bet * betTypes[ticket.type].multiplier;
+                            ticket.prize = prize;
+                            ticket.status = 'won';
+                            adminTotalPrize += prize;
+                            
+                            const winner = {
+                                id: 'winner_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
+                                ticketId: ticket.id,
+                                userName: ticket.userName,
+                                trueMoneyLink: ticket.trueMoneyLink,
+                                number: ticket.number,
+                                betType: getBetTypeName(ticket.type),
+                                betAmount: ticket.bet,
+                                prizeAmount: prize,
+                                winningFrontNumbers: winningFrontNumbers,
+                                winningBackNumbers: winningBackNumbers,
+                                twoDigitWinningNumber: twoDigitWinningNumber,
+                                date: new Date().toLocaleString('th-TH'),
+                                paid: false
+                            };
+                            winners.unshift(winner);
+                            newWinners.push(winner);
+                        } else {
+                            ticket.status = 'lost';
+                        }
+                    }
+                });
+            }
 
             // Add to history
             winHistory.unshift({
@@ -1848,7 +1923,7 @@
                 winningFrontNumbers: winningFrontNumbers,
                 winningBackNumbers: winningBackNumbers,
                 twoDigitWinningNumber: twoDigitWinningNumber,
-                totalPrize: totalPrize
+                totalPrize: isAdminLoggedIn ? 0 : adminTotalPrize
             });
 
             renderHistory();
@@ -1856,11 +1931,25 @@
             saveToStorage();
             updateBalance();
             renderTickets();
-            renderResult(totalPrize);
+            
+            if (adminTotalPrize > 0 || !isAdminLoggedIn) {
+                renderResult(adminTotalPrize);
+            } else if (isAdminLoggedIn) {
+                showInfoModal('ออกผลรางวัลเรียบร้อยแล้ว! มีผู้โชคดี ' + newWinners.length + ' รายการ', '✅');
+            }
 
-            // Send Telegram notification for winners
             if (newWinners.length > 0) {
                 sendTelegramNotification(newWinners);
+            }
+
+            } catch (err) {
+                console.error('Error drawing lottery:', err);
+                showInfoModal('เกิดข้อผิดพลาดในการออกผลรางวัล', '❌', 'ข้อผิดพลาด');
+            } finally {
+                if (drawBtn && isAdminLoggedIn) {
+                    drawBtn.disabled = false;
+                    drawBtn.innerHTML = originalBtnText;
+                }
             }
         }
 

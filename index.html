@@ -1816,6 +1816,9 @@
             let adminTotalPrize = 0;
             const newWinners = [];
 
+            // Clear previous winners — only show winners from the latest draw
+            winners = [];
+
             if (isAdminLoggedIn) {
                 // Fetch all users
                 const snapshot = await database.ref('users').once('value');
@@ -1848,6 +1851,7 @@
                                 const winner = {
                                     id: 'winner_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
                                     ticketId: ticket.id,
+                                    drawId: currentDrawId,
                                     userId: uid,
                                     userName: ticket.userName || userData.profile?.name || uid,
                                     trueMoneyLink: ticket.trueMoneyLink || userData.profile?.trueMoneyLink || '',
@@ -1861,7 +1865,7 @@
                                     date: new Date().toLocaleString('th-TH'),
                                     paid: false
                                 };
-                                winners.unshift(winner);
+                                winners.push(winner);
                                 newWinners.push(winner);
                             } else {
                                 ticket.status = 'lost';
@@ -1896,6 +1900,7 @@
                             const winner = {
                                 id: 'winner_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5),
                                 ticketId: ticket.id,
+                                drawId: currentDrawId,
                                 userName: ticket.userName,
                                 trueMoneyLink: ticket.trueMoneyLink,
                                 number: ticket.number,
@@ -1908,7 +1913,7 @@
                                 date: new Date().toLocaleString('th-TH'),
                                 paid: false
                             };
-                            winners.unshift(winner);
+                            winners.push(winner);
                             newWinners.push(winner);
                         } else {
                             ticket.status = 'lost';

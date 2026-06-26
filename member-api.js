@@ -128,5 +128,9 @@ const MemberAPI = {
 
     async submitGiftVoucher(userId, sessionToken, amount, link, telegramBotToken, telegramChatId) {
         return this.call('submitGiftVoucher', { userId, sessionToken, amount, link, telegramBotToken, telegramChatId });
+    },
+
+    async requestWithdrawal(userId, sessionToken, amount, account) {
+        return this.call('requestWithdrawal', { userId, sessionToken, amount, account });
     }
 };

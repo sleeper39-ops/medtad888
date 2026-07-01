@@ -166,7 +166,245 @@
         .info-modal-icon { font-size: 3rem; margin-bottom: 15px; }
         .modal-btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
         .modal-btn-row .login-btn { flex: 1; min-width: 120px; }
-    </style>
+    
+
+        /* Member dark lotto theme overrides */
+        :root {
+            --lotto-dark: #071b19;
+            --lotto-panel: #11171b;
+            --lotto-panel-2: #22282f;
+            --lotto-gold: #d69b31;
+            --lotto-gold-light: #f4d576;
+            --lotto-green: #10c66a;
+            --lotto-line: rgba(214, 155, 49, 0.55);
+        }
+
+        body {
+            background: radial-gradient(circle at 18% 18%, rgba(35, 240, 160, 0.2), transparent 32%), linear-gradient(180deg, #062c29 0%, #030607 100%) !important;
+            color: #20262d;
+        }
+
+        .container {
+            max-width: 560px !important;
+        }
+
+        .header {
+            background: linear-gradient(180deg, #073f3a 0%, #052421 100%);
+            border: 1px solid var(--lotto-line);
+            border-radius: 4px;
+            padding: 14px 16px;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.34);
+        }
+
+        .header h1 {
+            color: #23f0a0;
+            letter-spacing: 0;
+            text-shadow: none !important;
+        }
+
+        .header a {
+            color: var(--lotto-gold-light) !important;
+            font-weight: 800;
+        }
+
+        .card {
+            background: #f4f5f6 !important;
+            border: 1px solid var(--lotto-line);
+            border-radius: 4px !important;
+            box-shadow: 0 14px 36px rgba(0,0,0,0.42) !important;
+            overflow: hidden;
+        }
+
+        .section-title {
+            margin: -25px -25px 18px !important;
+            padding: 12px 16px !important;
+            background: #2b3138 !important;
+            color: #ffffff !important;
+            border-bottom: 1px solid var(--lotto-gold) !important;
+            font-size: 1.08rem !important;
+        }
+
+        .auth-tabs {
+            background: #22282f;
+            border: 1px solid #111;
+            border-radius: 4px;
+            overflow: hidden;
+            gap: 0 !important;
+        }
+
+        .auth-tab {
+            flex: 1;
+            border: 0 !important;
+            border-radius: 0 !important;
+            background: transparent !important;
+            color: #cbd5df !important;
+        }
+
+        .auth-tab.active {
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important;
+            color: #111111 !important;
+        }
+
+        .login-input {
+            border-radius: 4px !important;
+            border: 1px solid #cfd5dc !important;
+            background: #ffffff !important;
+            color: #20262d !important;
+            box-shadow: none !important;
+        }
+
+        .login-btn,
+        .modal-btn-row .login-btn,
+        .deposit-check-btn {
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            box-shadow: none !important;
+            min-height: 42px;
+        }
+
+        .login-btn.green,
+        .deposit-check-btn,
+        #depositGoPlayBtn {
+            background: linear-gradient(180deg, #11d958 0%, #069d41 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(41, 219, 96, 0.75) !important;
+        }
+
+        .login-btn.orange,
+        #togglePwdBtn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+        }
+
+        .auth-link {
+            color: #9b6b1f !important;
+            font-weight: 800;
+        }
+
+        .profile-row {
+            background: #ffffff;
+            border: 1px solid #d8dde3 !important;
+            border-radius: 4px;
+            padding: 10px 12px !important;
+            margin-bottom: 8px;
+        }
+
+        .profile-label {
+            color: #4b535c !important;
+            font-weight: 700;
+        }
+
+        .profile-value {
+            color: #11171b !important;
+        }
+
+        .balance-display {
+            color: #069d41 !important;
+            background: #ffffff;
+            border: 1px solid #d8dde3;
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        .deposit-code-box {
+            background: #fff8e6 !important;
+            border: 1px solid var(--lotto-gold) !important;
+            border-radius: 4px !important;
+        }
+
+        .deposit-code {
+            color: #9b6b1f !important;
+        }
+
+        .deposit-info {
+            background: #ffffff !important;
+            border: 1px solid #d8dde3;
+            border-radius: 4px !important;
+        }
+
+        .btn-row {
+            flex-wrap: wrap;
+        }
+
+        .btn-row .login-btn {
+            min-width: 140px;
+        }
+
+        .modal-content {
+            border-radius: 4px !important;
+            border: 1px solid var(--lotto-line);
+        }
+
+        @media (max-width: 560px) {
+            body { padding: 10px !important; }
+            .card { padding: 18px !important; }
+            .section-title { margin: -18px -18px 16px !important; }
+            .btn-row { flex-direction: column; }
+            .profile-row { flex-direction: column; gap: 4px; }
+            .profile-value { max-width: 100% !important; text-align: left !important; }
+        }
+
+
+        /* Member profile action button final sizing */
+        #dashboardCard .member-action-row {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px !important;
+            align-items: stretch;
+        }
+
+        #dashboardCard .member-action-row .login-btn {
+            width: 100% !important;
+            min-height: 46px !important;
+            padding: 11px 12px !important;
+            margin: 0 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            text-align: center !important;
+            border-radius: 4px !important;
+            font-size: 0.98rem !important;
+            line-height: 1.15 !important;
+            white-space: nowrap;
+            box-shadow: none !important;
+        }
+
+        #dashboardCard .member-deposit-btn {
+            background: linear-gradient(180deg, #11d958 0%, #069d41 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(41, 219, 96, 0.75) !important;
+        }
+
+        #dashboardCard .member-play-btn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+        }
+
+        #dashboardCard .member-withdraw-btn {
+            background: linear-gradient(180deg, #d94b42 0%, #a82421 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(217, 75, 66, 0.75) !important;
+        }
+
+        #dashboardCard .member-logout-btn {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(214, 155, 49, 0.5) !important;
+        }
+
+        #dashboardCard .member-action-row .login-btn:hover {
+            filter: brightness(1.08);
+        }
+
+        @media (max-width: 420px) {
+            #dashboardCard .member-action-row {
+                grid-template-columns: 1fr;
+            }
+        }
+</style>
 </head>
 <body>
     <div class="container">
@@ -239,13 +477,13 @@
                 </div>
             </div>
 
-            <div class="btn-row" style="margin-top: 20px; display: flex; gap: 10px;">
-                <button type="button" class="login-btn green" style="flex: 1; margin-top: 0;" onclick="showDeposit()">💰 เติมเงิน</button>
-                <button type="button" class="login-btn orange" style="flex: 1; margin-top: 0;" onclick="showWithdraw()">💸 ถอนเงิน</button>
+            <div class="btn-row member-action-row" style="margin-top: 20px; display: flex; gap: 10px;">
+                <button type="button" class="login-btn green member-deposit-btn" style="flex: 1; margin-top: 0;" onclick="showDeposit()">💰 เติมเงิน</button>
+                <button type="button" class="login-btn orange member-withdraw-btn" style="flex: 1; margin-top: 0;" onclick="showWithdraw()">💸 ถอนเงิน</button>
             </div>
-            <div class="btn-row" style="margin-top: 10px; display: flex; gap: 10px;">
-                <a href="index.html" class="login-btn purple" style="flex: 1; text-align: center; display: inline-block; text-decoration: none; padding: 12px 0; border-radius: 8px;">🎫 ไปเล่นสลาก</a>
-                <button type="button" class="login-btn" style="background: #e74c3c; flex: 1; margin-top: 0;" onclick="memberLogout()">🚪 ออกจากระบบ</button>
+            <div class="btn-row member-action-row" style="margin-top: 10px; display: flex; gap: 10px;">
+                <a href="index.html" class="login-btn purple member-play-btn" style="flex: 1; text-align: center; display: inline-block; text-decoration: none; padding: 12px 0; border-radius: 8px;">🎫 ไปเล่นสลาก</a>
+                <button type="button" class="login-btn member-logout-btn" style="background: #e74c3c; flex: 1; margin-top: 0;" onclick="memberLogout()">🚪 ออกจากระบบ</button>
             </div>
         </div>
 
@@ -809,7 +1047,9 @@
                 await MemberAPI.call('checkDeposits', { userId: currentUser.id, sessionToken: sessionToken });
                 const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
                 if (bal !== null) {
-                    document.getElementById('dashBalance').textContent = bal.toLocaleString();
+                    balance = Number(bal) || 0;
+                    document.getElementById('dashBalance').textContent = balance.toLocaleString();
+                    MemberAPI.saveSession(currentUser, sessionToken, balance);
                 }
                 showInfoModal('ตรวจสอบการเติมเงินแล้ว! ยอดคงเหลือ: ' + (bal || 0).toLocaleString() + ' บาท', '✅');
             } catch (e) {
@@ -848,7 +1088,8 @@
                 if (result.success) {
                     showInfoModal('ส่งคำขอถอนเงินเรียบร้อยแล้ว กรุณารอแอดมินโอนเงิน', '✅');
                     document.getElementById('withdrawAmount').value = '';
-                    balance = result.balance;
+                    balance = Number(result.balance) || 0;
+                    MemberAPI.saveSession(currentUser, sessionToken, balance);
                     showDashboard(balance);
                     hideWithdraw();
                 } else {
@@ -868,7 +1109,9 @@
                 if (!currentUser || !sessionToken) return;
                 const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
                 if (bal !== null) {
-                    document.getElementById('dashBalance').textContent = bal.toLocaleString();
+                    balance = Number(bal) || 0;
+                    document.getElementById('dashBalance').textContent = balance.toLocaleString();
+                    MemberAPI.saveSession(currentUser, sessionToken, balance);
                 }
             }, 8000);
         }

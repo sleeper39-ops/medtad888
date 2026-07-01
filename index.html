@@ -361,12 +361,12 @@
         }
 
         .winning-number {
-            font-size: 4rem;
+            font-size: 3.2rem;
             font-weight: bold;
             color: #2c3e50;
-            letter-spacing: 10px;
+            letter-spacing: 6px;
             background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            padding: 20px;
+            padding: 14px 18px;
             border-radius: 15px;
             margin-bottom: 20px;
             display: inline-block;
@@ -707,7 +707,7 @@
 
         /* Custom Info Modal */
         .info-modal-icon {
-            font-size: 4rem;
+            font-size: 3.1rem;
             margin-bottom: 20px;
         }
 
@@ -779,7 +779,7 @@
             }
 
             .header h1 {
-                font-size: 1.8rem;
+                font-size: 1.35rem;
             }
 
             .number-input {
@@ -793,7 +793,1295 @@
                 letter-spacing: 5px;
             }
         }
-    </style>
+
+
+        /* Lotto portal visual refresh - keeps existing IDs and functions intact */
+        :root {
+            --lotto-dark: #071a18;
+            --lotto-panel: #15191d;
+            --lotto-panel-2: #2b3137;
+            --lotto-gold: #d69b31;
+            --lotto-gold-soft: #f4cf77;
+            --lotto-green: #08c75a;
+            --lotto-line: rgba(214, 155, 49, 0.55);
+        }
+
+        body {
+            background:
+                radial-gradient(circle at 12% 16%, rgba(0, 255, 179, 0.22), transparent 22%),
+                radial-gradient(circle at 88% 18%, rgba(0, 255, 179, 0.18), transparent 22%),
+                linear-gradient(90deg, #050b0c 0%, #0c2320 24%, #111 50%, #0c2320 76%, #050b0c 100%);
+            color: #1f2933;
+            padding: 0 0 42px;
+            overflow-x: hidden;
+        }
+
+        body::before,
+        body::after {
+            content: "";
+            position: fixed;
+            top: 108px;
+            bottom: 92px;
+            width: calc((100vw - min(920px, 92vw)) / 2 + 46px);
+            min-width: 180px;
+            z-index: -1;
+            opacity: 0.95;
+            background:
+                radial-gradient(circle at 50% 22%, rgba(20, 255, 180, 0.34), transparent 22%),
+                radial-gradient(circle at 50% 74%, rgba(246, 203, 102, 0.22), transparent 18%),
+                linear-gradient(145deg, rgba(3, 34, 31, 0.95), rgba(2, 8, 10, 0.92));
+            border-top: 1px solid rgba(16, 255, 183, 0.35);
+            box-shadow: inset 0 0 80px rgba(0, 255, 178, 0.14);
+        }
+
+        body::before {
+            left: 0;
+            clip-path: polygon(0 0, 100% 4%, 88% 100%, 0 100%);
+        }
+
+        body::after {
+            right: 0;
+            clip-path: polygon(12% 0, 100% 0, 100% 100%, 0 100%);
+        }
+
+        .container {
+            max-width: 920px;
+            padding-top: 10px;
+        }
+
+        .container::before,
+        .container::after {
+            position: fixed;
+            top: 245px;
+            z-index: -1;
+            color: rgba(255,255,255,0.8);
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-shadow: 0 0 24px rgba(0, 255, 178, 0.55);
+            pointer-events: none;
+        }
+
+        .container::before {
+            content: "MEDTAD888\A LOTTO LIVE";
+            white-space: pre;
+            left: max(26px, calc((100vw - 920px) / 2 - 255px));
+            font-size: 2.1rem;
+        }
+
+        .container::after {
+            content: "RESULTS\A WIN NOW";
+            white-space: pre;
+            right: max(26px, calc((100vw - 920px) / 2 - 220px));
+            font-size: 2rem;
+            text-align: right;
+        }
+
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            background: linear-gradient(180deg, #083936 0%, #052522 100%);
+            border-bottom: 1px solid rgba(0, 255, 190, 0.25);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
+            margin: 0 calc(50% - 50vw) 10px;
+            padding: 10px max(20px, calc((100vw - 920px) / 2));
+            min-height: 58px;
+        }
+
+        .header h1 {
+            color: #18e69b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            font-style: italic;
+        }
+
+        .header h1 span {
+            filter: drop-shadow(0 0 8px rgba(23, 230, 155, 0.65));
+        }
+
+        #userArea .user-info,
+        #adminArea .user-info {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.18);
+        }
+
+        .admin-btn,
+        .guest-btn,
+        .login-btn,
+        .buy-btn,
+        .draw-btn,
+        .history-btn,
+        .deposit-link-btn {
+            border-radius: 4px !important;
+        }
+
+        .guest-btn,
+        .buy-btn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            border: 1px solid #f2d178 !important;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 6px 12px rgba(0,0,0,0.22);
+        }
+
+        .guest-btn.outline,
+        .admin-btn,
+        .login-btn.purple {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255,255,255,0.24) !important;
+        }
+
+        .deposit-link-btn,
+        .line-btn,
+        .login-btn.green {
+            background: linear-gradient(180deg, #10db55 0%, #04a83f 100%) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+        }
+
+        .guest-banner,
+        .balance-box,
+        .ticket-section,
+        .result-section,
+        .admin-section,
+        .history-section,
+        .login-section,
+        .deposit-section,
+        .winners-section {
+            border-radius: 4px;
+            border: 1px solid var(--lotto-line);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+        }
+
+        .guest-banner,
+        .balance-box {
+            background: linear-gradient(180deg, #12171b 0%, #07090b 100%);
+            color: #f7fafc;
+        }
+
+        .guest-banner .section-title,
+        .balance-box .balance {
+            color: var(--lotto-gold-soft);
+        }
+
+        .result-section {
+            padding: 0 0 12px;
+            overflow: hidden;
+            background: #f7f7f7;
+        }
+
+        .result-section .section-title,
+        .ticket-section .section-title,
+        .history-section .section-title,
+        .admin-section .section-title,
+        .winners-section .section-title {
+            background: linear-gradient(180deg, #343b42 0%, #22282f 100%);
+            color: #ffffff;
+            border-bottom: 1px solid #13171b;
+            margin: 0 0 12px;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 1.08rem;
+        }
+
+        .draw-time-box {
+            margin: 0 10px 12px;
+            padding: 10px;
+            border: 1px solid #d6dbe0;
+            background: white;
+        }
+
+        .next-draw-label {
+            color: #47515c;
+            font-weight: 700;
+        }
+
+        .next-draw-display {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 4px 12px;
+            background: #eef7f0;
+            color: #0fb45f;
+            border-radius: 4px;
+            font-size: 1rem;
+            font-weight: 800;
+        }
+
+        .result-display {
+            margin: 0 10px;
+        }
+
+        .result-display > div:first-child {
+            border-radius: 4px !important;
+            box-shadow: none !important;
+            background: #ffffff !important;
+            border: 1px solid #d8dde3 !important;
+            color: #20262d;
+        }
+
+        .result-display > div:first-child > div:first-child {
+            color: #35404a !important;
+        }
+
+        .result-display div[style*="background: linear-gradient(135deg, #0057B8"] {
+            background: #f7f7f7 !important;
+            border: 1px solid #d6dbe0 !important;
+            box-shadow: none !important;
+            border-radius: 3px !important;
+        }
+
+        .result-display div[style*="font-size: 3.1rem"],
+        .result-display div[style*="font-size: 3.4rem"] {
+            color: #1f2933 !important;
+            text-shadow: none !important;
+        }
+
+        .history-btn {
+            width: calc(100% - 20px);
+            margin: 12px 10px 0;
+            background: linear-gradient(180deg, #343b42 0%, #22282f 100%);
+        }
+
+        .ticket-section,
+        .history-section,
+        .admin-section,
+        .winners-section {
+            background: #f4f5f6;
+            padding: 0 0 18px;
+        }
+
+        .ticket-section > :not(.section-title),
+        .history-section > :not(.section-title),
+        .admin-section > :not(.section-title),
+        .winners-section > :not(.section-title) {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+
+        .bet-option {
+            background: white;
+            border-radius: 3px;
+        }
+
+        .bet-option.selected {
+            background: linear-gradient(180deg, #343b42 0%, #22282f 100%);
+            border-color: var(--lotto-gold);
+        }
+
+        .number-input,
+        .login-input,
+        .admin-control-group input,
+        #adminSelectMember {
+            border-radius: 3px !important;
+        }
+
+        .ticket,
+        .history-item,
+        .winner-item {
+            border-radius: 3px;
+            border: 1px solid #d8dde3;
+        }
+
+        .main-content {
+            gap: 14px;
+        }
+
+        body::selection {
+            background: var(--lotto-gold);
+            color: #111;
+        }
+
+        @media (max-width: 1100px) {
+            body::before,
+            body::after,
+            .container::before,
+            .container::after {
+                display: none;
+            }
+
+            .container {
+                max-width: 94vw;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 24px;
+            }
+
+            .header {
+                margin-left: calc(50% - 50vw);
+                margin-right: calc(50% - 50vw);
+                padding: 12px 16px;
+            }
+
+            .result-section .section-title,
+            .ticket-section .section-title,
+            .history-section .section-title,
+            .admin-section .section-title,
+            .winners-section .section-title {
+                text-align: center;
+            }
+        }
+
+
+
+        /* Combined login/register and top admin bar */
+        #adminTopBar {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            background: linear-gradient(180deg, #061512 0%, #03100f 100%);
+            border-bottom: 1px solid rgba(214, 155, 49, 0.55);
+            box-shadow: 0 10px 26px rgba(0,0,0,0.45);
+        }
+
+        .admin-top-inner {
+            max-width: 920px;
+            margin: 0 auto;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            padding: 8px 0;
+        }
+
+        .admin-top-title {
+            color: #f5d889;
+            font-weight: 800;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .admin-top-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .admin-top-actions .login-btn {
+            width: auto;
+            margin: 0;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+        }
+
+        .admin-top-logout {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+        }
+
+        .auth-portal {
+            padding: 0;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .auth-brand-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-bottom: 1px solid rgba(214, 155, 49, 0.4);
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%);
+        }
+
+        .auth-brand-title {
+            color: #23f0a0;
+            font-weight: 900;
+            font-size: 1.35rem;
+            letter-spacing: 1px;
+            font-style: italic;
+        }
+
+        .auth-brand-subtitle {
+            color: #d7dee5;
+            font-size: 0.95rem;
+            margin-top: 3px;
+        }
+
+        .auth-profile-link {
+            color: #111;
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%);
+            border: 1px solid #f8dfa0;
+            text-decoration: none;
+            padding: 9px 12px;
+            border-radius: 4px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .auth-tabs-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            background: #22282f;
+            border-bottom: 1px solid #111;
+        }
+
+        .auth-tab-inline {
+            border: 0;
+            padding: 12px;
+            color: #cbd5df;
+            background: transparent;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .auth-tab-inline.active {
+            color: #111;
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%);
+        }
+
+        .auth-grid-inline {
+            padding: 18px;
+            background: #f4f5f6;
+        }
+
+        .auth-form-inline { display: none; gap: 12px; }
+        .auth-form-inline.active { display: flex; flex-direction: column; }
+        .auth-form-title { font-weight: 900; color: #20262d; margin-bottom: 2px; }
+
+        .auth-field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .auth-field-row.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+        .auth-submit-btn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111 !important;
+            border: 1px solid #f2d178 !important;
+        }
+
+        .auth-secondary-btn { background: linear-gradient(180deg, #3c434b 0%, #242a31 100%) !important; }
+        #adminPageContainer > div:first-child { display: none !important; }
+
+        @media (max-width: 768px) {
+            .admin-top-inner { padding: 8px 14px; align-items: flex-start; flex-direction: column; }
+            .admin-top-actions { width: 100%; }
+            .admin-top-actions .login-btn { flex: 1; min-width: 96px; }
+            .auth-brand-row,
+            .auth-field-row,
+            .auth-field-row.two-col { grid-template-columns: 1fr; }
+            .auth-brand-row { flex-direction: column; align-items: stretch; }
+            .auth-profile-link { text-align: center; }
+        }
+
+
+
+        /* Public first page like lotto result portal */
+        .auth-header-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-auth-btn,
+        .line-login-btn {
+            border: 0;
+            border-radius: 4px;
+            padding: 9px 18px;
+            font-weight: 800;
+            cursor: pointer;
+            color: #111;
+            white-space: nowrap;
+        }
+
+        .header-register-btn {
+            background: linear-gradient(180deg, #3c444c 0%, #20262d 100%);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .header-login-btn {
+            background: linear-gradient(180deg, #f6d879 0%, #a86b1d 100%);
+            border: 1px solid #f8dfa0;
+            min-width: 108px;
+        }
+
+        .line-login-btn {
+            background: linear-gradient(180deg, #0bd84d 0%, #02a63a 100%);
+            color: #fff;
+            min-width: 110px;
+        }
+
+        .public-home {
+            border: 1px solid var(--lotto-line);
+            background: #111;
+            box-shadow: 0 16px 42px rgba(0,0,0,0.5);
+            margin-bottom: 18px;
+        }
+
+        .public-result-card {
+            margin: 10px 0;
+            background: #f7f7f7;
+            border-top: 1px solid #cfd5dc;
+            border-bottom: 1px solid #cfd5dc;
+        }
+
+        .public-card-title {
+            background: linear-gradient(180deg, #343b42 0%, #252b31 100%);
+            color: #fff;
+            padding: 10px 14px;
+            font-weight: 900;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .flag-chip { font-size: 1.2rem; }
+        .mini-date,
+        .date-pill {
+            background: #fff;
+            color: #20262d;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.82rem;
+            font-weight: 900;
+        }
+
+        .date-pill { color: #0ab862; background: #eef7f0; }
+        .x-pill { color: #e24a5f; background: #fff; border: 1px solid #d8dde3; border-radius: 3px; padding: 2px 7px; }
+
+        .provider-strip {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+            padding: 14px 12px;
+            background: #2e343a;
+            color: #d3a748;
+            font-size: 0.78rem;
+            font-weight: 900;
+            text-align: center;
+            align-items: center;
+        }
+
+        .public-small-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .public-table {
+            width: calc(100% - 14px);
+            margin: 7px;
+            border-collapse: collapse;
+            background: white;
+            color: #20262d;
+            font-weight: 700;
+        }
+
+        .public-table th,
+        .public-table td {
+            border: 1px solid #d8dde3;
+            padding: 10px 12px;
+        }
+
+        .public-table th {
+            background: #fff;
+            font-weight: 900;
+        }
+
+        .public-table tbody tr:nth-child(even) td { background: #f1f2f3; }
+        .public-table-center th,
+        .public-table-center td { text-align: center; }
+        .color-dot { width: 14px; height: 14px; display: inline-block; border-radius: 2px; }
+        .color-dot.pink { background: #f20a9d; }
+        .color-dot.blue { background: #2764ff; }
+
+        body.public-landing .guest-banner {
+            display: none !important;
+        }
+
+        body.public-landing .header {
+            margin-bottom: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .auth-header-actions {
+                width: 100%;
+            }
+            .provider-strip { grid-template-columns: repeat(2, 1fr); }
+            .public-small-grid { grid-template-columns: 1fr; }
+            .public-table { font-size: 0.9rem; }
+        }
+
+
+
+        .auth-popup-modal.active {
+            display: flex;
+        }
+
+        .auth-popup-modal .auth-portal {
+            display: block !important;
+            max-width: 680px;
+            width: min(680px, 94vw);
+            margin: 0;
+            border: 1px solid var(--lotto-line);
+        }
+
+        .auth-popup-modal .auth-brand-row {
+            padding-right: 52px;
+        }
+
+        .auth-popup-close {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            width: 34px;
+            height: 34px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: #20262d;
+            color: #fff;
+            border-radius: 4px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+
+
+        /* Compact official result form */
+        .result-section {
+            padding: 0 0 10px !important;
+            margin-bottom: 12px !important;
+        }
+
+        .result-section .section-title {
+            font-size: 0.98rem !important;
+            padding: 9px 12px !important;
+            margin-bottom: 8px !important;
+        }
+
+        .draw-time-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 0 8px 8px !important;
+            padding: 7px 10px !important;
+        }
+
+        .next-draw-label {
+            margin: 0 !important;
+            font-size: 0.85rem !important;
+        }
+
+        .next-draw-display {
+            margin-top: 0 !important;
+            font-size: 0.88rem !important;
+            padding: 3px 9px !important;
+        }
+
+        .compact-result-card {
+            margin: 0 8px;
+            border: 1px solid #d8dde3;
+            background: #fff;
+        }
+
+        .compact-result-date {
+            padding: 7px 10px;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: #0a8f52;
+            border-bottom: 1px solid #d8dde3;
+            text-align: center;
+            background: #f7faf8;
+        }
+
+        .compact-result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 0.75fr;
+        }
+
+        .compact-result-item {
+            padding: 8px 8px 9px;
+            text-align: center;
+            border-right: 1px solid #d8dde3;
+        }
+
+        .compact-result-item:last-child {
+            border-right: 0;
+        }
+
+        .compact-result-label {
+            font-size: 0.78rem;
+            color: #c93145;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .compact-result-number {
+            font-size: 1.05rem;
+            line-height: 1.2;
+            letter-spacing: 1px;
+            color: #1f2933;
+            font-weight: 900;
+        }
+
+        .compact-prize-result {
+            margin: 8px 8px 0;
+            padding: 8px 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            align-items: center;
+            font-weight: 900;
+            border: 1px solid #d8dde3;
+            background: #fff;
+            font-size: 0.92rem;
+        }
+
+        .compact-prize-result.won { color: #0a8f52; }
+        .compact-prize-result.lost { color: #6b7280; }
+
+        .history-btn {
+            padding: 9px !important;
+            font-size: 0.88rem !important;
+            margin-top: 8px !important;
+        }
+
+        @media (max-width: 640px) {
+            .compact-result-grid { grid-template-columns: 1fr; }
+            .compact-result-item { border-right: 0; border-bottom: 1px solid #d8dde3; }
+            .compact-result-item:last-child { border-bottom: 0; }
+        }
+
+    
+
+        /* Admin dark lotto theme */
+        #adminPageContainer {
+            margin-top: 12px !important;
+        }
+
+        #adminPageContainer .admin-section,
+        #adminPageContainer .winners-section {
+            background: #f4f5f6;
+            border: 1px solid var(--lotto-line);
+            border-radius: 4px;
+            padding: 0 0 16px;
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+            overflow: hidden;
+        }
+
+        #adminPageContainer .admin-section h2,
+        #adminPageContainer .winners-section h3 {
+            margin: 0 0 12px;
+            padding: 10px 14px;
+            background: #2b3138;
+            color: #ffffff;
+            border-bottom: 1px solid #d69b31;
+            font-size: 1rem;
+            letter-spacing: 0;
+        }
+
+        #adminPageContainer .admin-controls,
+        #adminPageContainer .admin-stats,
+        #adminPageContainer .admin-users,
+        #adminPageContainer .draw-management,
+        #adminPageContainer .lottery-config,
+        #adminPageContainer .winners-list {
+            margin-left: 14px;
+            margin-right: 14px;
+        }
+
+        #adminPageContainer .admin-status,
+        #adminStatus {
+            background: #11171b !important;
+            color: #f5d889 !important;
+            border: 1px solid rgba(214, 155, 49, 0.55) !important;
+            border-radius: 4px !important;
+            padding: 8px 12px !important;
+        }
+
+        #adminPageContainer .admin-controls,
+        #adminPageContainer .draw-management,
+        #adminPageContainer .lottery-config {
+            background: #ffffff;
+            border: 1px solid #d8dde3;
+            border-radius: 4px;
+            padding: 12px;
+        }
+
+        #adminPageContainer .admin-control-group,
+        #adminPageContainer .config-row {
+            background: #f8f9fa;
+            border: 1px solid #e0e4e8;
+            border-radius: 4px;
+            padding: 10px;
+            gap: 8px;
+        }
+
+        #adminPageContainer label {
+            color: #20262d;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        #adminPageContainer input,
+        #adminPageContainer select,
+        #adminPageContainer textarea {
+            border-radius: 3px !important;
+            border: 1px solid #cfd5dc !important;
+            background: #ffffff !important;
+            color: #20262d !important;
+            box-shadow: none !important;
+        }
+
+        #adminPageContainer button,
+        .admin-btn {
+            border-radius: 4px !important;
+            border: 1px solid rgba(214, 155, 49, 0.55) !important;
+            box-shadow: none !important;
+            font-weight: 800 !important;
+            letter-spacing: 0 !important;
+        }
+
+        #saveAdminSettingsBtn,
+        #drawBtn,
+        #adminPageContainer .btn-primary,
+        #adminPageContainer button[onclick*="save"],
+        #adminPageContainer button[onclick*="Draw"] {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+        }
+
+        #adminAddMoneyBtn,
+        #autoDrawBtn,
+        #adminPageContainer .btn-success,
+        #adminPageContainer button[onclick*="add"],
+        #adminPageContainer button[onclick*="credit"] {
+            background: linear-gradient(180deg, #11d958 0%, #069d41 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(41, 219, 96, 0.7) !important;
+        }
+
+        #adminDeductMoneyBtn,
+        #adminPageContainer .btn-danger,
+        #adminPageContainer button[onclick*="deduct"],
+        #adminPageContainer button[onclick*="delete"],
+        #adminPageContainer button[onclick*="logout"] {
+            background: linear-gradient(180deg, #d94b42 0%, #a82421 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(217, 75, 66, 0.7) !important;
+        }
+
+        #adminPageContainer .draw-time-tag,
+        #adminPageContainer .time-tag {
+            background: #22282f !important;
+            color: #f5d889 !important;
+            border: 1px solid rgba(214, 155, 49, 0.45) !important;
+            border-radius: 4px !important;
+        }
+
+        #adminPageContainer table {
+            border-collapse: collapse;
+            background: #ffffff;
+            color: #20262d;
+        }
+
+        #adminPageContainer th {
+            background: #2b3138 !important;
+            color: #ffffff !important;
+            border-color: #4b535c !important;
+        }
+
+        #adminPageContainer td {
+            border-color: #dfe3e7 !important;
+        }
+
+
+        .auth-popup-modal.active #guestBanner {
+            display: block !important;
+        }
+
+
+        /* Admin final button tone overrides */
+        #adminPageContainer button {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            border-radius: 4px !important;
+            text-shadow: none !important;
+        }
+
+        #adminPageContainer button:hover {
+            filter: brightness(1.08);
+        }
+
+        #adminPageContainer button[onclick*="toggleAutoDraw"],
+        #adminPageContainer button[onclick*="adminAddMoney"],
+        #adminPageContainer button[onclick*="saveAdminSettings"],
+        #adminPageContainer button[onclick*="switchView('player')"] {
+            background: linear-gradient(180deg, #11d958 0%, #069d41 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(41, 219, 96, 0.75) !important;
+        }
+
+        #adminPageContainer button[onclick*="adminDeductMoney"],
+        #adminPageContainer button[onclick*="adminLogout"] {
+            background: linear-gradient(180deg, #d94b42 0%, #a82421 100%) !important;
+            color: #ffffff !important;
+            border-color: rgba(217, 75, 66, 0.75) !important;
+        }
+
+        #adminPageContainer button[onclick*="testTelegram"],
+        #adminPageContainer button[onclick*="drawLottery"],
+        #adminPageContainer button[onclick*="addDrawTime"] {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border-color: #f2d178 !important;
+        }
+
+        #adminPageContainer .admin-control-group button,
+        #adminPageContainer .config-row button {
+            min-height: 34px;
+            padding: 7px 12px;
+        }
+
+
+        /* Requested compact lotto UI refinements */
+        .auth-profile-link.auth-close-link {
+            border: 1px solid #f8dfa0;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .auth-form-inline#inlineForgotPanel .auth-field-row {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .deposit-link-btn {
+            display: inline-flex !important;
+            align-items: center;
+            justify-content: center;
+            min-width: 128px;
+            min-height: 40px;
+            padding: 9px 18px !important;
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, #11d958 0%, #069d41 100%) !important;
+            color: #ffffff !important;
+            border: 1px solid rgba(41, 219, 96, 0.75) !important;
+            font-weight: 900 !important;
+            text-decoration: none !important;
+            line-height: 1.1;
+        }
+
+        .buy-btn {
+            width: 100% !important;
+            min-height: 52px !important;
+            padding: 12px 18px !important;
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            font-size: 1.08rem !important;
+            line-height: 1.15 !important;
+            box-shadow: none !important;
+        }
+
+        .buy-btn:hover {
+            transform: none !important;
+            filter: brightness(1.08);
+        }
+
+        .amount-btn {
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            font-size: 1.35rem !important;
+            font-weight: 900 !important;
+        }
+
+        .amount-btn:hover {
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important;
+        }
+
+        .amount-display {
+            min-width: 118px !important;
+            font-size: 1.55rem !important;
+            color: #20262d !important;
+        }
+
+        .result-section {
+            padding-bottom: 16px !important;
+        }
+
+        .result-section .section-title {
+            font-size: 1.12rem !important;
+            padding: 12px 14px !important;
+        }
+
+        .draw-time-box {
+            padding: 10px 14px !important;
+            margin: 0 12px 12px !important;
+        }
+
+        .next-draw-label,
+        .next-draw-display {
+            font-size: 1rem !important;
+        }
+
+        .compact-result-card {
+            margin: 0 12px !important;
+        }
+
+        .compact-result-date {
+            padding: 10px 12px !important;
+            font-size: 1rem !important;
+            color: #057044 !important;
+        }
+
+        .compact-result-item {
+            padding: 12px 10px 13px !important;
+        }
+
+        .compact-result-label {
+            font-size: 0.95rem !important;
+        }
+
+        .compact-result-number {
+            font-size: 1.45rem !important;
+            letter-spacing: 0 !important;
+        }
+
+        .history-btn {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%) !important;
+            border: 1px solid rgba(214, 155, 49, 0.45) !important;
+            border-radius: 4px !important;
+        }
+
+        .history-btn:hover {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+        }
+
+        .history-section,
+        .ticket-section {
+            border: 1px solid var(--lotto-line) !important;
+            border-radius: 4px !important;
+            overflow: hidden;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.28);
+        }
+
+        .history-list {
+            padding: 0 12px 12px;
+        }
+
+        .history-item,
+        .ticket {
+            border-radius: 4px !important;
+            border: 1px solid #d8dde3;
+        }
+
+        @media (max-width: 640px) {
+            .auth-field-row,
+            .auth-field-row.two-col,
+            .auth-form-inline#inlineForgotPanel .auth-field-row {
+                grid-template-columns: 1fr;
+            }
+            .compact-result-grid {
+                grid-template-columns: 1fr;
+            }
+            .compact-result-item {
+                border-right: 0 !important;
+                border-bottom: 1px solid #d8dde3;
+            }
+            .compact-result-item:last-child {
+                border-bottom: 0;
+            }
+        }
+
+
+        /* purchase history refinements */
+        .purchase-history-title {
+            margin: 18px 0 8px;
+            padding: 9px 12px;
+            background: #2b3138;
+            color: #ffffff;
+            border: 1px solid rgba(214, 155, 49, 0.55);
+            border-radius: 4px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .my-tickets {
+            border: 1px solid #d8dde3;
+            border-radius: 4px;
+            background: #ffffff;
+            padding: 10px;
+        }
+
+
+        /* Logout gold theme override */
+        .logout-gold-btn,
+        #userArea .admin-btn[onclick*="toggleLogin"],
+        #adminArea .admin-btn[onclick*="adminLogout"],
+        .admin-top-logout {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            border-radius: 4px !important;
+            box-shadow: none !important;
+            font-weight: 900 !important;
+        }
+
+        .logout-gold-btn:hover,
+        #userArea .admin-btn[onclick*="toggleLogin"]:hover,
+        #adminArea .admin-btn[onclick*="adminLogout"]:hover,
+        .admin-top-logout:hover {
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important;
+            color: #111111 !important;
+        }
+
+
+        /* History placement and gold deposit final overrides */
+        .result-history-section {
+            margin: 10px 12px 0 !important;
+            padding: 0 0 10px !important;
+            border: 1px solid rgba(214, 155, 49, 0.55) !important;
+            border-radius: 4px !important;
+            box-shadow: none !important;
+            overflow: hidden;
+        }
+
+        .result-history-section .section-title {
+            margin: 0 0 10px !important;
+            padding: 10px 12px !important;
+            font-size: 1rem !important;
+            background: #2b3138 !important;
+            color: #ffffff !important;
+            border-bottom: 1px solid #d69b31 !important;
+        }
+
+        .result-history-section .history-list {
+            margin-top: 0 !important;
+            max-height: 260px;
+            padding: 0 10px;
+        }
+
+        .deposit-link-btn,
+        #depositGoPlayBtn,
+        a[href*="tab=deposit"] {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            border-radius: 4px !important;
+            font-weight: 900 !important;
+            box-shadow: none !important;
+        }
+
+        .deposit-link-btn:hover,
+        #depositGoPlayBtn:hover,
+        a[href*="tab=deposit"]:hover {
+            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important;
+            color: #111111 !important;
+        }
+
+
+        /* Error modal and purchase history theme final */
+        #infoModal .modal-content {
+            background: #f4f5f6 !important;
+            border: 1px solid rgba(214, 155, 49, 0.65) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.48) !important;
+            padding: 0 0 18px !important;
+            overflow: hidden;
+            max-width: 420px !important;
+        }
+
+        #infoModal .info-modal-icon {
+            margin: 0 !important;
+            padding: 18px 18px 6px !important;
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%) !important;
+            font-size: 2.4rem !important;
+        }
+
+        #infoModal .modal-title {
+            margin: 0 !important;
+            padding: 4px 18px 14px !important;
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%) !important;
+            color: #f5d889 !important;
+            border-bottom: 1px solid rgba(214, 155, 49, 0.55) !important;
+            font-size: 1.12rem !important;
+        }
+
+        #infoModalMessage {
+            margin: 16px 18px 18px !important;
+            padding: 14px 12px !important;
+            background: #ffffff !important;
+            border: 1px solid #d8dde3 !important;
+            border-radius: 4px !important;
+            color: #20262d !important;
+            font-size: 1rem !important;
+            font-weight: 800 !important;
+        }
+
+        #infoModalOk {
+            min-width: 140px !important;
+            min-height: 42px !important;
+            border-radius: 4px !important;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            box-shadow: none !important;
+        }
+
+        #infoModalOk:hover {
+            transform: none !important;
+            filter: brightness(1.08);
+        }
+
+        .purchase-history-title {
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%) !important;
+            color: #f5d889 !important;
+            border-color: rgba(214, 155, 49, 0.65) !important;
+        }
+
+        .my-tickets {
+            background: #f4f5f6 !important;
+            border: 1px solid rgba(214, 155, 49, 0.55) !important;
+            border-radius: 4px !important;
+            max-height: 320px !important;
+        }
+
+        .my-tickets .ticket,
+        .ticket {
+            background: #ffffff !important;
+            border: 1px solid #d8dde3 !important;
+            border-radius: 4px !important;
+            padding: 12px !important;
+            box-shadow: none !important;
+        }
+
+        .ticket-number {
+            color: #11171b !important;
+            letter-spacing: 0 !important;
+        }
+
+        .ticket-info {
+            color: #4b535c !important;
+            font-weight: 700;
+        }
+
+        .ticket.won {
+            border-color: rgba(6, 157, 65, 0.65) !important;
+            background: #f1fff6 !important;
+        }
+
+        .ticket.lost {
+            border-color: rgba(217, 75, 66, 0.55) !important;
+            background: #fff6f5 !important;
+        }
+</style>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <!-- Add Firebase products that you want to use -->
@@ -802,28 +2090,102 @@
 </head>
 
 <body>
+    <div id="adminTopBar" style="display: none;">
+        <div class="admin-top-inner">
+            <div class="admin-top-title"><span>🔐</span> แผงควบคุมผู้ดูแลระบบ</div>
+            <div class="admin-top-actions">
+                <button type="button" class="login-btn purple" onclick="switchView('player')">🎫 เล่นสลาก</button>
+                <button type="button" class="login-btn" onclick="switchView('admin')">⚙️ จัดการระบบ</button>
+                <button type="button" class="login-btn admin-top-logout" onclick="adminLogout()">ออกระบบแอดมิน</button>
+            </div>
+        </div>
+    </div>
     <div class="container">
         <div class="header">
-            <h1 style="font-size: 1.8rem;"><span style="cursor: pointer; user-select: none;"
+            <h1 style="font-size: 1.35rem;"><span style="cursor: pointer; user-select: none;"
                     onclick="toggleAdmin()">🎫</span> Medtad888</h1>
             <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
                 target="_blank"
                 style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
                 💬 Line OpenChat
             </a>
+            <div class="auth-header-actions" id="authHeaderActions">
+                <button type="button" class="header-auth-btn header-register-btn" onclick="openInlineAuth('register')">สมัครสมาชิก</button>
+                <button type="button" class="header-auth-btn header-login-btn" onclick="openInlineAuth('login')">เข้าสู่ระบบ</button>
+            </div>
             <div id="userArea">
             </div>
             <div id="adminArea" style="margin-left: 10px;">
             </div>
         </div>
 
-        <!-- Guest Banner -->
-        <div class="guest-banner" id="guestBanner" style="display: none;">
-            <div class="section-title" style="border: none; padding: 0;">🎫 ยินดีต้อนรับเข้าสู่ หวย/Medtad888</div>
-            <p>10 บาท ก็แทงได้ หวยออกทุกวัน 16:00 มาแทงกันไหมละ</p>
-            <p>กรุณาเข้าสู่ระบบหรือสมัครสมาชิกก่อนเล่น</p>
-            <a href="member.html" class="guest-btn">🔐 เข้าสู่ระบบ</a>
-            <a href="member.html?tab=register" class="guest-btn outline">📝 สมัครสมาชิก</a>
+        <div class="result-section" id="resultSection" style="display: none; margin-bottom: 20px;">
+                <div class="section-title">🏆 ผลสลาก</div>
+                <div class="draw-time-box">
+                    <div class="next-draw-label">งวดถัดไป</div>
+                    <div class="next-draw-display" id="nextDrawDisplay">กำลังโหลด...</div>
+                </div>
+                <div class="result-display" id="resultDisplay"></div>
+                <button class="history-btn" onclick="toggleHistory()">📋 ประวัติการถูกรางวัล</button>
+                <div class="history-section result-history-section" id="historySection" style="display: none;">
+                    <div class="section-title">📜 ประวัติการถูกรางวัล</div>
+                    <div class="history-list" id="historyList"></div>
+                </div>
+            </div>
+
+        <!-- Auth Popup Modal -->
+        <div class="modal-overlay auth-popup-modal" id="authPopupModal" onclick="if(event.target === this) closeAuthPopup()">
+            <div class="guest-banner auth-portal" id="guestBanner" style="display: none;">
+                <button type="button" class="auth-popup-close" onclick="closeAuthPopup()">×</button>
+            <div class="auth-brand-row">
+                <div>
+                    <div class="auth-brand-title">MEDTAD888</div>
+                    <div class="auth-brand-subtitle">เข้าสู่ระบบหรือสมัครสมาชิกเพื่อเริ่มเล่นสลาก</div>
+                </div>
+                <button type="button" class="auth-profile-link auth-close-link" onclick="closeAuthPopup()">ปิด</button>
+            </div>
+
+            <div class="auth-tabs-inline">
+                <button type="button" class="auth-tab-inline active" id="inlineLoginTab" onclick="switchInlineAuth('login')">เข้าสู่ระบบ</button>
+                <button type="button" class="auth-tab-inline" id="inlineRegisterTab" onclick="switchInlineAuth('register')">สมัครสมาชิก</button>
+            </div>
+
+            <div class="auth-grid-inline">
+                <form class="auth-form-inline active" id="inlineLoginPanel" onsubmit="event.preventDefault(); inlineMemberLogin();">
+                    <div class="auth-form-title">เข้าสู่ระบบสมาชิก</div>
+                    <div class="auth-field-row">
+                        <input type="text" class="login-input" id="inlineLoginUserId" placeholder="ID สมาชิก" autocomplete="username">
+                        <input type="password" class="login-input" id="inlineLoginPassword" placeholder="รหัสผ่าน" autocomplete="current-password">
+                    </div>
+                    <button type="submit" class="login-btn auth-submit-btn">เข้าสู่ระบบ</button>
+                    <button type="button" class="login-btn auth-secondary-btn" onclick="switchInlineAuth('forgot')">ลืมรหัสผ่าน</button>
+                </form>
+
+                <form class="auth-form-inline" id="inlineRegisterPanel" onsubmit="event.preventDefault(); inlineMemberRegister();">
+                    <div class="auth-form-title">สมัครสมาชิกใหม่</div>
+                    <div class="auth-field-row two-col">
+                        <input type="text" class="login-input" id="inlineRegUserId" placeholder="ID สมาชิก อย่างน้อย 3 ตัว" autocomplete="username">
+                        <input type="email" class="login-input" id="inlineRegEmail" placeholder="Gmail" autocomplete="email">
+                        <input type="password" class="login-input" id="inlineRegPassword" placeholder="รหัสผ่าน อย่างน้อย 4 ตัว" autocomplete="new-password">
+                        <input type="password" class="login-input" id="inlineRegPasswordConfirm" placeholder="ยืนยันรหัสผ่าน" autocomplete="new-password">
+                    </div>
+                    <input type="text" class="login-input" id="inlineRegTrueMoneyLink" placeholder="Link TrueMoney Wallet">
+                    <button type="submit" class="login-btn auth-submit-btn">สมัครสมาชิก</button>
+                </form>
+
+                <form class="auth-form-inline" id="inlineForgotPanel" onsubmit="event.preventDefault(); inlineResetPassword();">
+                    <div class="auth-form-title">ลืมรหัสผ่าน</div>
+                    <input type="email" class="login-input" id="inlineForgotEmail" placeholder="อีเมล Gmail ที่สมัครไว้" autocomplete="email">
+                    <button type="button" class="login-btn auth-submit-btn" onclick="inlineSendResetCode()">ส่งรหัสยืนยัน</button>
+                    <div class="auth-field-row">
+                        <input type="text" class="login-input" id="inlineResetCode" placeholder="รหัสยืนยัน 6 หลัก">
+                        <input type="password" class="login-input" id="inlineNewPassword" placeholder="รหัสผ่านใหม่" autocomplete="new-password">
+                    </div>
+                    <button type="submit" class="login-btn auth-submit-btn">เปลี่ยนรหัสผ่าน</button>
+                    <button type="button" class="login-btn auth-secondary-btn" onclick="switchInlineAuth('login')">กลับไปเข้าสู่ระบบ</button>
+                </form>
+            </div>
+            </div>
         </div>
 
         <div class="balance-box" id="balanceBox" style="display: none;">
@@ -864,23 +2226,10 @@
 
                 <button class="buy-btn" id="buyBtn" onclick="buyTicket()">ซื้อสลาก</button>
 
+                <div class="purchase-history-title">ประวัติการซื้อสลาก</div>
                 <div class="my-tickets" id="myTickets"></div>
             </div>
 
-            <div class="result-section">
-                <div class="section-title">🏆 ผลสลาก</div>
-                <div class="draw-time-box">
-                    <div class="next-draw-label">งวดถัดไป</div>
-                    <div class="next-draw-display" id="nextDrawDisplay">กำลังโหลด...</div>
-                </div>
-                <div class="result-display" id="resultDisplay"></div>
-                <button class="history-btn" onclick="toggleHistory()">📋 ประวัติการถูกรางวัล</button>
-            </div>
-
-            <div class="history-section" id="historySection" style="display: none;">
-                <div class="section-title">📜 ประวัติการถูกรางวัล</div>
-                <div class="history-list" id="historyList"></div>
-            </div>
         </div>
 
         <!-- Admin View Container (sibling of mainContent, NOT inside it) -->
@@ -1139,6 +2488,8 @@
         let ADMIN_CREDENTIALS = { username: '', password: '' };
         let twoDigitWinningNumber = '';
         let currentDrawId = null;
+        let currentDrawDate = '';
+        let lastAutoDrawKey = localStorage.getItem('lotteryLastAutoDrawKey') || '';
 
         // Constants
         let betTypes = {
@@ -1159,6 +2510,7 @@
             if (infoModal) infoModal.removeAttribute('style');
 
             document.getElementById('adminArea').innerHTML = '';
+            document.getElementById('adminTopBar').style.display = isAdminLoggedIn ? 'block' : 'none';
 
             // Load cached drawTimes from localStorage first for instant display
             loadFromStorage();
@@ -1289,8 +2641,14 @@
             if (!user || !sessionToken) return { success: false };
             const result = await MemberAPI.updateBalance(user.id, sessionToken, amount);
             if (result.success) {
-                balance = result.balance;
+                balance = Number(result.balance) || 0;
                 updateBalance();
+                MemberAPI.saveSession(user, sessionToken, balance);
+                try {
+                    await database.ref('users/' + user.id + '/balance').set(balance);
+                } catch (e) {
+                    console.warn('Firebase balance update failed:', e);
+                }
             }
             return result;
         }
@@ -1383,6 +2741,8 @@
                     winningFrontNumbers = globalData.lastResult.winningFrontNumbers || [];
                     winningBackNumbers = globalData.lastResult.winningBackNumbers || [];
                     twoDigitWinningNumber = globalData.lastResult.twoDigitWinningNumber || '';
+                    currentDrawDate = globalData.lastResult.drawDate || (winHistory[0]?.date || '');
+                    currentDrawId = globalData.lastResult.drawId || currentDrawId;
                 }
             }
 
@@ -1419,21 +2779,22 @@
                     winningFrontNumbers,
                     winningBackNumbers,
                     twoDigitWinningNumber,
+                    drawDate: currentDrawDate,
                     drawId: currentDrawId
                 } : (winHistory.length > 0 ? {
                     winningFrontNumbers: winHistory[0].winningFrontNumbers || [],
                     winningBackNumbers: winHistory[0].winningBackNumbers || [],
                     twoDigitWinningNumber: winHistory[0].twoDigitWinningNumber || '',
+                    drawDate: winHistory[0].date || '',
                     drawId: null
                 } : null)
             }));
 
-            // Save user data
+            // Save user data without overwriting the authoritative balance from Google Sheets.
             if (user) {
                 localStorage.setItem('lotteryUserId', user.id);
-                promises.push(database.ref('users/' + user.id).set({
+                promises.push(database.ref('users/' + user.id).update({
                     profile: user,
-                    balance,
                     tickets
                 }));
                 if (sessionToken) {
@@ -1496,16 +2857,22 @@
             }
 
             // Update UI
-            document.getElementById('guestBanner').style.display = 'block';
+            document.body.classList.add('public-landing');
+            document.getElementById('guestBanner').style.display = 'none';
             document.getElementById('balanceBox').style.display = 'none';
+            document.getElementById('resultSection').style.display = 'block';
             document.getElementById('mainContent').style.display = 'none';
             document.getElementById('userArea').innerHTML = '';
+            const authHeader = document.getElementById('authHeaderActions');
+            if (authHeader) authHeader.style.display = 'flex';
             document.getElementById('adminArea').innerHTML = '';
         }
 
         function showLoggedInUI() {
+            document.body.classList.remove('public-landing');
             document.getElementById('guestBanner').style.display = 'none';
             document.getElementById('balanceBox').style.display = 'block';
+            document.getElementById('resultSection').style.display = 'block';
             document.getElementById('mainContent').style.display = 'grid';
             updateUserArea();
             updateBalance();
@@ -1513,12 +2880,14 @@
         }
 
         function updateUserArea() {
+            const authHeader = document.getElementById('authHeaderActions');
+            if (authHeader) authHeader.style.display = 'none';
             document.getElementById('userArea').innerHTML = `
                 <div class="user-info">
                     <div class="user-avatar">👤</div>
                     <div class="user-name">${user.name}</div>
                     <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
-                    <button class="admin-btn" onclick="toggleLogin()" style="background: #e74c3c;">ออกจากระบบ</button>
+                    <button class="admin-btn logout-gold-btn" onclick="toggleLogin()">ออกจากระบบ</button>
                 </div>
             `;
             if (isAdminLoggedIn) {
@@ -1527,7 +2896,7 @@
                         <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
                             🔐 แอดมิน
                         </div>
-                        <button class="admin-btn" onclick="adminLogout()" style="background: #e74c3c;">ออกจากระบบ</button>
+                        <button class="admin-btn logout-gold-btn" onclick="adminLogout()">ออกจากระบบ</button>
                     </div>
                 `;
             } else {
@@ -1757,6 +3126,7 @@
 
             // Set current draw ID
             currentDrawId = Date.now();
+            currentDrawDate = new Date().toLocaleString('th-TH');
 
             // Check if admin set custom winning numbers
             const customFront1 = document.getElementById('customFrontNumber1')?.value.trim();
@@ -1863,7 +3233,7 @@
                                     winningFrontNumbers: winningFrontNumbers,
                                     winningBackNumbers: winningBackNumbers,
                                     twoDigitWinningNumber: twoDigitWinningNumber,
-                                    date: new Date().toLocaleString('th-TH'),
+                                    date: currentDrawDate,
                                     paid: false
                                 };
                                 winners.push(winner);
@@ -1911,7 +3281,7 @@
                                 winningFrontNumbers: winningFrontNumbers,
                                 winningBackNumbers: winningBackNumbers,
                                 twoDigitWinningNumber: twoDigitWinningNumber,
-                                date: new Date().toLocaleString('th-TH'),
+                                date: currentDrawDate,
                                 paid: false
                             };
                             winners.push(winner);
@@ -1925,7 +3295,7 @@
 
             // Add to history
             winHistory.unshift({
-                date: new Date().toLocaleString('th-TH'),
+                date: currentDrawDate,
                 winningFrontNumbers: winningFrontNumbers,
                 winningBackNumbers: winningBackNumbers,
                 twoDigitWinningNumber: twoDigitWinningNumber,
@@ -1997,6 +3367,10 @@
         }
 
         // แสดงผลสลากล่าสุด (ไม่คำนวณรางวัลสรุป, ใช้สำหรับแสดงเพียงตัวเลข)
+        function getLatestDrawDateText() {
+            return currentDrawDate || (winHistory[0]?.date || '-');
+        }
+
         function renderLastResult() {
             if (winningFrontNumbers.length === 0 && winningBackNumbers.length === 0) return;
             renderResult(null);
@@ -2004,163 +3378,37 @@
 
         function renderResult(totalPrize) {
             const container = document.getElementById('resultDisplay');
+            if (!container) return;
             const userWonTickets = tickets.filter(t => t.userId === user?.id && t.status === 'won' && t.drawId === currentDrawId);
-            console.log('renderResult - userWonTickets:', userWonTickets);
             const userTotalPrize = userWonTickets.reduce((sum, t) => sum + (t.prize || 0), 0);
-            console.log('renderResult - userTotalPrize:', userTotalPrize);
             const wonAny = userTotalPrize > 0;
-
-            // ถ้าเรียกด้วย null = แค่แสดงตัวเลข ไม่แสดงผล ถูก/ไม่ถูก
             const showPrizeSection = totalPrize !== null;
+            const frontText = winningFrontNumbers.length ? winningFrontNumbers.join(' / ') : 'xxx / xxx';
+            const backText = winningBackNumbers.length ? winningBackNumbers.join(' / ') : 'xxx / xxx';
+            const twoText = twoDigitWinningNumber || 'xx';
 
             container.innerHTML = `
-                <div style="
-                    background: linear-gradient(135deg, #0047AB 0%, #0073CF 50%, #00A3FF 100%);
-                    border-radius: 20px;
-                    padding: 40px 30px;
-                    text-align: center;
-                    box-shadow: 0 20px 60px rgba(0, 71, 171, 0.5);
-                    margin-bottom: 30px;
-                ">
-                    <div style="
-                        display: flex;
-                        justify-content: center;
-                        gap: 40px;
-                        flex-wrap: wrap;
-                    ">
-                        <!-- Front 3 Digits -->
-                        <div>
-                            <div style="
-                                font-size: 1.8rem;
-                                color: white;
-                                font-weight: bold;
-                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                                margin-bottom: 15px;
-                            ">
-                                รางวัลเลขหน้า 3 ตัว
-                            </div>
-                            <div style="
-                                display: flex;
-                                gap: 15px;
-                                justify-content: center;
-                            ">
-                                ${winningFrontNumbers.map(num => `
-                                    <div style="
-                                        background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
-                                        border-radius: 15px;
-                                        padding: 20px 30px;
-                                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                                    ">
-                                        <div style="
-                                            font-size: 4rem;
-                                            font-weight: 900;
-                                            color: white;
-                                            letter-spacing: 10px;
-                                            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                                        ">
-                                            ${num}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
+                <div class="compact-result-card">
+                    <div class="compact-result-date">วันที่ออกผลล่าสุด: ${getLatestDrawDateText()}</div>
+                    <div class="compact-result-grid">
+                        <div class="compact-result-item">
+                            <div class="compact-result-label">3 ตัวหน้า</div>
+                            <div class="compact-result-number">${frontText}</div>
                         </div>
-
-                        <!-- Back 3 Digits -->
-                        <div>
-                            <div style="
-                                font-size: 1.8rem;
-                                color: white;
-                                font-weight: bold;
-                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                                margin-bottom: 15px;
-                            ">
-                                รางวัลเลขท้าย 3 ตัว
-                            </div>
-                            <div style="
-                                display: flex;
-                                gap: 15px;
-                                justify-content: center;
-                            ">
-                                ${winningBackNumbers.map(num => `
-                                    <div style="
-                                        background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
-                                        border-radius: 15px;
-                                        padding: 20px 30px;
-                                        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                                    ">
-                                        <div style="
-                                            font-size: 4rem;
-                                            font-weight: 900;
-                                            color: white;
-                                            letter-spacing: 10px;
-                                            text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                                        ">
-                                            ${num}
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
+                        <div class="compact-result-item">
+                            <div class="compact-result-label">3 ตัวล่าง</div>
+                            <div class="compact-result-number">${backText}</div>
                         </div>
-
-                        <!-- 2 Digit Number -->
-                        ${twoDigitWinningNumber ? `
-                        <div>
-                            <div style="
-                                font-size: 1.8rem;
-                                color: white;
-                                font-weight: bold;
-                                text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                                margin-bottom: 15px;
-                            ">
-                                รางวัลเลขท้าย 2 ตัว
-                            </div>
-                            <div style="
-                                background: linear-gradient(135deg, #0057B8 0%, #0066CC 100%);
-                                border-radius: 15px;
-                                padding: 20px 60px;
-                                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-                            ">
-                                <div style="
-                                    font-size: 4.5rem;
-                                    font-weight: 900;
-                                    color: white;
-                                    letter-spacing: 15px;
-                                    text-shadow: 0 3px 10px rgba(0,0,0,0.2);
-                                ">
-                                    ${twoDigitWinningNumber}
-                                </div>
-                            </div>
+                        <div class="compact-result-item compact-result-item-small">
+                            <div class="compact-result-label">2 ตัวล่าง</div>
+                            <div class="compact-result-number">${twoText}</div>
                         </div>
-                        ` : ''}
                     </div>
                 </div>
-
-                <!-- Prize Result -->
                 ${showPrizeSection ? `
-                <div style="
-                    background: white;
-                    border-radius: 20px;
-                    padding: 30px;
-                    text-align: center;
-                    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-                ">
-                    <div style="
-                        font-size: 2rem;
-                        font-weight: bold;
-                        color: ${wonAny ? '#10B981' : '#64748B'};
-                        margin-bottom: 15px;
-                    ">
-                        ${wonAny ? '🎉 สุดยอด! คุณถูกรางวัล' : '😔 คุณไม่ถูกรางวัล'}
-                    </div>
-                    ${wonAny ? `
-                    <div style="
-                        font-size: 2.5rem;
-                        font-weight: 900;
-                        color: #059669;
-                    ">
-                        ${userTotalPrize.toLocaleString()} บาท
-                    </div>
-                    ` : ''}
+                <div class="compact-prize-result ${wonAny ? 'won' : 'lost'}">
+                    <span>${wonAny ? 'ถูกรางวัล' : 'ไม่ถูกรางวัล'}</span>
+                    ${wonAny ? `<strong>${userTotalPrize.toLocaleString()} บาท</strong>` : ''}
                 </div>
                 ` : ''}
             `;
@@ -2191,26 +3439,182 @@
             document.getElementById('nextDrawDisplay').textContent = `${nextHour}:${nextMinute} น.`;
         }
 
-        function checkDrawTime() {
-            if (!autoDrawEnabled) {
-                console.log('Auto-draw disabled');
-                return;
-            }
-            const now = new Date();
-            const currentTime = now.getHours().toString().padStart(2, '0') + now.getMinutes().toString().padStart(2, '0');
-            console.log(`Checking draw time: currentTime=${currentTime}, lastDrawTime=${lastDrawTime}, drawTimes=${drawTimes}`);
+        function getLocalDateKey(date = new Date()) {
+            return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        }
 
-            if (drawTimes.includes(currentTime) && lastDrawTime !== currentTime) {
-                console.log(`Draw time reached! Drawing lottery...`);
-                lastDrawTime = currentTime;
-                drawLottery(true);
+        function timeToMinutes(time) {
+            return (parseInt(time.substring(0, 2), 10) * 60) + parseInt(time.substring(2, 4), 10);
+        }
+
+        async function checkDrawTime() {
+            if (!autoDrawEnabled || !Array.isArray(drawTimes) || drawTimes.length === 0) return;
+
+            const now = new Date();
+            const todayKey = getLocalDateKey(now);
+            const currentMinutes = now.getHours() * 60 + now.getMinutes();
+            const sortedTimes = [...drawTimes].sort();
+
+            for (const drawTime of sortedTimes) {
+                const diff = currentMinutes - timeToMinutes(drawTime);
+                const drawKey = `${todayKey}-${drawTime}`;
+                if (diff >= 0 && diff <= 2 && lastAutoDrawKey !== drawKey) {
+                    lastAutoDrawKey = drawKey;
+                    lastDrawTime = drawTime;
+                    localStorage.setItem('lotteryLastAutoDrawKey', drawKey);
+                    await drawLottery(true);
+                    updateNextDrawDisplay();
+                    break;
+                }
             }
         }
 
         function startCheckTime() {
-            checkTimeInterval = setInterval(() => {
-                checkDrawTime();
-            }, 1000);
+            if (checkTimeInterval) clearInterval(checkTimeInterval);
+            checkDrawTime();
+            checkTimeInterval = setInterval(checkDrawTime, 15000);
+        }
+
+
+
+
+
+        function openInlineAuth(tab = 'login') {
+            const modal = document.getElementById('authPopupModal');
+            const guest = document.getElementById('guestBanner');
+            if (guest) guest.style.display = 'block';
+            switchInlineAuth(tab);
+            if (modal) modal.classList.add('active');
+        }
+
+        function closeAuthPopup() {
+            const modal = document.getElementById('authPopupModal');
+            const guest = document.getElementById('guestBanner');
+            if (modal) modal.classList.remove('active');
+            if (guest) guest.style.display = 'none';
+        }
+
+        // Inline Login/Register on the main page
+        function switchInlineAuth(tab) {
+            const isLogin = tab === 'login';
+            const isRegister = tab === 'register';
+            const isForgot = tab === 'forgot';
+            document.getElementById('inlineLoginTab')?.classList.toggle('active', isLogin || isForgot);
+            document.getElementById('inlineRegisterTab')?.classList.toggle('active', isRegister);
+            document.getElementById('inlineLoginPanel')?.classList.toggle('active', isLogin);
+            document.getElementById('inlineRegisterPanel')?.classList.toggle('active', isRegister);
+            document.getElementById('inlineForgotPanel')?.classList.toggle('active', isForgot);
+        }
+
+        async function inlineSendResetCode() {
+            const email = document.getElementById('inlineForgotEmail').value.trim();
+            if (!email) {
+                showInfoModal('กรุณากรอกอีเมล', '❌', 'ข้อมูลไม่ครบ');
+                return;
+            }
+            try {
+                const result = await MemberAPI.call('forgotPassword', { email });
+                showInfoModal(result.message || 'ส่งรหัสยืนยันแล้ว', result.success ? '✅' : '❌', result.success ? 'สำเร็จ' : 'ข้อผิดพลาด');
+            } catch (e) {
+                showInfoModal(e.message || 'ไม่สามารถส่งรหัสยืนยันได้', '❌', 'เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function inlineResetPassword() {
+            const email = document.getElementById('inlineForgotEmail').value.trim();
+            const code = document.getElementById('inlineResetCode').value.trim();
+            const newPassword = document.getElementById('inlineNewPassword').value;
+            if (!email || !code || !newPassword) {
+                showInfoModal('กรุณากรอกอีเมล รหัสยืนยัน และรหัสผ่านใหม่', '❌', 'ข้อมูลไม่ครบ');
+                return;
+            }
+            try {
+                const result = await MemberAPI.call('resetPassword', { email, code, newPassword });
+                if (result.success) {
+                    showInfoModal(result.message || 'เปลี่ยนรหัสผ่านสำเร็จ', '✅', 'สำเร็จ');
+                    switchInlineAuth('login');
+                } else {
+                    showInfoModal(result.message || 'เปลี่ยนรหัสผ่านไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal(e.message || 'ไม่สามารถเปลี่ยนรหัสผ่านได้', '❌', 'เกิดข้อผิดพลาด');
+            }
+        }
+
+        async function inlineMemberLogin() {
+            const userId = document.getElementById('inlineLoginUserId').value.trim();
+            const password = document.getElementById('inlineLoginPassword').value;
+            if (!userId || !password) {
+                showInfoModal('กรุณากรอก ID และรหัสผ่าน', '❌', 'ข้อมูลไม่ครบ');
+                return;
+            }
+            const btn = document.querySelector('#inlineLoginPanel button[type="submit"]');
+            const oldText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'กำลังเข้าสู่ระบบ...';
+            try {
+                const result = await MemberAPI.call('login', { userId, password });
+                if (!result.success) {
+                    showInfoModal(result.message || 'เข้าสู่ระบบไม่สำเร็จ', '❌', 'เข้าสู่ระบบไม่สำเร็จ');
+                    return;
+                }
+                user = MemberAPI.userFromApi(result.user);
+                sessionToken = result.sessionToken;
+                balance = Number(result.user.balance) || 0;
+                MemberAPI.saveSession(user, sessionToken, balance);
+                tickets = [];
+                await loadFromFirebase();
+                showLoggedInUI();
+                startBalancePolling();
+                startRealtimeSync();
+                await syncBalanceFromSheets();
+                closeAuthPopup();
+            } catch (e) {
+                showInfoModal(e.message || 'ไม่สามารถเชื่อมต่อระบบสมาชิกได้', '❌', 'เกิดข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+            }
+        }
+
+        async function inlineMemberRegister() {
+            const userId = document.getElementById('inlineRegUserId').value.trim();
+            const email = document.getElementById('inlineRegEmail').value.trim();
+            const password = document.getElementById('inlineRegPassword').value;
+            const confirm = document.getElementById('inlineRegPasswordConfirm').value;
+            const trueMoneyLink = document.getElementById('inlineRegTrueMoneyLink').value.trim();
+            if (!userId || userId.length < 3) return showInfoModal('ID สมาชิกต้องมีอย่างน้อย 3 ตัว', '❌', 'ข้อมูลไม่ถูกต้อง');
+            if (!password || password.length < 4) return showInfoModal('รหัสผ่านต้องมีอย่างน้อย 4 ตัว', '❌', 'ข้อมูลไม่ถูกต้อง');
+            if (password !== confirm) return showInfoModal('รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน', '❌', 'ข้อมูลไม่ถูกต้อง');
+            if (!email || !email.includes('@')) return showInfoModal('กรุณากรอกอีเมลให้ถูกต้อง', '❌', 'ข้อมูลไม่ถูกต้อง');
+            if (!trueMoneyLink) return showInfoModal('กรุณากรอก Link TrueMoney Wallet', '❌', 'ข้อมูลไม่ครบ');
+            const btn = document.querySelector('#inlineRegisterPanel button[type="submit"]');
+            const oldText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'กำลังสมัครสมาชิก...';
+            try {
+                const result = await MemberAPI.call('register', { userId, password, email, trueMoneyLink });
+                if (!result.success) {
+                    showInfoModal(result.message || 'สมัครสมาชิกไม่สำเร็จ', '❌', 'สมัครสมาชิกไม่สำเร็จ');
+                    return;
+                }
+                user = MemberAPI.userFromApi(result.user);
+                sessionToken = result.sessionToken;
+                balance = Number(result.user.balance) || 0;
+                MemberAPI.saveSession(user, sessionToken, balance);
+                tickets = [];
+                await saveToFirebase();
+                showLoggedInUI();
+                startBalancePolling();
+                startRealtimeSync();
+                closeAuthPopup();
+                showInfoModal('สมัครสมาชิกสำเร็จ', '✅', 'ยินดีต้อนรับ');
+            } catch (e) {
+                showInfoModal(e.message || 'ไม่สามารถสมัครสมาชิกได้', '❌', 'เกิดข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = oldText;
+            }
         }
 
         function openAdminLoginModal() {
@@ -2249,8 +3653,10 @@
                     return;
                 }
                 // Hide player UI
+                document.body.classList.remove('public-landing');
                 document.getElementById('guestBanner').style.display = 'none';
                 document.getElementById('balanceBox').style.display = 'none';
+                document.getElementById('resultSection').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'none';
                 if (document.getElementById('historySection')) {
                     document.getElementById('historySection').style.display = 'none';
@@ -2264,16 +3670,21 @@
                 if (user) {
                     document.getElementById('guestBanner').style.display = 'none';
                     document.getElementById('balanceBox').style.display = 'block';
-                    document.getElementById('mainContent').style.display = 'grid';
+            document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('mainContent').style.display = 'grid';
                 } else {
-                    document.getElementById('guestBanner').style.display = 'block';
+                    document.body.classList.add('public-landing');
+                    document.getElementById('guestBanner').style.display = 'none';
                     document.getElementById('balanceBox').style.display = 'none';
+                    document.getElementById('resultSection').style.display = 'block';
                     document.getElementById('mainContent').style.display = 'none';
                 }
             }
         }
 
         function updateAdminBadge() {
+            const topBar = document.getElementById('adminTopBar');
+            if (topBar) topBar.style.display = isAdminLoggedIn ? 'block' : 'none';
             if (isAdminLoggedIn) {
                 document.getElementById('adminArea').innerHTML = `
                     <div class="user-info">
@@ -2425,9 +3836,11 @@
                 showInfoModal(`เพิ่มเงินให้คุณ ${targetUserId} สำเร็จ! +${amount} บาท 🎉`, '✅');
 
                 if (user && user.id === targetUserId) {
-                    balance = result.balance;
+                    balance = Number(result.balance) || 0;
                     updateBalance();
+                    MemberAPI.saveSession(user, sessionToken, balance);
                 }
+                try { await database.ref('users/' + targetUserId + '/balance').set(Number(result.balance) || 0); } catch (e) { console.warn('Firebase balance sync failed:', e); }
 
                 loadAdminMembersDropdown();
             } else {
@@ -2466,9 +3879,11 @@
                 showInfoModal(`หักเงินคุณ ${targetUserId} สำเร็จ! -${amount} บาท`, '✅');
 
                 if (user && user.id === targetUserId) {
-                    balance = result.balance;
+                    balance = Number(result.balance) || 0;
                     updateBalance();
+                    MemberAPI.saveSession(user, sessionToken, balance);
                 }
+                try { await database.ref('users/' + targetUserId + '/balance').set(Number(result.balance) || 0); } catch (e) { console.warn('Firebase balance sync failed:', e); }
 
                 loadAdminMembersDropdown();
             } else {
@@ -2479,6 +3894,8 @@
 
         function adminLogout() {
             isAdminLoggedIn = false;
+            const topBar = document.getElementById('adminTopBar');
+            if (topBar) topBar.style.display = 'none';
             updateAdminBadge();
             switchView('player');
         }
@@ -2521,7 +3938,10 @@
 
         function toggleHistory() {
             const historySection = document.getElementById('historySection');
-            historySection.style.display = historySection.style.display === 'none' ? 'block' : 'none';
+            if (!historySection) return;
+            const shouldOpen = historySection.style.display === 'none' || !historySection.style.display;
+            historySection.style.display = shouldOpen ? 'block' : 'none';
+            if (shouldOpen) renderHistory();
         }
 
         function renderHistory() {

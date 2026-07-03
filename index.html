@@ -3997,21 +3997,9 @@
             if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
                 isAdminLoggedIn = true;
                 closeAdminLoginModal();
-
-                // Load admin settings from Google Apps Script
-                try {
-                    const result = await MemberAPI.getAdminSettings();
-                    if (result.success && result.settings) {
-                        adminTrueMoneyLink = result.settings.adminTrueMoneyLink || adminTrueMoneyLink;
-                        telegramBotToken = result.settings.telegramBotToken || telegramBotToken;
-                        telegramChatId = result.settings.telegramChatId || telegramChatId;
-                        saveToStorage();
-                    }
-                } catch (e) {
-                    console.error('Failed to load admin settings from GAS:', e);
-                }
-
-                // Load saved admin settings
+                
+                // SHOW ADMIN UI FIRST for instant feedback!
+                // Load saved admin settings from local storage first
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
                 document.getElementById('telegramChatIdInput').value = telegramChatId;
 
@@ -4024,12 +4012,33 @@
                     autoDrawBtn.innerHTML = '🔴 ปิด';
                     autoDrawBtn.style.background = '#e74c3c';
                 }
-
-                renderDrawTimes();
-                renderWinners();
+                
                 updateAdminBadge();
-                loadAdminMembersDropdown();
                 switchView('admin');
+                
+                // NOW LOAD EVERYTHING ELSE IN THE BACKGROUND!
+                (async () => {
+                    // Load admin settings from Google Apps Script in background
+                    try {
+                        const result = await MemberAPI.getAdminSettings();
+                        if (result.success && result.settings) {
+                            adminTrueMoneyLink = result.settings.adminTrueMoneyLink || adminTrueMoneyLink;
+                            telegramBotToken = result.settings.telegramBotToken || telegramBotToken;
+                            telegramChatId = result.settings.telegramChatId || telegramChatId;
+                            document.getElementById('telegramBotTokenInput').value = telegramBotToken;
+                            document.getElementById('telegramChatIdInput').value = telegramChatId;
+                            saveToStorage();
+                        }
+                    } catch (e) {
+                        console.error('Failed to load admin settings from GAS:', e);
+                    }
+
+                    // Render draw times and winners in background
+                    renderDrawTimes();
+                    renderWinners();
+                    loadAdminMembersDropdown();
+                })();
+                
             } else {
                 showInfoModal('ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง!', '❌', 'ข้อผิดพลาด');
             }

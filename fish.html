@@ -799,7 +799,9 @@
 
             // Calculate result before animation
             const matchCount = rolls.filter(r => r.name === selectedSymbol).length;
-            const won = matchCount > 0;
+            // 30% chance for player to win, 70% house wins
+            const randomChance = Math.random();
+            const won = (randomChance <= 0.3) && (matchCount > 0);
             const payout = won ? betAmountInput * matchCount : 0;
             const netChange = won ? payout - betAmountInput : -betAmountInput;
 
@@ -930,12 +932,18 @@
             if (!user || isRolling) return; // Prevent overwriting during gameplay
             try {
                 const session = MemberAPI.getSession();
-                const res = await MemberAPI.syncBalance(user.id, session.sessionToken);
-                if (res !== null && !isRolling) {
-                    balance = res;
-                    document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                    await database.ref('users/' + user.id + '/balance').set(balance);
-                    MemberAPI.saveSession(user, session.sessionToken, balance);
+                const res = await MemberAPI.call('getProfile', {
+                    userId: user.id,
+                    sessionToken: session.sessionToken
+                });
+                if (res.success && !isRolling) {
+                    const newBal = Number(res.user.balance) || 0;
+                    if (newBal !== balance) {
+                        balance = newBal;
+                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        MemberAPI.saveSession(user, session.sessionToken, balance);
+                        database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
+                    }
                 }
             } catch (e) {}
         }

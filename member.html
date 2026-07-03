@@ -197,7 +197,7 @@
         }
 
         .header h1 {
-            color: #23f0a0;
+            color: var(--lotto-gold-light);
             letter-spacing: 0;
             text-shadow: none !important;
         }
@@ -477,14 +477,7 @@
                 </div>
             </div>
 
-            <div class="btn-row member-action-row" style="margin-top: 20px; display: flex; gap: 10px;">
-                <button type="button" class="login-btn green member-deposit-btn" style="flex: 1; margin-top: 0;" onclick="showDeposit()">💰 เติมเงิน</button>
-                <button type="button" class="login-btn orange member-withdraw-btn" style="flex: 1; margin-top: 0;" onclick="showWithdraw()">💸 ถอนเงิน</button>
-            </div>
-            <div class="btn-row member-action-row" style="margin-top: 10px; display: flex; gap: 10px;">
-                <a href="index.html" class="login-btn purple member-play-btn" style="flex: 1; text-align: center; display: inline-block; text-decoration: none; padding: 12px 0; border-radius: 8px;">🎫 ไปเล่นสลาก</a>
-                <button type="button" class="login-btn member-logout-btn" style="background: #e74c3c; flex: 1; margin-top: 0;" onclick="memberLogout()">🚪 ออกจากระบบ</button>
-            </div>
+            <a href="index.html" class="login-btn" style="display: block; width: 220px; margin: 15px auto 0; text-align: center; text-decoration: none; padding: 12px 0; border-radius: 4px; font-weight: bold; background: #111111 !important; color: #f4d576 !important; border: 1px solid #f4d576 !important;">กลับหน้าแรก</a>
         </div>
 
         <!-- Deposit -->
@@ -498,7 +491,7 @@
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="text" class="login-input" id="giftVoucherLink" placeholder="https://gift.truemoney.com/campaign/?v=..." style="margin-top: 0;">
                     <input type="number" class="login-input" id="giftVoucherAmount" placeholder="จำนวนเงินในซอง (บาท)" min="10" style="margin-top: 0;">
-                    <button type="button" class="login-btn green" onclick="confirmGiftVoucher()" style="margin-top: 5px;">📤 ส่งซองทรูมันนี่</button>
+                    <button type="button" class="login-btn" onclick="confirmGiftVoucher()" style="margin-top: 5px; background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important; color: #111111 !important; border: 1px solid #f8dfa0 !important; font-weight: bold;">📤 ส่งซองทรูมันนี่</button>
                 </div>
             </div>
 
@@ -507,7 +500,7 @@
             <button id="depositBackBtn" class="login-btn" style="background: #95a5a6; margin-top: 10px; display: none;" onclick="hideDeposit()">🔙 กลับ</button>
             <!-- Go to lottery button (only for logged in users) -->
             <div style="text-align: center; margin-top: 10px;">
-                <a id="depositGoPlayBtn" href="index.html" class="login-btn purple" style="display: none; margin: 0 auto;">🎫 ไปเล่นสลาก</a>
+                <a id="depositGoPlayBtn" href="index.html" class="login-btn" style="display: none; width: 220px; margin: 0 auto; text-align: center; text-decoration: none; padding: 12px 0; border-radius: 4px; font-weight: bold; background: #111111 !important; color: #f4d576 !important; border: 1px solid #f4d576 !important;">กลับหน้าแรก</a>
             </div>
         </div>
 
@@ -519,10 +512,10 @@
                 <div style="font-size: 0.85rem; color: #666; margin-bottom: 12px; text-align: center;">ขั้นต่ำในการถอน 10 บาท (บัญชี: <span id="withdrawAccountDisplay" style="color: #e67e22; font-weight: bold;">-</span>)</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <input type="number" class="login-input" id="withdrawAmount" placeholder="จำนวนเงินที่ต้องการถอน (บาท)" min="10" style="margin-top: 0;">
-                    <button type="button" class="login-btn orange" onclick="submitWithdrawal()" style="margin-top: 5px;">📤 ยืนยันการถอนเงิน</button>
+                    <button type="button" class="login-btn" onclick="submitWithdrawal()" style="margin-top: 5px; background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important; color: #111111 !important; border: 1px solid #f8dfa0 !important; font-weight: bold;">📤 ยืนยันการถอนเงิน</button>
                 </div>
             </div>
-            <button class="login-btn" style="background: #95a5a6; margin-top: 10px;" onclick="hideWithdraw()">🔙 กลับ</button>
+            <a href="index.html" class="login-btn" style="display: block; width: 220px; margin: 15px auto 0; text-align: center; text-decoration: none; padding: 12px 0; border-radius: 4px; font-weight: bold; background: #111111 !important; color: #f4d576 !important; border: 1px solid #f4d576 !important;">กลับหน้าแรก</a>
         </div>
     </div>
 
@@ -628,6 +621,8 @@
                 startBalancePolling();
                 if (tab === 'deposit') {
                     showDeposit();
+                } else if (tab === 'withdraw') {
+                    showWithdraw();
                 }
 
             } else {
@@ -644,6 +639,11 @@
                     setTimeout(() => {
                         showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน! 🚀 หลังจากโอนเงินแล้ว ให้เข้าสู่ระบบเพื่อตรวจสอบ!', '🔐');
                     }, 500);
+                } else if (tab === 'withdraw') {
+                    showAuthUI();
+                    setTimeout(() => {
+                        showInfoModal('กรุณาเข้าสู่ระบบก่อนถอนเงิน! 🔐', '🔐');
+                    }, 500);
                 }
             }
 
@@ -659,7 +659,8 @@
                         }
                         if (tab === 'deposit') {
                             showDeposit();
-
+                        } else if (tab === 'withdraw') {
+                            showWithdraw();
                         } else {
                             showDashboard(balance); // Refresh with latest!
                         }
@@ -678,6 +679,8 @@
                             switchAuthTab('forgot');
                         } else if (tab === 'deposit') {
                             showInfoModal('กรุณาเข้าสู่ระบบก่อนเติมเงิน!', '🔐');
+                        } else if (tab === 'withdraw') {
+                            showInfoModal('กรุณาเข้าสู่ระบบก่อนถอนเงิน!', '🔐');
                         }
                     }
                 } catch (e) {

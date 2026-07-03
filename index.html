@@ -3595,17 +3595,9 @@
         function checkWin(ticket) {
             const type = betTypes[ticket.type];
             console.log('checkWin - ticket:', ticket, 'winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'type:', type);
-            
-            // 30% chance for player to win, 70% house wins
-            const randomChance = Math.random();
-            if (randomChance > 0.3) {
-                console.log('House wins - random chance:', randomChance);
-                return false; // 70% chance to lose
-            }
-            
-            // If we get here, 30% chance to win (use original logic to determine win)
             if (type.position === 'top') {
                 const ticketPart = ticket.number;
+                // Check if ticket part matches any front number
                 for (const frontNum of winningFrontNumbers) {
                     if (ticketPart === frontNum) {
                         console.log('top - ticketPart:', ticketPart, 'matches front number:', frontNum);
@@ -3615,6 +3607,7 @@
                 return false;
             } else if (type.digits === 3 && type.position === 'bottom') {
                 const ticketPart = ticket.number;
+                // Check if ticket part matches any back number (for bottom3)
                 for (const backNum of winningBackNumbers) {
                     if (ticketPart === backNum) {
                         console.log('bottom3 - ticketPart:', ticketPart, 'matches back number:', backNum);
@@ -3997,13 +3990,26 @@
             showInfoModal(`ออกผลสลากอัตโนมัติ ${autoDrawEnabled ? 'เปิดแล้ว' : 'ปิดแล้ว'}`, autoDrawEnabled ? '✅' : '🔴', 'แจ้งเตือน');
         }
 
-        function adminLogin() {
+        async function adminLogin() {
             const username = document.getElementById('adminUsername').value;
             const password = document.getElementById('adminPassword').value;
 
             if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
                 isAdminLoggedIn = true;
                 closeAdminLoginModal();
+
+                // Load admin settings from Google Apps Script
+                try {
+                    const result = await MemberAPI.getAdminSettings();
+                    if (result.success && result.settings) {
+                        adminTrueMoneyLink = result.settings.adminTrueMoneyLink || adminTrueMoneyLink;
+                        telegramBotToken = result.settings.telegramBotToken || telegramBotToken;
+                        telegramChatId = result.settings.telegramChatId || telegramChatId;
+                        saveToStorage();
+                    }
+                } catch (e) {
+                    console.error('Failed to load admin settings from GAS:', e);
+                }
 
                 // Load saved admin settings
                 document.getElementById('telegramBotTokenInput').value = telegramBotToken;
@@ -4062,6 +4068,17 @@
             updateBetMultipliersUI();
             saveToStorage();
 
+            // Save to Google Apps Script
+            try {
+                await MemberAPI.saveAdminSettings({
+                    adminTrueMoneyLink: adminTrueMoneyLink,
+                    telegramBotToken: telegramBotToken,
+                    telegramChatId: telegramChatId
+                });
+            } catch (e) {
+                console.error('Failed to save admin settings to GAS:', e);
+            }
+
             btn.disabled = false;
             btn.innerHTML = originalText;
             showInfoModal('บันทึกการตั้งค่าสำเร็จ! ✅', '✅');
@@ -4079,7 +4096,7 @@
                     result.members.forEach((member) => {
                         const opt = document.createElement('option');
                         opt.value = member.userId;
-                        opt.textContent = `ยอดเงิน: ${member.balance} บาท`;
+                        opt.textContent = `${member.userId} - ยอดเงิน: ${member.balance} บาท`;
                         datalistEl.appendChild(opt);
                     });
                 }

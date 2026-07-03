@@ -63,11 +63,11 @@
         }
 
         .header-auth-btn {
-            background: #11171b;
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%);
             color: #e2e8f0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.24);
             padding: 8px 14px;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 0.85rem;
             font-weight: bold;
             cursor: pointer;
@@ -78,6 +78,14 @@
             border-color: var(--lotto-gold);
             color: var(--lotto-gold-soft);
         }
+
+        .header-auth-btn.header-register-btn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%);
+            color: #111;
+            border: 1px solid #f2d178;
+        }
+
+
 
         .user-info {
             display: flex;
@@ -512,13 +520,14 @@
         <!-- Header -->
         <div class="header">
             <h1 style="font-size: 1.35rem;"><span style="cursor: pointer; user-select: none;">🎫</span> Medtad888</h1>
-            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ"
+            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
                 target="_blank"
                 style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
                 💬 Line OpenChat
             </a>
             <div class="auth-header-actions" id="authHeaderActions">
-                <button type="button" class="header-auth-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
+                <button type="button" class="header-auth-btn header-register-btn" onclick="openRegisterModal()">สมัครสมาชิก</button>
+                <button type="button" class="header-auth-btn header-login-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
             </div>
             <div id="userArea"></div>
         </div>
@@ -527,7 +536,7 @@
         <div class="game-tabs" id="gameTabs">
             <a href="index.html" class="game-tab">🎫 แทงหวย</a>
             <a href="dice.html" class="game-tab active">🎲 ทอยเต๋า 1-6</a>
-            <a href="coin.html" class="game-tab">🪙 ปั่นแปะ</a>
+            <a href="fish.html" class="game-tab">🦀 น้ำเต้า ปู ปลา</a>
         </div>
 
         <!-- Guest Warning -->
@@ -607,6 +616,19 @@
         </div>
     </div>
 
+    <!-- Auth Login Modal -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content">
+            <div class="modal-title">เข้าสู่ระบบ</div>
+            <form onsubmit="event.preventDefault(); handleAuthSubmit();">
+                <input type="text" class="login-input" id="authUserId" placeholder="ID สมาชิก" autocomplete="username">
+                <input type="password" class="login-input" id="authPassword" placeholder="รหัสผ่าน" autocomplete="current-password">
+                <button type="submit" class="login-btn" id="authSubmitBtn">เข้าสู่ระบบ</button>
+                <button type="button" class="login-btn secondary" onclick="closeAuthModal()">ปิด</button>
+            </form>
+        </div>
+    </div>
+
     <!-- Info Modal Popup -->
     <div class="modal-overlay" id="infoModal">
         <div class="modal-content">
@@ -656,18 +678,51 @@
             // Restore last bet amount
             const lastBet = parseInt(localStorage.getItem('lastBetAmount')) || 10;
             document.getElementById('betAmount').value = Math.min(100, Math.max(10, lastBet));
+            
             // Restore session
             const cachedSession = MemberAPI.getSession();
-            if (cachedSession) {
-                user = MemberAPI.userFromSession(cachedSession);
-                balance = Number(cachedSession.balance) || 0;
+            if (cachedSession && cachedSession.userId) {
+                user = {
+                    id: cachedSession.userId,
+                    name: cachedSession.name || cachedSession.userId,
+                    email: cachedSession.email,
+                    trueMoneyLink: cachedSession.trueMoneyLink
+                };
+                balance = cachedSession.balance || 0;
                 showLoggedInUI();
                 startRealtimeBalance(); // Real-time + polling
                 loadDiceHistory();
+
+                // Refresh profile asynchronously to verify session
+                try {
+                    const profileRes = await MemberAPI.call('getProfile', {
+                        userId: user.id,
+                        sessionToken: cachedSession.sessionToken
+                    });
+                    if (profileRes.success) {
+                        balance = Number(profileRes.user.balance) || 0;
+                        user.name = profileRes.user.userId || user.name;
+                        MemberAPI.saveSession(user, cachedSession.sessionToken, balance);
+                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        await database.ref('users/' + user.id + '/balance').set(balance);
+                    } else if (profileRes.reason === 'invalid_session') {
+                        logoutWithoutConfirm();
+                    }
+                } catch (e) {
+                    console.warn('Session refresh skipped:', e);
+                }
             } else {
                 showGuestUI();
             }
         };
+
+        function logoutWithoutConfirm() {
+            stopRealtimeBalance();
+            MemberAPI.clearSession();
+            user = null;
+            balance = 0;
+            showGuestUI();
+        }
 
         function showLoggedInUI() {
             document.getElementById('authHeaderActions').style.display = 'none';
@@ -703,7 +758,7 @@
             // 1. Firebase real-time listener — instant update whenever balance changes
             balanceRef = database.ref('users/' + user.id + '/balance');
             balanceListener = balanceRef.on('value', (snap) => {
-                if (snap.exists()) {
+                if (snap.exists() && !isRolling) { // Prevent overwriting during gameplay
                     const fbBal = Number(snap.val()) || 0;
                     if (fbBal !== balance) {
                         balance = fbBal;
@@ -732,13 +787,13 @@
         }
 
         async function syncBalance() {
-            if (!user) return;
+            if (!user || isRolling) return; // Prevent overwriting during gameplay
             try {
                 const profile = await MemberAPI.call('getProfile', {
                     userId: user.id,
                     sessionToken: MemberAPI.getSession()?.sessionToken
                 });
-                if (profile.success) {
+                if (profile.success && !isRolling) {
                     const newBal = Number(profile.user.balance) || 0;
                     if (newBal !== balance) {
                         balance = newBal;
@@ -755,6 +810,11 @@
 
         function openAuthModal() {
             document.getElementById('authModal').classList.add('active');
+        }
+
+        function openRegisterModal() {
+            // Redirect to main page and open register form
+            window.location.href = 'index.html?auth=register';
         }
 
         function closeAuthModal() {
@@ -834,7 +894,6 @@
                 showInfoModal('เดิมพันขั้นต่ำ 10 บาท', '💸', 'ข้อผิดพลาด');
                 return;
             }
-
             if (balance < betAmountInput) {
                 showInfoModal('ยอดเงินของคุณไม่เพียงพอ', '💸', 'ข้อผิดพลาด');
                 return;
@@ -845,106 +904,77 @@
             document.getElementById('gameStatus').textContent = '🎲 กำลังทอยลูกเต๋า...';
             document.getElementById('gameStatus').style.color = '#f4cf77';
 
-            // Deduct balance first
-            try {
-                const session = MemberAPI.getSession();
-                const deductRes = await MemberAPI.updateBalance(user.id, session.sessionToken, -betAmountInput);
-                if (!deductRes.success) {
-                    showInfoModal(deductRes.message || 'ไม่สามารถหักเงินได้', '❌', 'ข้อผิดพลาด');
-                    isRolling = false;
-                    document.getElementById('rollBtn').disabled = false;
-                    return;
-                }
-                balance = Number(deductRes.balance) || 0;
-                document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                MemberAPI.saveSession(user, session.sessionToken, balance);
-                await database.ref('users/' + user.id + '/balance').set(balance);
-            } catch (e) {
-                showInfoModal('เกิดข้อผิดพลาดในการทำรายการเดิมพัน', '❌', 'ข้อผิดพลาด');
-                isRolling = false;
-                document.getElementById('rollBtn').disabled = false;
-                return;
-            }
+            // Roll result — determine immediately before animation
+            const rolledNum = Math.floor(Math.random() * 6) + 1;
+            const won = rolledNum === selectedNumber;
+            const payout = won ? betAmountInput * 5 : 0;
+            // Net change: lose bet, gain payout if won
+            const netChange = won ? payout - betAmountInput : -betAmountInput;
 
             // Animate rolling
             const dice = document.getElementById('dice3d');
-            
-            // Reset transition and rotate back to 0 to guarantee animation triggers every time
             dice.style.transition = 'none';
             dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
-            
-            // Force browser reflow to apply the reset instantly
             void dice.offsetHeight;
-            
-            // Restore transition property
             dice.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.15)';
-            
-            // Random spin rounds (increased spins for faster, longer spin effect)
-            const spins = 8; // full rotations
-            const rolledNum = Math.floor(Math.random() * 6) + 1;
-            
+
+            const spins = 8;
             const targetRotation = faceRotations[rolledNum];
-            
-            // Apply dramatic spin
             const finalX = targetRotation.x + (360 * spins);
             const finalY = targetRotation.y + (360 * spins);
-            
             dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
 
+            // Optimistically update local balance for instant UI feedback
+            balance = Math.max(0, balance + netChange);
+            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+
             setTimeout(async () => {
-                const won = rolledNum === selectedNumber;
-                let payout = 0;
                 let statusText = '';
-                
                 if (won) {
-                    payout = betAmountInput * 5;
                     statusText = `🎉 ถูกรางวัล! ลูกเต๋าออกเลข ${rolledNum} ได้รับ ${payout} บาท!`;
                     document.getElementById('gameStatus').style.color = '#10c66a';
-                    
-                    // Add payout
-                    try {
-                        const session = MemberAPI.getSession();
-                        const addRes = await MemberAPI.updateBalance(user.id, session.sessionToken, payout);
-                        if (addRes.success) {
-                            balance = Number(addRes.balance) || 0;
-                            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                            MemberAPI.saveSession(user, session.sessionToken, balance);
-                            await database.ref('users/' + user.id + '/balance').set(balance);
-                        }
-                    } catch (e) {
-                        console.error('Add payout failed:', e);
-                    }
                 } else {
                     statusText = `❌ เสียใจด้วย! ลูกเต๋าออกเลข ${rolledNum} (คุณทาย ${selectedNumber})`;
                     document.getElementById('gameStatus').style.color = '#e74c3c';
                 }
-
                 document.getElementById('gameStatus').textContent = statusText;
 
-                // Save game log
+                // Non-blocking async API call to settle net change
+                const session = MemberAPI.getSession();
+                if (session && netChange !== 0) {
+                    MemberAPI.updateBalance(user.id, session.sessionToken, netChange)
+                        .then(settleRes => {
+                            if (settleRes.success) {
+                                balance = Number(settleRes.balance) || balance;
+                                document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                                MemberAPI.saveSession(user, session.sessionToken, balance);
+                                database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
+                            }
+                        })
+                        .catch(err => console.warn('Balance settle failed (will resync):', err));
+                }
+
+                // Save game log to Firebase asynchronously
                 const gameLog = {
                     id: Date.now(),
                     game: 'ทอยเต๋า 1-6',
                     bet: betAmountInput,
                     choice: selectedNumber,
                     result: rolledNum,
-                    won: won,
-                    payout: payout,
+                    won,
+                    payout,
                     time: new Date().toLocaleTimeString('th-TH')
                 };
+                database.ref('users/' + user.id + '/diceHistory').push(gameLog)
+                    .catch(e => {
+                        diceHistory.unshift(gameLog);
+                        renderHistoryList();
+                    });
 
-                // Save to Firebase
-                try {
-                    await database.ref('users/' + user.id + '/diceHistory').push(gameLog);
-                } catch (e) {
-                    // fall back to local
-                    diceHistory.unshift(gameLog);
-                    renderHistoryList();
-                }
-
+                // Immediately unlock UI for the next turn
                 isRolling = false;
                 document.getElementById('rollBtn').disabled = false;
-            }, 800);
+            }, 850);
         }
 
         function loadDiceHistory() {
@@ -991,6 +1021,53 @@
 
         function closeInfoModal() {
             document.getElementById('infoModal').classList.remove('active');
+        }
+
+        // ===== Auth Modal =====
+        function openAuthModal(mode) {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        async function handleAuthSubmit() {
+            const userId = document.getElementById('authUserId').value.trim();
+            const password = document.getElementById('authPassword').value.trim();
+            if (!userId || !password) {
+                showInfoModal('กรุณากรอก ID และรหัสผ่าน', '⚠️', 'แจ้งเตือน');
+                return;
+            }
+            const btn = document.getElementById('authSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'กำลังเข้าสู่ระบบ...';
+            try {
+                const res = await MemberAPI.call('login', { userId, password });
+                if (res.success) {
+                    user = {
+                        id: res.user ? res.user.userId : userId,
+                        name: res.user ? res.user.userId : userId,
+                        email: res.user ? res.user.email : '',
+                        trueMoneyLink: res.user ? res.user.trueMoneyLink : ''
+                    };
+                    balance = Number(res.balance) || 0;
+                    MemberAPI.saveSession(user, res.sessionToken, balance);
+                    closeAuthModal();
+                    showLoggedInUI();
+                    startRealtimeBalance();
+                    loadDiceHistory();
+                    // Push balance to Firebase
+                    try { await database.ref('users/' + user.id + '/balance').set(balance); } catch(e) {}
+                } else {
+                    showInfoModal(res.message || 'ID หรือรหัสผ่านไม่ถูกต้อง', '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal('เชื่อมต่อระบบล้มเหลว กรุณาลองใหม่', '❌', 'ข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'เข้าสู่ระบบ';
+            }
         }
     </script>
 </body>

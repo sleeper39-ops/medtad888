@@ -560,6 +560,16 @@
                 </div>
             </div>
 
+            <!-- Test Rotation Buttons -->
+            <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 10px;">
+                <button onclick="testRotation(1)" style="padding: 5px 10px; cursor: pointer;">Test 1</button>
+                <button onclick="testRotation(2)" style="padding: 5px 10px; cursor: pointer;">Test 2</button>
+                <button onclick="testRotation(3)" style="padding: 5px 10px; cursor: pointer;">Test 3</button>
+                <button onclick="testRotation(4)" style="padding: 5px 10px; cursor: pointer;">Test 4</button>
+                <button onclick="testRotation(5)" style="padding: 5px 10px; cursor: pointer;">Test 5</button>
+                <button onclick="testRotation(6)" style="padding: 5px 10px; cursor: pointer;">Test 6</button>
+            </div>
+
             <!-- Number Picker -->
             <div class="dice-numbers">
                 <button class="number-btn" onclick="selectDiceNumber(1, this)">1 <span style="font-size: 0.7rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;">(5x)</span></button>
@@ -640,11 +650,11 @@
         // Rotation angles corresponding to dice face on front
         const faceRotations = {
             1: { x: 0, y: 0 },
-            2: { x: 0, y: 180 },
+            2: { x: 180, y: 0 },
             3: { x: 0, y: 90 },
             4: { x: 0, y: -90 },
-            5: { x: 90, y: 0 },
-            6: { x: -90, y: 0 }
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
         };
 
         window.onload = async function() {
@@ -838,6 +848,14 @@
             selectedNumber = num;
             document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
             btn.classList.add('selected');
+        }
+
+        function testRotation(num) {
+            const dice = document.getElementById('dice3d');
+            dice.style.transition = 'transform 0.5s ease';
+            const rot = faceRotations[num];
+            dice.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+            console.log('Testing face', num, 'rotation:', rot);
         }
 
         function adjustBet(change) {

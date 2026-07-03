@@ -690,8 +690,8 @@
         const faceRotations = {
             1: { x: 0,    y: 0   },
             2: { x: 0,    y: 180 },
-            3: { x: 0,    y: -90 }, // matches dface-3 (กุ้ง)
-            4: { x: 0,    y: 90  }, // matches dface-4 (เสือ)
+            3: { x: 0,    y: 90  }, // matches dface-3 (กุ้ง)
+            4: { x: 0,    y: -90 }, // matches dface-4 (เสือ)
             5: { x: -90,  y: 0   },
             6: { x: 90,   y: 0   }
         };
@@ -799,9 +799,7 @@
 
             // Calculate result before animation
             const matchCount = rolls.filter(r => r.name === selectedSymbol).length;
-            // 30% chance for player to win, 70% house wins
-            const randomChance = Math.random();
-            const won = (randomChance <= 0.3) && (matchCount > 0);
+            const won = matchCount > 0;
             const payout = won ? betAmountInput * matchCount : 0;
             const netChange = won ? payout - betAmountInput : -betAmountInput;
 

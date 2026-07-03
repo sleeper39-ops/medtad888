@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medtad888 - ทอยเต๋า 1-6</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    <script src="config.js"></script>
+    <script src="member-api.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -84,8 +89,6 @@
             color: #111;
             border: 1px solid #f2d178;
         }
-
-
 
         .user-info {
             display: flex;
@@ -177,7 +180,7 @@
 
         .deposit-link-btn {
             background: linear-gradient(180deg, #10db55 0%, #04a83f 100%) !important;
-            border: 1px solid rgba(255,255,255,0.25) !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
             color: white;
             text-decoration: none;
             padding: 8px 24px;
@@ -428,7 +431,18 @@
         .history-won-text { color: #10c66a; font-weight: bold; }
         .history-lost-text { color: #e74c3c; font-weight: bold; }
 
-        /* Modal styling */
+        /* Guest warning */
+        .guest-warning {
+            text-align: center;
+            color: #a0aec0;
+            padding: 40px 20px;
+            background: var(--lotto-panel);
+            border-radius: 4px;
+            border: 1px solid var(--lotto-line);
+            margin-bottom: 20px;
+        }
+
+        /* Modal */
         .modal-overlay {
             display: none;
             position: fixed;
@@ -439,81 +453,55 @@
             z-index: 1000;
         }
 
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal-content {
             background: #15191d;
             border: 1px solid var(--lotto-line);
             border-radius: 6px;
-            width: min(460px, 92vw);
-            padding: 24px;
+            padding: 30px;
+            max-width: 380px;
+            width: 90%;
             text-align: center;
-            color: #ffffff;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
         .modal-title {
-            font-size: 1.25rem;
-            color: var(--lotto-gold-soft);
-            margin-bottom: 15px;
+            font-size: 1.2rem;
             font-weight: bold;
+            color: var(--lotto-gold-soft);
+            margin-bottom: 14px;
         }
 
-        /* Form classes */
         .login-input {
+            display: block;
             width: 100%;
-            padding: 12px;
+            margin-bottom: 10px;
+            padding: 10px 12px;
             background: #11171b;
-            border: 1px solid rgba(255,255,255,0.15);
+            border: 1px solid var(--lotto-line);
             border-radius: 6px;
             color: #fff;
             font-size: 1rem;
-            margin-bottom: 12px;
-        }
-
-        .login-input:focus {
-            border-color: var(--lotto-gold);
-            outline: none;
         }
 
         .login-btn {
+            display: block;
             width: 100%;
+            margin-top: 10px;
             padding: 12px;
+            border: none;
+            border-radius: 6px;
             background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%);
             color: #111;
-            border: 1px solid #f2d178;
-            border-radius: 6px;
             font-weight: bold;
-            cursor: pointer;
             font-size: 1rem;
-            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
         }
 
-        .login-btn:hover {
-            filter: brightness(1.1);
-        }
-
-        .login-btn.secondary {
-            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .guest-warning {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 6px;
-            padding: 30px;
-            text-align: center;
-            color: #fff;
-            margin-top: 30px;
-        }
+        .login-btn:hover { filter: brightness(1.1); }
+        .login-btn.secondary { background: linear-gradient(180deg, #3c434b 0%, #242a31 100%); color: #cbd5df; border: 1px solid rgba(255,255,255,0.1); }
     </style>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -527,7 +515,7 @@
             </a>
             <div class="auth-header-actions" id="authHeaderActions">
                 <button type="button" class="header-auth-btn header-register-btn" onclick="openRegisterModal()">สมัครสมาชิก</button>
-                <button type="button" class="header-auth-btn header-login-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
+                <button type="button" class="header-auth-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
             </div>
             <div id="userArea"></div>
         </div>
@@ -603,23 +591,10 @@
         </div>
     </div>
 
-    <!-- Auth Popup Modal (เหมือนหน้าแรก) -->
+    <!-- Auth Popup Modal -->
     <div class="modal-overlay" id="authModal">
         <div class="modal-content">
             <div class="modal-title" id="authModalTitle">เข้าสู่ระบบ</div>
-            <form onsubmit="event.preventDefault(); handleAuthSubmit();">
-                <input type="text" class="login-input" id="authUserId" placeholder="ID สมาชิก" autocomplete="username">
-                <input type="password" class="login-input" id="authPassword" placeholder="รหัสผ่าน" autocomplete="current-password">
-                <button type="submit" class="login-btn" id="authSubmitBtn">เข้าสู่ระบบ</button>
-                <button type="button" class="login-btn secondary" onclick="closeAuthModal()">ปิด</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- Auth Login Modal -->
-    <div class="modal-overlay" id="authModal">
-        <div class="modal-content">
-            <div class="modal-title">เข้าสู่ระบบ</div>
             <form onsubmit="event.preventDefault(); handleAuthSubmit();">
                 <input type="text" class="login-input" id="authUserId" placeholder="ID สมาชิก" autocomplete="username">
                 <input type="password" class="login-input" id="authPassword" placeholder="รหัสผ่าน" autocomplete="current-password">
@@ -639,8 +614,6 @@
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="member-api.js"></script>
     <script>
         const firebaseConfig = {
             apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
@@ -682,15 +655,10 @@
             // Restore session
             const cachedSession = MemberAPI.getSession();
             if (cachedSession && cachedSession.userId) {
-                user = {
-                    id: cachedSession.userId,
-                    name: cachedSession.name || cachedSession.userId,
-                    email: cachedSession.email,
-                    trueMoneyLink: cachedSession.trueMoneyLink
-                };
+                user = MemberAPI.userFromSession(cachedSession);
                 balance = cachedSession.balance || 0;
                 showLoggedInUI();
-                startRealtimeBalance(); // Real-time + polling
+                startRealtimeBalance();
                 loadDiceHistory();
 
                 // Refresh profile asynchronously to verify session
@@ -789,18 +757,18 @@
         async function syncBalance() {
             if (!user || isRolling) return; // Prevent overwriting during gameplay
             try {
-                const profile = await MemberAPI.call('getProfile', {
+                const session = MemberAPI.getSession();
+                const res = await MemberAPI.call('getProfile', {
                     userId: user.id,
-                    sessionToken: MemberAPI.getSession()?.sessionToken
+                    sessionToken: session.sessionToken
                 });
-                if (profile.success && !isRolling) {
-                    const newBal = Number(profile.user.balance) || 0;
+                if (res.success && !isRolling) {
+                    const newBal = Number(res.user.balance) || 0;
                     if (newBal !== balance) {
                         balance = newBal;
                         document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                        MemberAPI.saveSession(user, MemberAPI.getSession().sessionToken, balance);
-                        // Push to Firebase so listener picks it up on other pages
-                        try { await database.ref('users/' + user.id + '/balance').set(balance); } catch(e){}
+                        MemberAPI.saveSession(user, session.sessionToken, balance);
+                        database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
                     }
                 }
             } catch (e) {
@@ -808,7 +776,9 @@
             }
         }
 
-        function openAuthModal() {
+        function openAuthModal(mode) {
+            document.getElementById('authModalTitle').textContent = mode === 'login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
+            document.getElementById('authSubmitBtn').textContent = mode === 'login' ? 'เข้าสู่ระบบ' : 'สมัครสมาชิก';
             document.getElementById('authModal').classList.add('active');
         }
 
@@ -823,12 +793,14 @@
 
         async function handleAuthSubmit() {
             const userId = document.getElementById('authUserId').value.trim();
-            const password = document.getElementById('authPassword').value;
+            const password = document.getElementById('authPassword').value.trim();
             if (!userId || !password) {
-                showInfoModal('กรุณากรอกข้อมูลให้ครบถ้วน', '❌', 'ข้อผิดพลาด');
+                showInfoModal('กรุณากรอก ID และรหัสผ่าน', '⚠️', 'แจ้งเตือน');
                 return;
             }
-
+            const btn = document.getElementById('authSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'กำลังเข้าสู่ระบบ...';
             try {
                 const res = await MemberAPI.call('login', { userId, password });
                 if (res.success) {
@@ -839,11 +811,16 @@
                     showLoggedInUI();
                     startRealtimeBalance();
                     loadDiceHistory();
+                    // Push balance to Firebase
+                    try { await database.ref('users/' + user.id + '/balance').set(balance); } catch(e) {}
                 } else {
-                    showInfoModal(res.message || 'เข้าสู่ระบบไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+                    showInfoModal(res.message || 'ID หรือรหัสผ่านไม่ถูกต้อง', '❌', 'ข้อผิดพลาด');
                 }
             } catch (e) {
-                showInfoModal('เชื่อมต่อระบบล้มเหลว', '❌', 'ข้อผิดพลาด');
+                showInfoModal('เชื่อมต่อระบบล้มเหลว กรุณาลองใหม่', '❌', 'ข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'เข้าสู่ระบบ';
             }
         }
 
@@ -906,7 +883,9 @@
 
             // Roll result — determine immediately before animation
             const rolledNum = Math.floor(Math.random() * 6) + 1;
-            const won = rolledNum === selectedNumber;
+            // 30% chance for player to win, 70% house wins
+            const randomChance = Math.random();
+            const won = (randomChance <= 0.3) && (rolledNum === selectedNumber);
             const payout = won ? betAmountInput * 5 : 0;
             // Net change: lose bet, gain payout if won
             const netChange = won ? payout - betAmountInput : -betAmountInput;
@@ -979,7 +958,7 @@
 
         function loadDiceHistory() {
             if (!user) return;
-            database.ref('users/' + user.id + '/diceHistory').limitToLast(10).on('value', snap => {
+            database.ref('users/' + user.id + '/diceHistory').limitToLast(10).on('value', (snap) => {
                 if (snap.exists()) {
                     const data = snap.val();
                     diceHistory = Object.values(data).reverse();
@@ -996,7 +975,6 @@
                 list.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">ไม่มีประวัติการเล่น</div>';
                 return;
             }
-
             list.innerHTML = diceHistory.map(log => `
                 <div class="history-item ${log.won ? 'history-won' : 'history-lost'}">
                     <div>
@@ -1011,63 +989,15 @@
             `).join('');
         }
 
-        // Info Modal Helpers
-        function showInfoModal(msg, icon = 'ℹ️', title = 'แจ้งเตือน') {
-            document.getElementById('infoIcon').textContent = icon;
-            document.getElementById('infoTitle').textContent = title;
-            document.getElementById('infoMessage').textContent = msg;
+        function showInfoModal(message, icon, title) {
+            document.getElementById('infoIcon').textContent = icon || 'ℹ️';
+            document.getElementById('infoTitle').textContent = title || 'แจ้งเตือน';
+            document.getElementById('infoMessage').textContent = message;
             document.getElementById('infoModal').classList.add('active');
         }
 
         function closeInfoModal() {
             document.getElementById('infoModal').classList.remove('active');
-        }
-
-        // ===== Auth Modal =====
-        function openAuthModal(mode) {
-            document.getElementById('authModal').classList.add('active');
-        }
-
-        function closeAuthModal() {
-            document.getElementById('authModal').classList.remove('active');
-        }
-
-        async function handleAuthSubmit() {
-            const userId = document.getElementById('authUserId').value.trim();
-            const password = document.getElementById('authPassword').value.trim();
-            if (!userId || !password) {
-                showInfoModal('กรุณากรอก ID และรหัสผ่าน', '⚠️', 'แจ้งเตือน');
-                return;
-            }
-            const btn = document.getElementById('authSubmitBtn');
-            btn.disabled = true;
-            btn.textContent = 'กำลังเข้าสู่ระบบ...';
-            try {
-                const res = await MemberAPI.call('login', { userId, password });
-                if (res.success) {
-                    user = {
-                        id: res.user ? res.user.userId : userId,
-                        name: res.user ? res.user.userId : userId,
-                        email: res.user ? res.user.email : '',
-                        trueMoneyLink: res.user ? res.user.trueMoneyLink : ''
-                    };
-                    balance = Number(res.balance) || 0;
-                    MemberAPI.saveSession(user, res.sessionToken, balance);
-                    closeAuthModal();
-                    showLoggedInUI();
-                    startRealtimeBalance();
-                    loadDiceHistory();
-                    // Push balance to Firebase
-                    try { await database.ref('users/' + user.id + '/balance').set(balance); } catch(e) {}
-                } else {
-                    showInfoModal(res.message || 'ID หรือรหัสผ่านไม่ถูกต้อง', '❌', 'ข้อผิดพลาด');
-                }
-            } catch (e) {
-                showInfoModal('เชื่อมต่อระบบล้มเหลว กรุณาลองใหม่', '❌', 'ข้อผิดพลาด');
-            } finally {
-                btn.disabled = false;
-                btn.textContent = 'เข้าสู่ระบบ';
-            }
         }
     </script>
 </body>

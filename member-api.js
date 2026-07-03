@@ -132,5 +132,13 @@ const MemberAPI = {
 
     async requestWithdrawal(userId, sessionToken, amount, account) {
         return this.call('requestWithdrawal', { userId, sessionToken, amount, account });
+    },
+
+    async getAdminSettings() {
+        return this.call('getAdminSettings');
+    },
+
+    async saveAdminSettings(settings) {
+        return this.call('saveAdminSettings', settings);
     }
 };

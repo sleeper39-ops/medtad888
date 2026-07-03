@@ -2459,10 +2459,9 @@
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>เติมเงินให้สมาชิก (อ้างอิง Google Sheet):</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <select id="adminSelectMember"
+                                <input type="text" id="adminSelectMember" list="memberListSuggestions" placeholder="พิมพ์หรือเลือก ID สมาชิก"
                                     style="padding: 10px; border-radius: 6px; border: 1px solid #ddd; background: #fff; color: #333; font-size: 14px; font-weight: 500; outline: none; width: 100%;">
-                                    <option value="">-- เลือก ID สมาชิก --</option>
-                                </select>
+                                <datalist id="memberListSuggestions"></datalist>
                                 <div style="display: flex; gap: 10px;">
                                     <input type="number" id="adminAddMoney" placeholder="จำนวนเงิน" min="1"
                                         style="flex: 1;">
@@ -3965,28 +3964,23 @@
         }
 
         async function loadAdminMembersDropdown() {
-            const selectEl = document.getElementById('adminSelectMember');
-            if (!selectEl) return;
+            const datalistEl = document.getElementById('memberListSuggestions');
+            if (!datalistEl) return;
 
-            selectEl.innerHTML = '<option value="">-- กำลังโหลดรายชื่อ... --</option>';
+            datalistEl.innerHTML = '';
 
             try {
                 const result = await MemberAPI.getAllMembers();
                 if (result.success && result.members) {
-                    selectEl.innerHTML = '<option value="">-- เลือก ID สมาชิก --</option>';
-                    result.members.forEach((member, index) => {
+                    result.members.forEach((member) => {
                         const opt = document.createElement('option');
                         opt.value = member.userId;
-                        opt.textContent = `${index + 1}. ${member.userId} - ยอดเงิน: ${member.balance} บาท`;
-                        selectEl.appendChild(opt);
+                        opt.textContent = `ยอดเงิน: ${member.balance} บาท`;
+                        datalistEl.appendChild(opt);
                     });
-                } else {
-                    const errorMsg = result.message || 'Unknown Error';
-                    selectEl.innerHTML = `<option value="">-- โหลดรายชื่อล้มเหลว (${errorMsg}) --</option>`;
                 }
             } catch (e) {
-                console.error('Failed to load members:', e);
-                selectEl.innerHTML = `<option value="">-- ข้อผิดพลาดในการเชื่อมต่อ (${e.message || e}) --</option>`;
+                console.error('Failed to load member suggestions:', e);
             }
         }
 

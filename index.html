@@ -2454,6 +2454,8 @@
                         </div>
                         <button class="login-btn" onclick="testTelegram()"
                             style="background: #0088cc; margin-top: 10px;">🧪 ทดสอบส่งข้อความ</button>
+                        <button class="login-btn" onclick="setupGasAutoDrawTrigger()"
+                            style="background: #e67e22; margin-top: 10px;">⚙️ เปิดใช้งาน Auto Draw หลังบ้าน (GAS)</button>
                         <div class="admin-control-group" style="margin-top: 15px;">
                             <label>เติมเงินให้สมาชิก (อ้างอิง Google Sheet):</label>
                             <div style="display: flex; flex-direction: column; gap: 8px;">
@@ -4243,6 +4245,28 @@
             } catch (error) {
                 console.error('Telegram error:', error);
                 showInfoModal('เกิดข้อผิดพลาดในการส่งข้อความ!', '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        async function setupGasAutoDrawTrigger() {
+            if (!isAdminLoggedIn) return;
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '⏳ กำลังตั้งค่าระบบ...';
+            try {
+                const result = await MemberAPI.call('createLotteryDrawTrigger', {});
+                if (result && result.success) {
+                    showInfoModal('เปิดใช้งานระบบออกรางวัลอัตโนมัติบน Google Apps Script สำเร็จแล้ว! 🚀', '✅');
+                } else {
+                    showInfoModal('เกิดข้อผิดพลาด: ' + (result?.message || 'ไม่สามารถเปิดใช้งานได้'), '❌', 'ข้อผิดพลาด');
+                }
+            } catch (err) {
+                console.error('GAS Trigger setup error:', err);
+                showInfoModal('ไม่สามารถติดต่อเซิร์ฟเวอร์ Google Apps Script ได้', '❌', 'ข้อผิดพลาด');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
             }
         }
 

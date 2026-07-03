@@ -2817,6 +2817,36 @@
                 }
             });
             realtimeListeners.push({ ref: balRef, listener: balListener, event: 'value' });
+
+            // 3. Realtime listener for global lottery result (updated by GAS server draw)
+            const resultRef = database.ref('global/lastResult');
+            const resultListener = resultRef.on('value', (snap) => {
+                if (snap.exists()) {
+                    const lastResult = snap.val();
+                    if (lastResult) {
+                        winningFrontNumbers = lastResult.winningFrontNumbers || [];
+                        winningBackNumbers = lastResult.winningBackNumbers || [];
+                        twoDigitWinningNumber = lastResult.twoDigitWinningNumber || '';
+                        currentDrawDate = lastResult.drawDate || '';
+                        renderLastResult();
+                        updateNextDrawDisplay();
+                    }
+                }
+            });
+            realtimeListeners.push({ ref: resultRef, listener: resultListener, event: 'value' });
+
+            // 4. Realtime listener for winners list (updated by GAS server draw)
+            const winnersRef = database.ref('global/winners');
+            const winnersListener = winnersRef.on('value', (snap) => {
+                if (snap.exists()) {
+                    const fbWinners = snap.val();
+                    if (Array.isArray(fbWinners)) {
+                        winners = fbWinners;
+                        renderWinners();
+                    }
+                }
+            });
+            realtimeListeners.push({ ref: winnersRef, listener: winnersListener, event: 'value' });
         }
 
         function stopRealtimeSync() {
@@ -3162,26 +3192,28 @@
             const confirmBtn = document.getElementById('modalConfirm');
             const cancelBtn = document.getElementById('modalCancel');
 
-            // Show loading state
+            // Check if user has enough balance first
+            if (balance < pendingTicketData.amount) {
+                showInfoModal('เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
+                closeModal();
+                return;
+            }
+
+            // Show loading state briefly
             confirmBtn.disabled = true;
             cancelBtn.disabled = true;
             confirmBtn.innerHTML = '<span style="display:inline-block;animation:spin 0.8s linear infinite;margin-right:6px;">⏳</span> กำลังทำรายการ...';
             confirmBtn.style.opacity = '0.8';
 
-            const result = await updateMemberBalance(-pendingTicketData.amount);
-
-            // Restore button state
-            confirmBtn.disabled = false;
-            cancelBtn.disabled = false;
-            confirmBtn.innerHTML = 'ยืนยัน';
-            confirmBtn.style.opacity = '';
-
-            if (!result.success) {
-                showInfoModal(result.message || 'เงินไม่เพียงพอ!', '💸', 'ข้อผิดพลาด');
-                closeModal();
-                return;
+            // 1. Update balance locally and Firebase FIRST
+            balance = balance - pendingTicketData.amount;
+            updateBalance();
+            if (user) {
+                try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
+                MemberAPI.saveSession(user, sessionToken, balance);
             }
 
+            // 2. Create and save ticket locally and Firebase FIRST
             const ticket = {
                 id: Date.now(),
                 number: pendingTicketData.number,
@@ -3195,7 +3227,19 @@
 
             tickets.push(ticket);
             renderTickets();
-            saveToStorage();
+            // Save to Firebase immediately
+            if (user) {
+                try { await database.ref('users/' + user.id + '/tickets').set(tickets); } catch (e) {}
+            }
+            // Save tickets and balance to localStorage manually (without calling saveToStorage())
+            localStorage.setItem('lotteryTickets', JSON.stringify(tickets));
+            localStorage.setItem('lotteryBalance', JSON.stringify(balance));
+
+            // 3. Restore button state and close modal & show success message RIGHT AWAY
+            confirmBtn.disabled = false;
+            cancelBtn.disabled = false;
+            confirmBtn.innerHTML = 'ยืนยัน';
+            confirmBtn.style.opacity = '';
 
             // Clear inputs
             const maxDigits = betTypes[selectedBetType].digits;
@@ -3206,6 +3250,33 @@
 
             closeModal();
             showInfoModal('ซื้อสลากสำเร็จ! 🎉', '✅', 'สำเร็จ');
+
+            const newTicketId = ticket.id;
+            // 4. Call GAS API in the background to sync balance
+            try {
+                const result = await MemberAPI.updateBalance(user.id, sessionToken, -pendingTicketData.amount);
+                if (!result.success) {
+                    // If GAS fails, revert the balance
+                    console.error('GAS balance update failed:', result);
+                    const newBalance = (result.balance != null ? result.balance : balance + pendingTicketData.amount);
+                    balance = newBalance;
+                    updateBalance();
+                    if (user) {
+                        try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
+                        MemberAPI.saveSession(user, sessionToken, balance);
+                    }
+                    // Also remove the ticket
+                    const ticketIndex = tickets.findIndex(t => t.id === newTicketId);
+                    if (ticketIndex !== -1) tickets.splice(ticketIndex, 1);
+                    renderTickets();
+                    if (user) {
+                        try { await database.ref('users/' + user.id + '/tickets').set(tickets); } catch (e) {}
+                    }
+                    showInfoModal(result.message || 'เกิดข้อผิดพลาดในการซื้อสลาก!', '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                console.error('GAS API call failed:', e);
+            }
         }
 
         function closeModal() {

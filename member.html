@@ -659,6 +659,13 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="loadingModal" style="z-index: 2000;">
+        <div class="modal-content">
+            <div class="info-modal-icon">⏳</div>
+            <div class="modal-title">กำลังส่งข้อมูล...</div>
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -1143,6 +1150,7 @@
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '⏳ กำลังส่งข้อมูล...';
+            document.getElementById('loadingModal').classList.add('active');
 
             try {
                 // Ensure we have loaded Telegram settings
@@ -1156,6 +1164,7 @@
                 }
 
                 if (!telegramBotToken || !telegramChatId) {
+                    document.getElementById('loadingModal').classList.remove('active');
                     showInfoModal('ระบบแจ้งเตือนแอดมินยังไม่ถูกตั้งค่า กรุณาติดต่อแอดมินโดยตรง!', '❌', 'ข้อผิดพลาด');
                     btn.disabled = false;
                     btn.innerHTML = originalText;
@@ -1185,6 +1194,7 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
+                document.getElementById('loadingModal').classList.remove('active');
             }
         }
 
@@ -1225,10 +1235,12 @@
                 return;
             }
 
-            const btn = document.querySelector('#withdrawCard button.orange');
+            const btn = document.querySelector('#withdrawCard button[onclick="submitWithdrawal()"]');
             const originalText = btn.innerHTML;
             btn.disabled = true;
             btn.innerHTML = '⏳ กำลังประมวลผล...';
+            document.getElementById('loadingModal').querySelector('.modal-title').textContent = 'กำลังส่งคำขอถอนเงิน...';
+            document.getElementById('loadingModal').classList.add('active');
 
             try {
                 const result = await MemberAPI.requestWithdrawal(currentUser.id, sessionToken, amount, currentUser.trueMoneyLink);
@@ -1247,6 +1259,8 @@
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = originalText;
+                document.getElementById('loadingModal').classList.remove('active');
+                document.getElementById('loadingModal').querySelector('.modal-title').textContent = 'กำลังส่งข้อมูล...';
             }
         }
 

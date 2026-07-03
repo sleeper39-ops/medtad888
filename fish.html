@@ -686,14 +686,14 @@
             { name: 'น้ำเต้า', emoji: '🎃', face: 6 }
         ];
 
-        // Face rotations for each symbol (face 1-6)
+        // Face rotations for each symbol (face 1-6): To show dface-# on front of die!
         const faceRotations = {
-            1: { x: 0,    y: 0   },
-            2: { x: 0,    y: 180 },
-            3: { x: 0,    y: 90  }, // matches dface-3 (กุ้ง)
-            4: { x: 0,    y: -90 }, // matches dface-4 (เสือ)
-            5: { x: -90,  y: 0   },
-            6: { x: 90,   y: 0   }
+            1: { x: 0,    y: 0   }, // shows dface-1 (ปู)
+            2: { x: 0,    y: 180 }, // shows dface-2 (ปลา)
+            3: { x: 0,    y: -90 }, // shows dface-3 (กุ้ง)
+            4: { x: 0,    y: 90  }, // shows dface-4 (เสือ)
+            5: { x: -90,  y: 0   }, // shows dface-5 (ไก่)
+            6: { x: 90,   y: 0   }  // shows dface-6 (น้ำเต้า)
         };
 
         window.onload = async function() {

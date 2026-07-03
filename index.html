@@ -857,7 +857,7 @@
             color: rgba(255,255,255,0.8);
             font-weight: 900;
             letter-spacing: 2px;
-            text-shadow: 0 0 24px rgba(0, 255, 178, 0.55);
+            text-shadow: 0 0 24px rgba(214, 155, 49, 0.65);
             pointer-events: none;
         }
 
@@ -1190,7 +1190,7 @@
         }
 
         .auth-brand-title {
-            color: #23f0a0;
+            color: var(--lotto-gold-soft) !important;
             font-weight: 900;
             font-size: 1.35rem;
             letter-spacing: 1px;
@@ -2040,46 +2040,169 @@
             filter: brightness(1.08);
         }
 
+        /* Confirm modal theme overrides to match infoModal */
+        #confirmModal .modal-content {
+            background: #f4f5f6 !important;
+            border: 1px solid rgba(214, 155, 49, 0.65) !important;
+            border-radius: 4px !important;
+            box-shadow: 0 18px 48px rgba(0, 0, 0, 0.48) !important;
+            padding: 0 0 18px !important;
+            overflow: hidden;
+            max-width: 420px !important;
+        }
+
+        #confirmModal .modal-title {
+            margin: 0 !important;
+            padding: 18px 18px 14px !important;
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%) !important;
+            color: #f5d889 !important;
+            border-bottom: 1px solid rgba(214, 155, 49, 0.55) !important;
+            font-size: 1.25rem !important;
+            font-weight: bold;
+        }
+
+        #confirmModal .modal-details {
+            background: #ffffff !important;
+            border: 1px solid #d8dde3 !important;
+            border-radius: 4px !important;
+            margin: 16px 18px 18px !important;
+            padding: 14px 16px !important;
+        }
+
+        #confirmModal .modal-detail-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        #confirmModal .modal-detail-item:last-child {
+            margin-bottom: 0;
+        }
+
+        #confirmModal .modal-detail-label {
+            color: #47515c !important;
+            font-weight: 700 !important;
+        }
+
+        #confirmModal .modal-detail-value {
+            color: #111111 !important;
+            font-weight: 800 !important;
+        }
+
+        #confirmModal .modal-buttons {
+            display: flex;
+            gap: 12px;
+            padding: 0 18px !important;
+            justify-content: center;
+        }
+
+        #confirmModal .modal-btn {
+            flex: 1;
+            padding: 10px 20px !important;
+            border-radius: 4px !important;
+            font-size: 1rem !important;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        #confirmModal #modalCancel {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255,255,255,0.24) !important;
+        }
+
+        #confirmModal #modalCancel:hover {
+            filter: brightness(1.15);
+        }
+
+        #confirmModal #modalConfirm {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            box-shadow: none !important;
+        }
+
+        #confirmModal #modalConfirm:hover {
+            filter: brightness(1.08);
+        }
+
         .purchase-history-title {
             background: linear-gradient(180deg, #11171b 0%, #090d10 100%) !important;
             color: #f5d889 !important;
             border-color: rgba(214, 155, 49, 0.65) !important;
+            border-radius: 4px 4px 0 0 !important;
+            font-weight: bold !important;
         }
 
         .my-tickets {
-            background: #f4f5f6 !important;
+            background: #11171b !important;
             border: 1px solid rgba(214, 155, 49, 0.55) !important;
-            border-radius: 4px !important;
+            border-radius: 0 0 4px 4px !important;
             max-height: 320px !important;
+            padding: 10px !important;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .my-tickets .ticket,
         .ticket {
-            background: #ffffff !important;
-            border: 1px solid #d8dde3 !important;
+            background: #1e242b !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
             border-radius: 4px !important;
             padding: 12px !important;
             box-shadow: none !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .ticket-number {
-            color: #11171b !important;
-            letter-spacing: 0 !important;
+            color: var(--lotto-gold-soft) !important;
+            letter-spacing: 1px !important;
+            font-size: 1.3rem !important;
+            font-weight: 800 !important;
         }
 
         .ticket-info {
-            color: #4b535c !important;
-            font-weight: 700;
+            color: #cbd5df !important;
+            font-weight: bold;
+            text-align: right;
         }
 
         .ticket.won {
-            border-color: rgba(6, 157, 65, 0.65) !important;
-            background: #f1fff6 !important;
+            border-color: rgba(16, 198, 106, 0.6) !important;
+            background: rgba(16, 198, 106, 0.12) !important;
         }
 
         .ticket.lost {
-            border-color: rgba(217, 75, 66, 0.55) !important;
-            background: #fff6f5 !important;
+            border-color: rgba(231, 76, 60, 0.4) !important;
+            background: rgba(231, 76, 60, 0.08) !important;
+        }
+
+        .ticket.pending {
+            border-color: rgba(255, 255, 255, 0.15) !important;
+            background: #222830 !important;
+        }
+
+        /* Gold theme header title adjustment */
+        .header h1 {
+            color: var(--lotto-gold-soft) !important;
+        }
+        .header h1 span {
+            filter: drop-shadow(0 0 8px rgba(214, 155, 49, 0.65)) !important;
+        }
+
+        /* Next draw display size and gold theme adjustment */
+        .next-draw-display {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            font-size: 1.15rem !important;
+            font-weight: 900 !important;
+            padding: 5px 14px !important;
         }
 </style>
     <!-- Firebase App (the core Firebase SDK) is always required and must be listed first -->
@@ -2094,7 +2217,7 @@
         <div class="admin-top-inner">
             <div class="admin-top-title"><span>🔐</span> แผงควบคุมผู้ดูแลระบบ</div>
             <div class="admin-top-actions">
-                <button type="button" class="login-btn purple" onclick="switchView('player')">🎫 เล่นสลาก</button>
+                <button type="button" class="login-btn purple" onclick="switchView('player')">🎫 หน้าแรก</button>
                 <button type="button" class="login-btn" onclick="switchView('admin')">⚙️ จัดการระบบ</button>
                 <button type="button" class="login-btn admin-top-logout" onclick="adminLogout()">ออกระบบแอดมิน</button>
             </div>
@@ -2244,7 +2367,7 @@
                 <div style="display: flex; gap: 10px;">
                     <button type="button" class="login-btn purple" onclick="switchView('player')"
                         style="margin: 0; padding: 8px 16px; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer;">🎫
-                        เล่นสลาก</button>
+                        หน้าแรก</button>
                     <button type="button" class="login-btn" onclick="adminLogout()"
                         style="margin: 0; background: #e74c3c; padding: 8px 16px; font-size: 0.9rem; border: none; border-radius: 8px; cursor: pointer; color: white;">🚪
                         ออกระบบแอดมิน</button>
@@ -2514,6 +2637,9 @@
 
             // Load cached drawTimes from localStorage first for instant display
             loadFromStorage();
+            // Show cached result instantly (before Firebase)
+            renderLastResult();
+            document.getElementById('resultSection').style.display = 'block';
 
             // *** INSTANT UI: restore from cached session BEFORE any await ***
             // This prevents flash of guest state when navigating from member.html
@@ -2539,6 +2665,7 @@
                 updateNextDrawDisplay();
                 renderTickets(); // Re-render with latest Firebase tickets
                 renderLastResult(); // แสดงผลสลากล่าสุดค้างไว้
+                cacheResultToStorage(); // บันทึกผลสลากลง localStorage สำหรับ reload ครั้งหน้า
             } catch (e) {
                 console.warn('Firebase load failed:', e);
             }
@@ -2809,7 +2936,20 @@
         function saveToStorage() {
             // Cache drawTimes in localStorage for instant display on reload
             localStorage.setItem('lotteryDrawTimes', JSON.stringify(drawTimes));
+            // Cache last result for instant display on reload
+            cacheResultToStorage();
             saveToFirebase();
+        }
+
+        function cacheResultToStorage() {
+            // Save only result fields — no Firebase write triggered
+            localStorage.setItem('lotteryLastResult', JSON.stringify({
+                winningFrontNumbers,
+                winningBackNumbers,
+                twoDigitWinningNumber,
+                currentDrawDate,
+                currentDrawId
+            }));
         }
 
         function loadFromStorage() {
@@ -2821,6 +2961,18 @@
                     if (Array.isArray(parsed) && parsed.length > 0) {
                         drawTimes = parsed;
                     }
+                } catch (e) { /* ignore */ }
+            }
+            // Load cached last result for instant display
+            const cachedResult = localStorage.getItem('lotteryLastResult');
+            if (cachedResult) {
+                try {
+                    const r = JSON.parse(cachedResult);
+                    if (r.winningFrontNumbers) winningFrontNumbers = r.winningFrontNumbers;
+                    if (r.winningBackNumbers)  winningBackNumbers  = r.winningBackNumbers;
+                    if (r.twoDigitWinningNumber) twoDigitWinningNumber = r.twoDigitWinningNumber;
+                    if (r.currentDrawDate)    currentDrawDate    = r.currentDrawDate;
+                    if (r.currentDrawId)      currentDrawId      = r.currentDrawId;
                 } catch (e) { /* ignore */ }
             }
         }
@@ -2884,18 +3036,15 @@
             if (authHeader) authHeader.style.display = 'none';
             document.getElementById('userArea').innerHTML = `
                 <div class="user-info">
-                    <div class="user-avatar">👤</div>
                     <div class="user-name">${user.name}</div>
                     <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
+                    <a href="member.html?tab=withdraw" class="admin-btn" style="text-decoration: none; font-size: 0.85rem; background: #111111; color: #f4d576; border: 1px solid #f4d576; font-weight: bold;">ถอนเงิน</a>
                     <button class="admin-btn logout-gold-btn" onclick="toggleLogin()">ออกจากระบบ</button>
                 </div>
             `;
             if (isAdminLoggedIn) {
                 document.getElementById('adminArea').innerHTML = `
                     <div class="user-info">
-                        <div style="background: #27ae60; color: white; padding: 8px 16px; border-radius: 8px; font-weight: bold;">
-                            🔐 แอดมิน
-                        </div>
                         <button class="admin-btn logout-gold-btn" onclick="adminLogout()">ออกจากระบบ</button>
                     </div>
                 `;
@@ -3565,10 +3714,10 @@
                 tickets = [];
                 await loadFromFirebase();
                 showLoggedInUI();
+                closeAuthPopup();
                 startBalancePolling();
                 startRealtimeSync();
                 await syncBalanceFromSheets();
-                closeAuthPopup();
             } catch (e) {
                 showInfoModal(e.message || 'ไม่สามารถเชื่อมต่อระบบสมาชิกได้', '❌', 'เกิดข้อผิดพลาด');
             } finally {
@@ -3685,15 +3834,7 @@
         function updateAdminBadge() {
             const topBar = document.getElementById('adminTopBar');
             if (topBar) topBar.style.display = isAdminLoggedIn ? 'block' : 'none';
-            if (isAdminLoggedIn) {
-                document.getElementById('adminArea').innerHTML = `
-                    <div class="user-info">
-                        <button type="button" class="admin-btn" onclick="switchView('admin')" style="background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; padding: 6px 12px; cursor: pointer;">🔐 แอดมิน</button>
-                    </div>
-                `;
-            } else {
-                document.getElementById('adminArea').innerHTML = '';
-            }
+            document.getElementById('adminArea').innerHTML = '';
         }
 
         function toggleAutoDraw() {

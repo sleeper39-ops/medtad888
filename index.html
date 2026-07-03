@@ -877,26 +877,25 @@
         }
 
         .header {
-            position: sticky;
-            top: 0;
-            z-index: 20;
-            background: linear-gradient(180deg, #083936 0%, #052522 100%);
-            border-bottom: 1px solid rgba(0, 255, 190, 0.25);
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.32);
-            margin: 0 calc(50% - 50vw) 10px;
-            padding: 10px max(20px, calc((100vw - 920px) / 2));
-            min-height: 58px;
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .header h1 {
-            color: #18e69b;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            font-style: italic;
+            font-size: 1.35rem;
+            color: var(--lotto-gold-soft) !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: normal;
+            text-transform: none;
+            font-style: normal;
         }
 
         .header h1 span {
-            filter: drop-shadow(0 0 8px rgba(23, 230, 155, 0.65));
+            filter: drop-shadow(0 0 8px rgba(214, 155, 49, 0.65)) !important;
         }
 
         #userArea .user-info,
@@ -1926,9 +1925,9 @@
         #userArea .admin-btn[onclick*="toggleLogin"],
         #adminArea .admin-btn[onclick*="adminLogout"],
         .admin-top-logout {
-            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
-            color: #111111 !important;
-            border: 1px solid #f2d178 !important;
+            background: #111111 !important;
+            color: #f4d576 !important;
+            border: 1px solid #f4d576 !important;
             border-radius: 4px !important;
             box-shadow: none !important;
             font-weight: 900 !important;
@@ -1938,8 +1937,9 @@
         #userArea .admin-btn[onclick*="toggleLogin"]:hover,
         #adminArea .admin-btn[onclick*="adminLogout"]:hover,
         .admin-top-logout:hover {
-            background: linear-gradient(180deg, #f4d576 0%, #b98227 100%) !important;
-            color: #111111 !important;
+            background: #1a1a1a !important;
+            color: #fde08a !important;
+            border-color: #fde08a !important;
         }
 
 
@@ -2240,6 +2240,13 @@
             </div>
             <div id="adminArea" style="margin-left: 10px;">
             </div>
+        </div>
+        
+        <!-- Game Navigation Tabs -->
+        <div class="game-tabs" id="gameTabs" style="display: flex; gap: 10px; margin: 15px 0 20px 0; justify-content: center; width: 100%;">
+            <a href="index.html" class="game-tab active" style="flex: 1; text-align: center; padding: 12px 10px; text-decoration: none; border-radius: 6px; font-weight: bold; background: #111111; color: #f4d576; border: 1px solid #f4d576; font-size: 0.95rem; transition: all 0.2s;">🎫 แทงหวย</a>
+            <a href="dice.html" class="game-tab" style="flex: 1; text-align: center; padding: 12px 10px; text-decoration: none; border-radius: 6px; font-weight: bold; background: #15191d; color: #cbd5df; border: 1px solid rgba(255,255,255,0.08); font-size: 0.95rem; transition: all 0.2s;">🎲 ทอยเต๋า 1-6</a>
+            <a href="coin.html" class="game-tab" style="flex: 1; text-align: center; padding: 12px 10px; text-decoration: none; border-radius: 6px; font-weight: bold; background: #15191d; color: #cbd5df; border: 1px solid rgba(255,255,255,0.08); font-size: 0.95rem; transition: all 0.2s;">🪙 ปั่นแปะ</a>
         </div>
 
         <div class="result-section" id="resultSection" style="display: none; margin-bottom: 20px;">
@@ -2591,10 +2598,9 @@
         let balancePollInterval = null;
         let realtimeListeners = []; // Firebase realtime listeners
 
-        // State
         let user = null;
         let balance = 0;
-        let betAmount = 50;
+        let betAmount = parseInt(localStorage.getItem('lastBetAmount')) || 10;
         let selectedBetType = 'bottom2';
         let tickets = [];
         let winners = [];
@@ -2640,6 +2646,7 @@
             // Show cached result instantly (before Firebase)
             renderLastResult();
             document.getElementById('resultSection').style.display = 'block';
+            document.getElementById('betAmount').textContent = betAmount;
 
             // *** INSTANT UI: restore from cached session BEFORE any await ***
             // This prevents flash of guest state when navigating from member.html
@@ -3038,8 +3045,8 @@
                 <div class="user-info">
                     <div class="user-name">${user.name}</div>
                     <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
-                    <a href="member.html?tab=withdraw" class="admin-btn" style="text-decoration: none; font-size: 0.85rem; background: #111111; color: #f4d576; border: 1px solid #f4d576; font-weight: bold;">ถอนเงิน</a>
-                    <button class="admin-btn logout-gold-btn" onclick="toggleLogin()">ออกจากระบบ</button>
+                    <a href="member.html?tab=withdraw" class="admin-btn" style="text-decoration: none; font-size: 0.85rem; background: #111111; color: #ffffff; border: 1px solid rgba(255,255,255,0.3); font-weight: bold;">ถอนเงิน</a>
+                    <button class="admin-btn logout-gold-btn" onclick="toggleLogin()" style="font-size: 0.85rem;">ออกจากระบบ</button>
                 </div>
             `;
             if (isAdminLoggedIn) {
@@ -3095,6 +3102,7 @@
         function changeAmount(change) {
             betAmount = Math.max(10, Math.min(100, betAmount + change));
             document.getElementById('betAmount').textContent = betAmount;
+            localStorage.setItem('lastBetAmount', betAmount);
         }
 
         function getSelectedNumber() {
@@ -3807,6 +3815,9 @@
                 document.getElementById('balanceBox').style.display = 'none';
                 document.getElementById('resultSection').style.display = 'none';
                 document.getElementById('mainContent').style.display = 'none';
+                if (document.getElementById('gameTabs')) {
+                    document.getElementById('gameTabs').style.display = 'none';
+                }
                 if (document.getElementById('historySection')) {
                     document.getElementById('historySection').style.display = 'none';
                 }
@@ -3816,11 +3827,14 @@
             } else {
                 // Show player UI
                 document.getElementById('adminPageContainer').style.display = 'none';
+                if (document.getElementById('gameTabs')) {
+                    document.getElementById('gameTabs').style.display = 'flex';
+                }
                 if (user) {
                     document.getElementById('guestBanner').style.display = 'none';
                     document.getElementById('balanceBox').style.display = 'block';
-            document.getElementById('resultSection').style.display = 'block';
-            document.getElementById('mainContent').style.display = 'grid';
+                    document.getElementById('resultSection').style.display = 'block';
+                    document.getElementById('mainContent').style.display = 'grid';
                 } else {
                     document.body.classList.add('public-landing');
                     document.getElementById('guestBanner').style.display = 'none';

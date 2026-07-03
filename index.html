@@ -2680,7 +2680,7 @@
             updateNumberInputs();
             renderHistory();
             renderWinners();
-            startCheckTime();
+            // startCheckTime(); // ปิดการตั้งเวลาออกรางวัลฝั่ง Client เพื่อป้องกันการออกรางวัลซ้ำซ้อน (สลับไปรันผ่าน Google Apps Script แทน 100%)
         };
 
 
@@ -2855,6 +2855,11 @@
                 telegramBotToken = globalData.telegramBotToken || '';
                 telegramChatId = globalData.telegramChatId || '';
                 autoDrawEnabled = globalData.autoDrawEnabled || false;
+                
+                if (globalData.lastAutoDrawKey) {
+                    lastAutoDrawKey = globalData.lastAutoDrawKey;
+                    localStorage.setItem('lotteryLastAutoDrawKey', lastAutoDrawKey);
+                }
 
                 if (globalData.betMultipliers) {
                     betTypes.bottom2.multiplier = globalData.betMultipliers.bottom2 || 25;
@@ -2903,6 +2908,7 @@
                 telegramBotToken,
                 telegramChatId,
                 autoDrawEnabled,
+                lastAutoDrawKey,
                 betMultipliers: {
                     bottom2: betTypes.bottom2.multiplier,
                     top3: betTypes.top3.multiplier,
@@ -3616,11 +3622,32 @@
                 const diff = currentMinutes - timeToMinutes(drawTime);
                 const drawKey = `${todayKey}-${drawTime}`;
                 if (diff >= 0 && diff <= 2 && lastAutoDrawKey !== drawKey) {
-                    lastAutoDrawKey = drawKey;
-                    lastDrawTime = drawTime;
-                    localStorage.setItem('lotteryLastAutoDrawKey', drawKey);
-                    await drawLottery(true);
-                    updateNextDrawDisplay();
+                    try {
+                        // ดึงข้อมูลการออกผลจาก Firebase ล่าสุดเพื่อเช็คว่ามีคนอื่นออกไปหรือยัง
+                        const dbSnapshot = await database.ref('global/lastAutoDrawKey').once('value');
+                        const dbLastAutoDrawKey = dbSnapshot.val() || '';
+                        
+                        if (dbLastAutoDrawKey === drawKey) {
+                            // มีคนอื่นออกรางวัลรอบนี้ไปแล้ว ให้บันทึกคีย์นี้ในเครื่องเราด้วยเพื่อความขนาน
+                            lastAutoDrawKey = drawKey;
+                            localStorage.setItem('lotteryLastAutoDrawKey', drawKey);
+                            break;
+                        }
+                        
+                        // ล็อคคีย์การออกรางวัลใน Firebase ทันทีเพื่อไม่ให้เครื่องอื่นออกซ้ำ
+                        lastAutoDrawKey = drawKey;
+                        lastDrawTime = drawTime;
+                        localStorage.setItem('lotteryLastAutoDrawKey', drawKey);
+                        
+                        // บันทึกลง Firebase (จะทำงานเป็น lock)
+                        await database.ref('global/lastAutoDrawKey').set(drawKey);
+                        
+                        console.log(`[AutoDraw] Triggering draw for key: ${drawKey}`);
+                        await drawLottery(true);
+                        updateNextDrawDisplay();
+                    } catch (err) {
+                        console.error('[AutoDraw] Check/Set error:', err);
+                    }
                     break;
                 }
             }

@@ -185,29 +185,131 @@
         }
 
         .container {
-            max-width: 560px !important;
+            max-width: 900px !important;
         }
 
         .header {
-            background: linear-gradient(180deg, #073f3a 0%, #052421 100%);
-            border: 1px solid var(--lotto-line);
-            border-radius: 4px;
-            padding: 14px 16px;
-            box-shadow: 0 14px 36px rgba(0,0,0,0.34);
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
         }
 
         .header h1 {
-            color: var(--lotto-gold-light);
+            font-size: 1.35rem;
+            color: var(--lotto-gold-light) !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             letter-spacing: 0;
-            text-shadow: none !important;
         }
 
-        .header a {
-            color: var(--lotto-gold-light) !important;
-            font-weight: 800;
+        .header h1 span {
+            filter: drop-shadow(0 0 8px rgba(214, 155, 49, 0.65)) !important;
+        }
+
+        .auth-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-auth-btn {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%);
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-auth-btn:hover {
+            border-color: var(--lotto-gold);
+            color: var(--lotto-gold-light);
+        }
+
+        .header-auth-btn.header-register-btn {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%);
+            color: #111;
+            border: 1px solid #f2d178;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-name {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .admin-btn:hover {
+            border-color: var(--lotto-gold);
+            color: var(--lotto-gold-light);
+        }
+
+        .logout-gold-btn {
+            background: #111111 !important;
+            color: #f4d576 !important;
+            border: 1px solid #f4d576 !important;
+        }
+
+        .game-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0 20px 0;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .game-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 10px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            background: #15191d;
+            color: #cbd5df;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .game-tab.active {
+            background: #111111;
+            color: #f4d576;
+            border: 1px solid #f4d576;
         }
 
         .card {
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
             background: #f4f5f6 !important;
             border: 1px solid var(--lotto-line);
             border-radius: 4px !important;
@@ -408,9 +510,26 @@
 </head>
 <body>
     <div class="container">
+        <!-- Header -->
         <div class="header">
-            <h1>👤 ระบบสมาชิก</h1>
-            <a href="index.html" id="backToIndexBtn" style="display: none;">← กลับหน้าแรก</a>
+            <h1 style="font-size: 1.35rem;"><span style="cursor: pointer; user-select: none;">🎫</span> Medtad888</h1>
+            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ?utm_source=invitation&utm_medium=link_copy&utm_campaign=default"
+                target="_blank"
+                style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
+                💬 Line OpenChat
+            </a>
+            <div class="auth-header-actions" id="authHeaderActions">
+                <button type="button" class="header-auth-btn header-register-btn" onclick="openRegisterModal()">สมัครสมาชิก</button>
+                <button type="button" class="header-auth-btn header-login-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
+            </div>
+            <div id="userArea"></div>
+        </div>
+
+        <!-- Game Navigation Tabs -->
+        <div class="game-tabs" id="gameTabs">
+            <a href="index.html" class="game-tab">🎫 แทงหวย</a>
+            <a href="dice.html" class="game-tab">🎲 ทอยเต๋า 1-6</a>
+            <a href="fish.html" class="game-tab">🦀 น้ำเต้า ปู ปลา</a>
         </div>
 
         <!-- Auth (guest) -->
@@ -499,9 +618,7 @@
             <!-- Back button to auth UI -->
             <button id="depositBackBtn" class="login-btn" style="background: #95a5a6; margin-top: 10px; display: none;" onclick="hideDeposit()">🔙 กลับ</button>
             <!-- Go to lottery button (only for logged in users) -->
-            <div style="text-align: center; margin-top: 10px;">
-                <a id="depositGoPlayBtn" href="index.html" class="login-btn" style="display: none; width: 220px; margin: 0 auto; text-align: center; text-decoration: none; padding: 12px 0; border-radius: 4px; font-weight: bold; background: #111111 !important; color: #f4d576 !important; border: 1px solid #f4d576 !important;">กลับหน้าแรก</a>
-            </div>
+            <a id="depositGoPlayBtn" href="index.html" class="login-btn" style="display: none; width: 220px; margin: 15px auto 0; text-align: center; text-decoration: none; padding: 12px 0; border-radius: 4px; font-weight: bold; background: #111111 !important; color: #f4d576 !important; border: 1px solid #f4d576 !important;">กลับหน้าแรก</a>
         </div>
 
         <!-- Withdraw -->
@@ -689,6 +806,31 @@
             }
         };
 
+        function updateUserArea() {
+            if (currentUser) {
+                document.getElementById('authHeaderActions').style.display = 'none';
+                document.getElementById('userArea').innerHTML = `
+                    <div class="user-info">
+                        <div class="user-name">${currentUser.name}</div>
+                        <a href="member.html" class="admin-btn active" style="text-decoration: none; font-size: 0.85rem; border-color: var(--lotto-gold); color: var(--lotto-gold-light);">โปรไฟล์</a>
+                        <a href="member.html?tab=withdraw" class="admin-btn" style="text-decoration: none; font-size: 0.85rem; background: #111111; color: #ffffff; border: 1px solid rgba(255,255,255,0.3); font-weight: bold;">ถอนเงิน</a>
+                        <button class="admin-btn logout-gold-btn" onclick="memberLogout()" style="font-size: 0.85rem;">ออกจากระบบ</button>
+                    </div>
+                `;
+            } else {
+                document.getElementById('authHeaderActions').style.display = 'flex';
+                document.getElementById('userArea').innerHTML = '';
+            }
+        }
+
+        function openRegisterModal() {
+            switchAuthTab('register');
+        }
+
+        function openAuthModal(mode) {
+            switchAuthTab(mode);
+        }
+
         function showAuthUI() {
             // Reset all user-related state
             currentUser = null;
@@ -703,14 +845,15 @@
             document.getElementById('authCard').style.display = 'block';
             document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'none';
-            document.getElementById('backToIndexBtn').style.display = 'inline';
+            updateUserArea();
             switchAuthTab('login');
         }
 
         function switchAuthTab(tab) {
             document.getElementById('authCard').style.display = 'block';
             ['login', 'register', 'forgot'].forEach(t => {
-                document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1)).classList.toggle('active', t === tab);
+                const el = document.getElementById('panel' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (el) el.classList.toggle('active', t === tab);
                 const tabBtn = document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1));
                 if (tabBtn) tabBtn.classList.toggle('active', t === tab);
             });
@@ -724,24 +867,25 @@
             document.getElementById('authCard').style.display = 'none';
             document.getElementById('dashboardCard').style.display = 'block';
             document.getElementById('depositCard').style.display = 'none';
-            document.getElementById('backToIndexBtn').style.display = 'none';
+            document.getElementById('withdrawCard').style.display = 'none';
             document.getElementById('dashUserId').textContent = currentUser.name;
             document.getElementById('dashEmail').textContent = currentUser.email || '-';
             document.getElementById('dashTrueMoney').textContent = currentUser.trueMoneyLink || '-';
             document.getElementById('dashBalance').textContent = (bal || 0).toLocaleString();
+            updateUserArea();
         }
 
         function showDeposit() {
             document.getElementById('authCard').style.display = 'none';
             document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'block';
-            // Show back button if not logged in
-            document.getElementById('backToIndexBtn').style.display = currentUser ? 'none' : 'inline';
+            document.getElementById('withdrawCard').style.display = 'none';
             // Show deposit back button only if not logged in
             document.getElementById('depositBackBtn').style.display = currentUser ? 'none' : 'inline';
             // Show "go play" button only if logged in
-            document.getElementById('depositGoPlayBtn').style.display = currentUser ? 'inline' : 'none';
+            document.getElementById('depositGoPlayBtn').style.display = currentUser ? 'block' : 'none';
             updateDepositDisplay();
+            updateUserArea();
         }
 
         function hideDeposit() {
@@ -759,8 +903,8 @@
             document.getElementById('dashboardCard').style.display = 'none';
             document.getElementById('depositCard').style.display = 'none';
             document.getElementById('withdrawCard').style.display = 'block';
-            document.getElementById('backToIndexBtn').style.display = 'none';
             document.getElementById('withdrawAccountDisplay').textContent = currentUser.trueMoneyLink || '-';
+            updateUserArea();
         }
 
         function hideWithdraw() {

@@ -36,7 +36,7 @@ const MemberAPI = {
             name: user.name,
             email: user.email,
             trueMoneyLink: user.trueMoneyLink,
-            balance: balance != null ? balance : 0
+            balance: Number(balance) || 0
         }));
     },
 
@@ -88,7 +88,7 @@ const MemberAPI = {
                     success: true,
                     user: this.userFromApi(result.user),
                     sessionToken: session.sessionToken,
-                    balance: result.user.balance || 0
+                    balance: Number(result.user.balance) || 0
                 };
             }
             return { success: false, reason: 'invalid_session' };
@@ -98,7 +98,7 @@ const MemberAPI = {
                 success: true,
                 user: this.userFromSession(session),
                 sessionToken: session.sessionToken,
-                balance: session.balance || 0,
+                balance: Number(session.balance) || 0,
                 isOffline: true
             };
         }
@@ -106,7 +106,7 @@ const MemberAPI = {
 
     async syncBalance(userId, sessionToken) {
         const result = await this.call('getProfile', { userId, sessionToken });
-        if (result.success) return result.user.balance || 0;
+        if (result.success) return Number(result.user.balance) || 0;
         return null;
     },
 

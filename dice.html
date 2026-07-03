@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medtad888 - ทอยเต๋า 1-6</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background:
+                radial-gradient(circle at 12% 16%, rgba(0, 255, 179, 0.22), transparent 22%),
+                radial-gradient(circle at 88% 18%, rgba(0, 255, 179, 0.18), transparent 22%),
+                linear-gradient(90deg, #050b0c 0%, #0c2320 24%, #111 50%, #0c2320 76%, #050b0c 100%);
+            color: #1f2933;
+            min-height: 100vh;
+            padding: 0 0 42px;
+            overflow-x: hidden;
+        }
+
+        :root {
+            --lotto-dark: #071a18;
+            --lotto-panel: #15191d;
+            --lotto-panel-2: #2b3137;
+            --lotto-gold: #d69b31;
+            --lotto-gold-soft: #f4cf77;
+            --lotto-green: #08c75a;
+            --lotto-line: rgba(214, 155, 49, 0.55);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.35rem;
+            color: var(--lotto-gold-soft) !important;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .header h1 span {
+            filter: drop-shadow(0 0 8px rgba(214, 155, 49, 0.65)) !important;
+        }
+
+        .auth-header-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .header-auth-btn {
+            background: #11171b;
+            color: #e2e8f0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-auth-btn:hover {
+            border-color: var(--lotto-gold);
+            color: var(--lotto-gold-soft);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .user-name {
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .admin-btn {
+            padding: 6px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+
+        .admin-btn:hover {
+            border-color: var(--lotto-gold);
+            color: var(--lotto-gold-soft);
+        }
+
+        .logout-gold-btn {
+            background: #111111 !important;
+            color: #f4d576 !important;
+            border: 1px solid #f4d576 !important;
+        }
+
+        .game-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0 20px 0;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .game-tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 10px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            background: #15191d;
+            color: #cbd5df;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .game-tab.active {
+            background: #111111;
+            color: #f4d576;
+            border: 1px solid #f4d576;
+        }
+
+        .balance-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, #12171b 0%, #07090b 100%);
+            color: #f7fafc;
+            border-radius: 4px;
+            border: 1px solid var(--lotto-line);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .balance-box .balance {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 4px 0;
+            color: var(--lotto-gold-soft);
+        }
+
+        .deposit-link-btn {
+            background: linear-gradient(180deg, #10db55 0%, #04a83f 100%) !important;
+            border: 1px solid rgba(255,255,255,0.25) !important;
+            color: white;
+            text-decoration: none;
+            padding: 8px 24px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            transition: all 0.2s;
+        }
+
+        .deposit-link-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .card {
+            background: var(--lotto-panel);
+            border-radius: 4px;
+            border: 1px solid var(--lotto-line);
+            box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-title {
+            background: linear-gradient(180deg, #11171b 0%, #090d10 100%);
+            color: var(--lotto-gold-soft);
+            border-bottom: 1px solid var(--lotto-line);
+            padding: 12px 16px;
+            font-weight: bold;
+            border-radius: 4px 4px 0 0;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+        }
+
+        /* 3D Dice Scene */
+        .dice-scene {
+            width: 100px;
+            height: 100px;
+            margin: 40px auto;
+            perspective: 600px;
+        }
+
+        .dice {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.15);
+        }
+
+        .dice-face {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #fcefa7 0%, #d69b31 100%);
+            border: 3px solid #b98227;
+            border-radius: 14px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            padding: 12px;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.15), 0 5px 15px rgba(0,0,0,0.4);
+        }
+
+        .dot {
+            display: block;
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #111111;
+            margin: auto;
+            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.3);
+        }
+
+        /* Face placements */
+        .face-1 { transform: rotateY(0deg) translateZ(50px); }
+        .face-2 { transform: rotateY(180deg) translateZ(50px); }
+        .face-3 { transform: rotateY(90deg) translateZ(50px); }
+        .face-4 { transform: rotateY(-90deg) translateZ(50px); }
+        .face-5 { transform: rotateX(90deg) translateZ(50px); }
+        .face-6 { transform: rotateX(-90deg) translateZ(50px); }
+
+        /* Grid area dots positioning */
+        .face-1 .dot { grid-area: 2/2; }
+        
+        .face-2 .dot:nth-child(1) { grid-area: 1/1; }
+        .face-2 .dot:nth-child(2) { grid-area: 3/3; }
+        
+        .face-3 .dot:nth-child(1) { grid-area: 1/1; }
+        .face-3 .dot:nth-child(2) { grid-area: 2/2; }
+        .face-3 .dot:nth-child(3) { grid-area: 3/3; }
+        
+        .face-4 .dot:nth-child(1) { grid-area: 1/1; }
+        .face-4 .dot:nth-child(2) { grid-area: 1/3; }
+        .face-4 .dot:nth-child(3) { grid-area: 3/1; }
+        .face-4 .dot:nth-child(4) { grid-area: 3/3; }
+        
+        .face-5 .dot:nth-child(1) { grid-area: 1/1; }
+        .face-5 .dot:nth-child(2) { grid-area: 1/3; }
+        .face-5 .dot:nth-child(3) { grid-area: 2/2; }
+        .face-5 .dot:nth-child(4) { grid-area: 3/1; }
+        .face-5 .dot:nth-child(5) { grid-area: 3/3; }
+        
+        .face-6 .dot:nth-child(1) { grid-area: 1/1; }
+        .face-6 .dot:nth-child(2) { grid-area: 1/3; }
+        .face-6 .dot:nth-child(3) { grid-area: 2/1; }
+        .face-6 .dot:nth-child(4) { grid-area: 2/3; }
+        .face-6 .dot:nth-child(5) { grid-area: 3/1; }
+        .face-6 .dot:nth-child(6) { grid-area: 3/3; }
+
+        /* Selection buttons styles */
+        .dice-numbers {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .number-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 8px;
+            background: #1a2228;
+            border: 2px solid rgba(255,255,255,0.08);
+            color: #cbd5df;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .number-btn:hover {
+            border-color: var(--lotto-gold);
+            color: var(--lotto-gold-soft);
+        }
+
+        .number-btn.selected {
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border-color: #f2d178 !important;
+            box-shadow: 0 0 10px rgba(214, 155, 49, 0.4);
+        }
+
+        .bet-control {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .amount-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #1e252d;
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #f4cf77;
+            font-size: 1.4rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .amount-btn:hover {
+            background: #252e38;
+            transform: scale(1.05);
+        }
+
+        .amount-input {
+            width: 120px;
+            height: 44px;
+            background: #11171b;
+            border: 1px solid var(--lotto-line);
+            border-radius: 6px;
+            color: #ffffff;
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .play-btn {
+            display: block;
+            width: 100%;
+            max-width: 320px;
+            margin: 25px auto 10px;
+            padding: 14px 28px;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%) !important;
+            color: #111111 !important;
+            border: 1px solid #f2d178 !important;
+            border-radius: 6px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+            transition: all 0.2s;
+        }
+
+        .play-btn:hover:not(:disabled) {
+            filter: brightness(1.1);
+            transform: translateY(-2px);
+        }
+
+        .play-btn:disabled {
+            background: #4a5568 !important;
+            border-color: #718096 !important;
+            color: #a0aec0 !important;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* History Table Style */
+        .history-list {
+            background: #11171b !important;
+            border: 1px solid rgba(214, 155, 49, 0.55) !important;
+            border-radius: 4px !important;
+            max-height: 320px !important;
+            overflow-y: auto;
+            padding: 10px !important;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: #1e242b !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-radius: 4px !important;
+            padding: 12px !important;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-won {
+            border-color: rgba(16, 198, 106, 0.6) !important;
+            background: rgba(16, 198, 106, 0.12) !important;
+        }
+
+        .history-lost {
+            border-color: rgba(231, 76, 60, 0.4) !important;
+            background: rgba(231, 76, 60, 0.08) !important;
+        }
+
+        .history-won-text { color: #10c66a; font-weight: bold; }
+        .history-lost-text { color: #e74c3c; font-weight: bold; }
+
+        /* Modal styling */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #15191d;
+            border: 1px solid var(--lotto-line);
+            border-radius: 6px;
+            width: min(460px, 92vw);
+            padding: 24px;
+            text-align: center;
+            color: #ffffff;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: var(--lotto-gold-soft);
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        /* Form classes */
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            background: #11171b;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 6px;
+            color: #fff;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        .login-input:focus {
+            border-color: var(--lotto-gold);
+            outline: none;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(180deg, #e4bd5d 0%, #a56c1f 100%);
+            color: #111;
+            border: 1px solid #f2d178;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .login-btn:hover {
+            filter: brightness(1.1);
+        }
+
+        .login-btn.secondary {
+            background: linear-gradient(180deg, #3c434b 0%, #242a31 100%);
+            color: #fff;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .guest-warning {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            padding: 30px;
+            text-align: center;
+            color: #fff;
+            margin-top: 30px;
+        }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1 style="font-size: 1.35rem;"><span style="cursor: pointer; user-select: none;">🎫</span> Medtad888</h1>
+            <a href="https://line.me/ti/g2/B0C_36-USNy_rNmMbNFblYRWIz8Txo2tFrjXwQ"
+                target="_blank"
+                style="background: #06C755; color: white; padding: 8px 15px; border-radius: 10px; text-decoration: none; font-weight: bold; font-size: 0.9rem; display: inline-flex; align-items: center; gap: 6px;">
+                💬 Line OpenChat
+            </a>
+            <div class="auth-header-actions" id="authHeaderActions">
+                <button type="button" class="header-auth-btn" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
+            </div>
+            <div id="userArea"></div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="game-tabs" id="gameTabs">
+            <a href="index.html" class="game-tab">🎫 แทงหวย</a>
+            <a href="dice.html" class="game-tab active">🎲 ทอยเต๋า 1-6</a>
+            <a href="coin.html" class="game-tab">🪙 ปั่นแปะ</a>
+        </div>
+
+        <!-- Guest Warning -->
+        <div class="guest-warning" id="guestWarning" style="display: none;">
+            <div style="font-size: 3rem; margin-bottom: 15px;">🔐</div>
+            <div style="font-size: 1.3rem; font-weight: bold; margin-bottom: 10px;">กรุณาเข้าสู่ระบบก่อนเล่นเกม</div>
+            <p style="color: #a0aec0; margin-bottom: 20px; font-size: 0.95rem;">คุณต้องเข้าสู่ระบบสมาชิกเพื่อทำรายการและสะสมเครดิต</p>
+            <button class="login-btn" style="max-width: 200px; margin: 0 auto;" onclick="openAuthModal('login')">เข้าสู่ระบบ</button>
+        </div>
+
+        <!-- Balance Box -->
+        <div class="balance-box" id="balanceBox" style="display: none;">
+            <div style="color: #a0aec0; margin-bottom: 5px; font-size: 0.9rem;">เงินคงเหลือ</div>
+            <div class="balance" id="balanceDisplay">0</div>
+            <a href="member.html?tab=deposit" class="deposit-link-btn">💵 เติมเงิน</a>
+        </div>
+
+        <!-- Main Game Panel -->
+        <div class="card" id="gamePlayPanel" style="display: none;">
+            <div class="section-title">🎲 เกมทอยเต๋าเลข 1-6</div>
+            
+            <p style="color: #cbd5df; font-size: 0.95rem; margin-bottom: 10px;">เลือกตัวเลขที่คุณต้องการทาย (รับรางวัลสูงถึง 5 เท่า!)</p>
+            
+            <!-- 3D Dice Scene -->
+            <div class="dice-scene">
+                <div class="dice" id="dice3d">
+                    <div class="dice-face face-1"><span class="dot"></span></div>
+                    <div class="dice-face face-2"><span class="dot"></span><span class="dot"></span></div>
+                    <div class="dice-face face-3"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    <div class="dice-face face-4"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    <div class="dice-face face-5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                    <div class="dice-face face-6"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+                </div>
+            </div>
+
+            <!-- Number Picker -->
+            <div class="dice-numbers">
+                <button class="number-btn" onclick="selectDiceNumber(1, this)">1 (5x)</button>
+                <button class="number-btn" onclick="selectDiceNumber(2, this)">2 (5x)</button>
+                <button class="number-btn" onclick="selectDiceNumber(3, this)">3 (5x)</button>
+                <button class="number-btn" onclick="selectDiceNumber(4, this)">4 (5x)</button>
+                <button class="number-btn" onclick="selectDiceNumber(5, this)">5 (5x)</button>
+                <button class="number-btn" onclick="selectDiceNumber(6, this)">6 (5x)</button>
+            </div>
+
+            <!-- Bet Controls -->
+            <div class="bet-control">
+                <button class="amount-btn" onclick="adjustBet(-10)">-</button>
+                <input type="number" class="amount-input" id="betAmount" value="10" min="10" max="100" step="10" onchange="handleBetChange(this)">
+                <button class="amount-btn" onclick="adjustBet(10)">+</button>
+            </div>
+
+            <button class="play-btn" id="rollBtn" onclick="rollDice()">🎲 ทอยเต๋า</button>
+            
+            <div id="gameStatus" style="font-size: 1.15rem; font-weight: bold; margin-top: 15px; min-height: 24px; color: #f4cf77;"></div>
+        </div>
+
+        <!-- History -->
+        <div class="card" id="historyPanel" style="display: none;">
+            <div class="section-title">📜 ประวัติการเล่นของคุณ</div>
+            <div class="history-list" id="historyList">
+                <div style="text-align: center; color: #a0aec0; padding: 20px;">ไม่มีประวัติการเล่น</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Popup Modal (เหมือนหน้าแรก) -->
+    <div class="modal-overlay" id="authModal">
+        <div class="modal-content">
+            <div class="modal-title" id="authModalTitle">เข้าสู่ระบบ</div>
+            <form onsubmit="event.preventDefault(); handleAuthSubmit();">
+                <input type="text" class="login-input" id="authUserId" placeholder="ID สมาชิก" autocomplete="username">
+                <input type="password" class="login-input" id="authPassword" placeholder="รหัสผ่าน" autocomplete="current-password">
+                <button type="submit" class="login-btn" id="authSubmitBtn">เข้าสู่ระบบ</button>
+                <button type="button" class="login-btn secondary" onclick="closeAuthModal()">ปิด</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Info Modal Popup -->
+    <div class="modal-overlay" id="infoModal">
+        <div class="modal-content">
+            <div style="font-size: 3rem; margin-bottom: 10px;" id="infoIcon"></div>
+            <div class="modal-title" id="infoTitle"></div>
+            <p style="color: #cbd5df; margin-bottom: 20px;" id="infoMessage"></p>
+            <button class="login-btn" onclick="closeInfoModal()">ตกลง</button>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="member-api.js"></script>
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDuKQngUd458B8Am4_Ajw2GnWBiTnv12n8",
+            authDomain: "cougar2-79354.firebaseapp.com",
+            databaseURL: "https://cougar2-79354-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "cougar2-79354",
+            storageBucket: "cougar2-79354.firebasestorage.app",
+            messagingSenderId: "807099695357",
+            appId: "1:807099695357:web:b8651458269fcc51c07e94",
+            measurementId: "G-528PBBFBE4"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        let user = null;
+        let balance = 0;
+        let selectedNumber = null;
+        let isRolling = false;
+        let diceHistory = [];
+        let balancePollInterval = null;
+        let balanceListener = null;
+        let balanceRef = null;
+
+        // Rotation angles corresponding to dice face on top
+        const faceRotations = {
+            1: { x: 0, y: 0 },
+            2: { x: 0, y: 180 },
+            3: { x: 0, y: -90 },
+            4: { x: 0, y: 90 },
+            5: { x: -90, y: 0 },
+            6: { x: 90, y: 0 }
+        };
+
+        window.onload = async function() {
+            // Restore last bet amount
+            const lastBet = parseInt(localStorage.getItem('lastBetAmount')) || 10;
+            document.getElementById('betAmount').value = Math.min(100, Math.max(10, lastBet));
+            // Restore session
+            const cachedSession = MemberAPI.getSession();
+            if (cachedSession) {
+                user = MemberAPI.userFromSession(cachedSession);
+                balance = Number(cachedSession.balance) || 0;
+                showLoggedInUI();
+                startRealtimeBalance(); // Real-time + polling
+                loadDiceHistory();
+            } else {
+                showGuestUI();
+            }
+        };
+
+        function showLoggedInUI() {
+            document.getElementById('authHeaderActions').style.display = 'none';
+            document.getElementById('userArea').innerHTML = `
+                <div class="user-info">
+                    <div class="user-name">${user.name}</div>
+                    <a href="member.html" class="admin-btn" style="text-decoration: none; font-size: 0.85rem;">โปรไฟล์</a>
+                    <a href="member.html?tab=withdraw" class="admin-btn" style="text-decoration: none; font-size: 0.85rem; background: #111111; color: #ffffff; border: 1px solid rgba(255,255,255,0.3); font-weight: bold;">ถอนเงิน</a>
+                    <button class="admin-btn logout-gold-btn" onclick="logout()" style="font-size: 0.85rem;">ออกจากระบบ</button>
+                </div>
+            `;
+            document.getElementById('balanceBox').style.display = 'flex';
+            document.getElementById('gamePlayPanel').style.display = 'block';
+            document.getElementById('historyPanel').style.display = 'block';
+            document.getElementById('guestWarning').style.display = 'none';
+            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+        }
+
+        function showGuestUI() {
+            document.getElementById('authHeaderActions').style.display = 'flex';
+            document.getElementById('userArea').innerHTML = '';
+            document.getElementById('balanceBox').style.display = 'none';
+            document.getElementById('gamePlayPanel').style.display = 'none';
+            document.getElementById('historyPanel').style.display = 'none';
+            document.getElementById('guestWarning').style.display = 'block';
+        }
+
+        // ===== Real-time Balance Sync =====
+        function startRealtimeBalance() {
+            if (!user) return;
+            stopRealtimeBalance();
+
+            // 1. Firebase real-time listener — instant update whenever balance changes
+            balanceRef = database.ref('users/' + user.id + '/balance');
+            balanceListener = balanceRef.on('value', (snap) => {
+                if (snap.exists()) {
+                    const fbBal = Number(snap.val()) || 0;
+                    if (fbBal !== balance) {
+                        balance = fbBal;
+                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        const sess = MemberAPI.getSession();
+                        if (sess) MemberAPI.saveSession(user, sess.sessionToken, balance);
+                    }
+                }
+            });
+
+            // 2. Polling from GAS every 10s as backup (catches Sheets-only updates)
+            if (balancePollInterval) clearInterval(balancePollInterval);
+            balancePollInterval = setInterval(syncBalance, 10000);
+        }
+
+        function stopRealtimeBalance() {
+            if (balanceRef && balanceListener) {
+                try { balanceRef.off('value', balanceListener); } catch (e) {}
+                balanceRef = null;
+                balanceListener = null;
+            }
+            if (balancePollInterval) {
+                clearInterval(balancePollInterval);
+                balancePollInterval = null;
+            }
+        }
+
+        async function syncBalance() {
+            if (!user) return;
+            try {
+                const profile = await MemberAPI.call('getProfile', {
+                    userId: user.id,
+                    sessionToken: MemberAPI.getSession()?.sessionToken
+                });
+                if (profile.success) {
+                    const newBal = Number(profile.user.balance) || 0;
+                    if (newBal !== balance) {
+                        balance = newBal;
+                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        MemberAPI.saveSession(user, MemberAPI.getSession().sessionToken, balance);
+                        // Push to Firebase so listener picks it up on other pages
+                        try { await database.ref('users/' + user.id + '/balance').set(balance); } catch(e){}
+                    }
+                }
+            } catch (e) {
+                console.warn('Sync balance failed:', e);
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('authModal').classList.add('active');
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        async function handleAuthSubmit() {
+            const userId = document.getElementById('authUserId').value.trim();
+            const password = document.getElementById('authPassword').value;
+            if (!userId || !password) {
+                showInfoModal('กรุณากรอกข้อมูลให้ครบถ้วน', '❌', 'ข้อผิดพลาด');
+                return;
+            }
+
+            try {
+                const res = await MemberAPI.call('login', { userId, password });
+                if (res.success) {
+                    user = MemberAPI.userFromApi(res.user);
+                    balance = Number(res.user.balance) || 0;
+                    MemberAPI.saveSession(user, res.sessionToken, balance);
+                    closeAuthModal();
+                    showLoggedInUI();
+                    startRealtimeBalance();
+                    loadDiceHistory();
+                } else {
+                    showInfoModal(res.message || 'เข้าสู่ระบบไม่สำเร็จ', '❌', 'ข้อผิดพลาด');
+                }
+            } catch (e) {
+                showInfoModal('เชื่อมต่อระบบล้มเหลว', '❌', 'ข้อผิดพลาด');
+            }
+        }
+
+        function logout() {
+            if (confirm('คุณต้องการออกจากระบบ?')) {
+                stopRealtimeBalance();
+                MemberAPI.clearSession();
+                user = null;
+                balance = 0;
+                showGuestUI();
+            }
+        }
+
+        function selectDiceNumber(num, btn) {
+            selectedNumber = num;
+            document.querySelectorAll('.number-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+        }
+
+        function adjustBet(change) {
+            const input = document.getElementById('betAmount');
+            let current = parseInt(input.value) || 10;
+            current = Math.max(10, Math.min(100, current + change));
+            input.value = current;
+            localStorage.setItem('lastBetAmount', current);
+        }
+
+        function handleBetChange(input) {
+            let val = parseInt(input.value) || 10;
+            val = Math.max(10, Math.min(100, val));
+            input.value = val;
+            localStorage.setItem('lastBetAmount', val);
+        }
+
+        async function rollDice() {
+            if (isRolling) return;
+            if (!user) {
+                showInfoModal('กรุณาเข้าสู่ระบบก่อนเล่น', '🔐', 'แจ้งเตือน');
+                return;
+            }
+            if (selectedNumber === null) {
+                showInfoModal('กรุณาเลือกตัวเลขที่ต้องการทาย', '🎲', 'แจ้งเตือน');
+                return;
+            }
+
+            const betAmountInput = parseInt(document.getElementById('betAmount').value) || 0;
+            if (betAmountInput < 10) {
+                showInfoModal('เดิมพันขั้นต่ำ 10 บาท', '💸', 'ข้อผิดพลาด');
+                return;
+            }
+
+            if (balance < betAmountInput) {
+                showInfoModal('ยอดเงินของคุณไม่เพียงพอ', '💸', 'ข้อผิดพลาด');
+                return;
+            }
+
+            isRolling = true;
+            document.getElementById('rollBtn').disabled = true;
+            document.getElementById('gameStatus').textContent = '🎲 กำลังทอยลูกเต๋า...';
+            document.getElementById('gameStatus').style.color = '#f4cf77';
+
+            // Deduct balance first
+            try {
+                const session = MemberAPI.getSession();
+                const deductRes = await MemberAPI.updateBalance(user.id, session.sessionToken, -betAmountInput);
+                if (!deductRes.success) {
+                    showInfoModal(deductRes.message || 'ไม่สามารถหักเงินได้', '❌', 'ข้อผิดพลาด');
+                    isRolling = false;
+                    document.getElementById('rollBtn').disabled = false;
+                    return;
+                }
+                balance = Number(deductRes.balance) || 0;
+                document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                MemberAPI.saveSession(user, session.sessionToken, balance);
+                await database.ref('users/' + user.id + '/balance').set(balance);
+            } catch (e) {
+                showInfoModal('เกิดข้อผิดพลาดในการทำรายการเดิมพัน', '❌', 'ข้อผิดพลาด');
+                isRolling = false;
+                document.getElementById('rollBtn').disabled = false;
+                return;
+            }
+
+            // Animate rolling
+            const dice = document.getElementById('dice3d');
+            
+            // Reset transition and rotate back to 0 to guarantee animation triggers every time
+            dice.style.transition = 'none';
+            dice.style.transform = 'rotateX(0deg) rotateY(0deg)';
+            
+            // Force browser reflow to apply the reset instantly
+            void dice.offsetHeight;
+            
+            // Restore transition property
+            dice.style.transition = 'transform 0.8s cubic-bezier(0.2, 0.8, 0.3, 1.15)';
+            
+            // Random spin rounds (increased spins for faster, longer spin effect)
+            const spins = 8; // full rotations
+            const rolledNum = Math.floor(Math.random() * 6) + 1;
+            
+            const targetRotation = faceRotations[rolledNum];
+            
+            // Apply dramatic spin
+            const finalX = targetRotation.x + (360 * spins);
+            const finalY = targetRotation.y + (360 * spins);
+            
+            dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
+
+            setTimeout(async () => {
+                const won = rolledNum === selectedNumber;
+                let payout = 0;
+                let statusText = '';
+                
+                if (won) {
+                    payout = betAmountInput * 5;
+                    statusText = `🎉 ถูกรางวัล! ลูกเต๋าออกเลข ${rolledNum} ได้รับ ${payout} บาท!`;
+                    document.getElementById('gameStatus').style.color = '#10c66a';
+                    
+                    // Add payout
+                    try {
+                        const session = MemberAPI.getSession();
+                        const addRes = await MemberAPI.updateBalance(user.id, session.sessionToken, payout);
+                        if (addRes.success) {
+                            balance = Number(addRes.balance) || 0;
+                            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                            MemberAPI.saveSession(user, session.sessionToken, balance);
+                            await database.ref('users/' + user.id + '/balance').set(balance);
+                        }
+                    } catch (e) {
+                        console.error('Add payout failed:', e);
+                    }
+                } else {
+                    statusText = `❌ เสียใจด้วย! ลูกเต๋าออกเลข ${rolledNum} (คุณทาย ${selectedNumber})`;
+                    document.getElementById('gameStatus').style.color = '#e74c3c';
+                }
+
+                document.getElementById('gameStatus').textContent = statusText;
+
+                // Save game log
+                const gameLog = {
+                    id: Date.now(),
+                    game: 'ทอยเต๋า 1-6',
+                    bet: betAmountInput,
+                    choice: selectedNumber,
+                    result: rolledNum,
+                    won: won,
+                    payout: payout,
+                    time: new Date().toLocaleTimeString('th-TH')
+                };
+
+                // Save to Firebase
+                try {
+                    await database.ref('users/' + user.id + '/diceHistory').push(gameLog);
+                } catch (e) {
+                    // fall back to local
+                    diceHistory.unshift(gameLog);
+                    renderHistoryList();
+                }
+
+                isRolling = false;
+                document.getElementById('rollBtn').disabled = false;
+            }, 800);
+        }
+
+        function loadDiceHistory() {
+            if (!user) return;
+            database.ref('users/' + user.id + '/diceHistory').limitToLast(10).on('value', snap => {
+                if (snap.exists()) {
+                    const data = snap.val();
+                    diceHistory = Object.values(data).reverse();
+                } else {
+                    diceHistory = [];
+                }
+                renderHistoryList();
+            });
+        }
+
+        function renderHistoryList() {
+            const list = document.getElementById('historyList');
+            if (diceHistory.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: #a0aec0; padding: 20px;">ไม่มีประวัติการเล่น</div>';
+                return;
+            }
+
+            list.innerHTML = diceHistory.map(log => `
+                <div class="history-item ${log.won ? 'history-won' : 'history-lost'}">
+                    <div>
+                        <div style="font-weight: bold; color: #fff;">ทายเลข ${log.choice} ${log.won ? '✅' : '❌'}</div>
+                        <div style="font-size: 0.8rem; color: #a0aec0;">ผลเต๋า: ${log.result} | ${log.time}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: bold; color: #fff;">${log.bet} บาท</div>
+                        <div class="${log.won ? 'history-won-text' : 'history-lost-text'}">${log.won ? '+' + log.payout + ' บาท' : 'เสีย'}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Info Modal Helpers
+        function showInfoModal(msg, icon = 'ℹ️', title = 'แจ้งเตือน') {
+            document.getElementById('infoIcon').textContent = icon;
+            document.getElementById('infoTitle').textContent = title;
+            document.getElementById('infoMessage').textContent = msg;
+            document.getElementById('infoModal').classList.add('active');
+        }
+
+        function closeInfoModal() {
+            document.getElementById('infoModal').classList.remove('active');
+        }
+    </script>
+</body>
+</html>

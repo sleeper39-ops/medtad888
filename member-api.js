@@ -142,3 +142,39 @@ const MemberAPI = {
         return this.call('saveAdminSettings', settings);
     }
 };
+
+/** แสดงยอดเงิน — อัปเดต DOM เฉพาะเมื่อค่าเปลี่ยนจริง */
+const BalanceUI = {
+    _shown: {},
+    _gasAt: 0,
+
+    format(amount) {
+        return (Number(amount) || 0).toLocaleString();
+    },
+
+    set(elementId, amount, opts = {}) {
+        const el = document.getElementById(elementId);
+        const num = Number(amount) || 0;
+        if (!el) return num;
+
+        const suffix = opts.suffix != null ? opts.suffix : '';
+        const prev = this._shown[elementId];
+        if (prev === num && !opts.force) return num;
+
+        this._shown[elementId] = num;
+        el.textContent = this.format(num) + suffix;
+        if (opts.gas) this._gasAt = Date.now();
+        return num;
+    },
+
+    /** Firebase เป็นตัวสำรอง — ไม่อ่านถ้าเพิ่ง sync GAS ไป */
+    acceptFirebase() {
+        return Date.now() - this._gasAt > 6000;
+    },
+
+    clear(elementId) {
+        if (elementId) delete this._shown[elementId];
+        else this._shown = {};
+        this._gasAt = 0;
+    }
+};

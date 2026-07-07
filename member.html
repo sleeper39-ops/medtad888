@@ -778,15 +778,14 @@
                     if (restored.success) {
                         currentUser = restored.user;
                         sessionToken = restored.sessionToken;
-                        if (restored.balance != null) {
-                            balance = restored.balance;
+                        if (restored.balance != null && Number(restored.balance) !== balance) {
+                            updateDashBalance(restored.balance, true);
+                            MemberAPI.saveSession(currentUser, sessionToken, balance);
                         }
                         if (tab === 'deposit') {
                             showDeposit();
                         } else if (tab === 'withdraw') {
                             showWithdraw();
-                        } else {
-                            showDashboard(balance); // Refresh with latest!
                         }
                     } else {
                         // Server says session invalid - show auth UI!
@@ -878,8 +877,12 @@
             document.getElementById('dashUserId').textContent = currentUser.name;
             document.getElementById('dashEmail').textContent = currentUser.email || '-';
             document.getElementById('dashTrueMoney').textContent = currentUser.trueMoneyLink || '-';
-            document.getElementById('dashBalance').textContent = (bal || 0).toLocaleString();
+            updateDashBalance(bal != null ? bal : balance);
             updateUserArea();
+        }
+
+        function updateDashBalance(amount, fromGas) {
+            balance = BalanceUI.set('dashBalance', amount, { gas: !!fromGas });
         }
 
         function showDeposit() {
@@ -1203,12 +1206,11 @@
             try {
                 await MemberAPI.call('checkDeposits', { userId: currentUser.id, sessionToken: sessionToken });
                 const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
-                if (bal !== null) {
-                    balance = Number(bal) || 0;
-                    document.getElementById('dashBalance').textContent = balance.toLocaleString();
+                if (bal !== null && Number(bal) !== balance) {
+                    updateDashBalance(bal, true);
                     MemberAPI.saveSession(currentUser, sessionToken, balance);
                 }
-                showInfoModal('ตรวจสอบการเติมเงินแล้ว! ยอดคงเหลือ: ' + (bal || 0).toLocaleString() + ' บาท', '✅');
+                showInfoModal('ตรวจสอบการเติมเงินแล้ว! ยอดคงเหลือ: ' + balance.toLocaleString() + ' บาท', '✅');
             } catch (e) {
                 showInfoModal(e.message, '❌', 'ข้อผิดพลาด');
             }
@@ -1269,12 +1271,11 @@
             balancePollInterval = setInterval(async () => {
                 if (!currentUser || !sessionToken) return;
                 const bal = await MemberAPI.syncBalance(currentUser.id, sessionToken);
-                if (bal !== null) {
-                    balance = Number(bal) || 0;
-                    document.getElementById('dashBalance').textContent = balance.toLocaleString();
+                if (bal !== null && Number(bal) !== balance) {
+                    updateDashBalance(bal, true);
                     MemberAPI.saveSession(currentUser, sessionToken, balance);
                 }
-            }, 8000);
+            }, 15000);
         }
 
         function showInfoModal(message, icon = 'ℹ️', title = 'แจ้งเตือน') {

@@ -560,16 +560,6 @@
                 </div>
             </div>
 
-            <!-- Test Rotation Buttons -->
-            <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 10px;">
-                <button onclick="testRotation(1)" style="padding: 5px 10px; cursor: pointer;">Test 1</button>
-                <button onclick="testRotation(2)" style="padding: 5px 10px; cursor: pointer;">Test 2</button>
-                <button onclick="testRotation(3)" style="padding: 5px 10px; cursor: pointer;">Test 3</button>
-                <button onclick="testRotation(4)" style="padding: 5px 10px; cursor: pointer;">Test 4</button>
-                <button onclick="testRotation(5)" style="padding: 5px 10px; cursor: pointer;">Test 5</button>
-                <button onclick="testRotation(6)" style="padding: 5px 10px; cursor: pointer;">Test 6</button>
-            </div>
-
             <!-- Number Picker -->
             <div class="dice-numbers">
                 <button class="number-btn" onclick="selectDiceNumber(1, this)">1 <span style="font-size: 0.7rem; font-weight: normal; opacity: 0.85; display: block; margin-top: 2px;">(5x)</span></button>
@@ -644,8 +634,6 @@
         let isRolling = false;
         let diceHistory = [];
         let balancePollInterval = null;
-        let balanceListener = null;
-        let balanceRef = null;
 
         // Rotation angles corresponding to dice face on front
         const faceRotations = {
@@ -671,24 +659,8 @@
                 startRealtimeBalance();
                 loadDiceHistory();
 
-                // Refresh profile asynchronously to verify session
-                try {
-                    const profileRes = await MemberAPI.call('getProfile', {
-                        userId: user.id,
-                        sessionToken: cachedSession.sessionToken
-                    });
-                    if (profileRes.success) {
-                        balance = Number(profileRes.user.balance) || 0;
-                        user.name = profileRes.user.userId || user.name;
-                        MemberAPI.saveSession(user, cachedSession.sessionToken, balance);
-                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                        await database.ref('users/' + user.id + '/balance').set(balance);
-                    } else if (profileRes.reason === 'invalid_session') {
-                        logoutWithoutConfirm();
-                    }
-                } catch (e) {
-                    console.warn('Session refresh skipped:', e);
-                }
+                // Sync จาก GAS ครั้งเดียว (แหล่งข้อมูลหลัก)
+                syncBalance(true);
             } else {
                 showGuestUI();
             }
@@ -716,7 +688,11 @@
             document.getElementById('gamePlayPanel').style.display = 'block';
             document.getElementById('historyPanel').style.display = 'block';
             document.getElementById('guestWarning').style.display = 'none';
-            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+            setBalanceDisplay(balance);
+        }
+
+        function setBalanceDisplay(amount, fromGas) {
+            balance = BalanceUI.set('balanceDisplay', amount, { suffix: ' บาท', gas: !!fromGas });
         }
 
         function showGuestUI() {
@@ -728,46 +704,26 @@
             document.getElementById('guestWarning').style.display = 'block';
         }
 
-        // ===== Real-time Balance Sync =====
+        // ===== Balance Sync (GAS = แหล่งหลัก) =====
         function startRealtimeBalance() {
             if (!user) return;
             stopRealtimeBalance();
-
-            // 1. Firebase real-time listener — instant update whenever balance changes
-            balanceRef = database.ref('users/' + user.id + '/balance');
-            balanceListener = balanceRef.on('value', (snap) => {
-                if (snap.exists() && !isRolling) { // Prevent overwriting during gameplay
-                    const fbBal = Number(snap.val()) || 0;
-                    if (fbBal !== balance) {
-                        balance = fbBal;
-                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                        const sess = MemberAPI.getSession();
-                        if (sess) MemberAPI.saveSession(user, sess.sessionToken, balance);
-                    }
-                }
-            });
-
-            // 2. Polling from GAS every 10s as backup (catches Sheets-only updates)
             if (balancePollInterval) clearInterval(balancePollInterval);
-            balancePollInterval = setInterval(syncBalance, 10000);
+            balancePollInterval = setInterval(() => syncBalance(true), 15000);
         }
 
         function stopRealtimeBalance() {
-            if (balanceRef && balanceListener) {
-                try { balanceRef.off('value', balanceListener); } catch (e) {}
-                balanceRef = null;
-                balanceListener = null;
-            }
             if (balancePollInterval) {
                 clearInterval(balancePollInterval);
                 balancePollInterval = null;
             }
         }
 
-        async function syncBalance() {
-            if (!user || isRolling) return; // Prevent overwriting during gameplay
+        async function syncBalance(fromGas) {
+            if (!user || isRolling) return;
             try {
                 const session = MemberAPI.getSession();
+                if (!session) return;
                 const res = await MemberAPI.call('getProfile', {
                     userId: user.id,
                     sessionToken: session.sessionToken
@@ -775,11 +731,12 @@
                 if (res.success && !isRolling) {
                     const newBal = Number(res.user.balance) || 0;
                     if (newBal !== balance) {
-                        balance = newBal;
-                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        setBalanceDisplay(newBal, true);
                         MemberAPI.saveSession(user, session.sessionToken, balance);
-                        database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
+                        database.ref('users/' + user.id + '/balance').set(balance).catch(() => {});
                     }
+                } else if (res.reason === 'invalid_session') {
+                    logoutWithoutConfirm();
                 }
             } catch (e) {
                 console.warn('Sync balance failed:', e);
@@ -850,14 +807,6 @@
             btn.classList.add('selected');
         }
 
-        function testRotation(num) {
-            const dice = document.getElementById('dice3d');
-            dice.style.transition = 'transform 0.5s ease';
-            const rot = faceRotations[num];
-            dice.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
-            console.log('Testing face', num, 'rotation:', rot);
-        }
-
         function adjustBet(change) {
             const input = document.getElementById('betAmount');
             let current = parseInt(input.value) || 10;
@@ -920,8 +869,7 @@
             dice.style.transform = `rotateX(${finalX}deg) rotateY(${finalY}deg)`;
 
             // Optimistically update local balance for instant UI feedback
-            balance = Math.max(0, balance + netChange);
-            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+            setBalanceDisplay(Math.max(0, balance + netChange));
 
             setTimeout(async () => {
                 let statusText = '';
@@ -940,8 +888,7 @@
                     MemberAPI.updateBalance(user.id, session.sessionToken, netChange)
                         .then(settleRes => {
                             if (settleRes.success) {
-                                balance = Number(settleRes.balance) || balance;
-                                document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                                setBalanceDisplay(settleRes.balance, true);
                                 MemberAPI.saveSession(user, session.sessionToken, balance);
                                 database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
                             }

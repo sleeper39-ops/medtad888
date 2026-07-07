@@ -2677,7 +2677,6 @@
             } catch (e) {
                 console.warn('Firebase load failed:', e);
             }
-            syncBalanceFromSheets();
             updateNumberInputs();
             renderHistory();
             renderWinners();
@@ -2702,41 +2701,28 @@
                 return;
             }
 
-            sessionToken = session.sessionToken;
-            user = MemberAPI.userFromSession(session);
-            balance = Number(session.balance) || 0;
-            showLoggedInUI();
-            startBalancePolling();
+            if (!user) {
+                sessionToken = session.sessionToken;
+                user = MemberAPI.userFromSession(session);
+                balance = Number(session.balance) || 0;
+                showLoggedInUI();
+                startBalancePolling();
+            }
 
             try {
-                // Race against 10s timeout — if GAS is slow, keep cached session
-                const timeoutPromise = new Promise(resolve =>
-                    setTimeout(() => resolve({ success: true, _timeout: true }), 10000)
-                );
-                const restored = await Promise.race([MemberAPI.restore(), timeoutPromise]);
-
-                if (restored._timeout) {
-                    // GAS too slow — stay logged in with cached data, but sync balance right away
-                    console.warn('Session restore timed out — keeping cached session, syncing balance');
-                    syncBalanceFromSheets();
-                    return;
-                }
-
+                const restored = await MemberAPI.restore();
                 if (restored.success) {
                     user = restored.user;
                     sessionToken = restored.sessionToken;
-                    if (restored.balance != null) {
+                    if (restored.balance != null && Number(restored.balance) !== balance) {
                         balance = Number(restored.balance) || 0;
-                        updateBalance();
+                        updateBalance(true);
                     }
                     if (sessionToken && user) {
                         MemberAPI.saveSession(user, sessionToken, balance);
-                        startRealtimeSync(); // start realtime after session confirmed
+                        startRealtimeSync();
                     }
-                    // Sync balance from GAS to get the latest
-                    syncBalanceFromSheets();
                 } else if (restored.reason === 'invalid_session') {
-                    // Server explicitly rejected the session — logout
                     user = null;
                     balance = 0;
                     tickets = [];
@@ -2746,14 +2732,13 @@
                     localStorage.removeItem('lotteryTickets');
                     localStorage.removeItem('lotteryUserId');
                     showGuestUI();
+                    return;
                 }
-                // Otherwise (network error, etc.) — keep logged in, but sync balance
-                syncBalanceFromSheets();
             } catch (e) {
                 console.warn('Session refresh failed — keeping cached session:', e);
-                // Sync balance from GAS to get the latest
-                syncBalanceFromSheets();
             }
+
+            await syncBalanceFromSheets();
         }
 
 
@@ -2768,9 +2753,8 @@
                     const newBal = Number(result.user.balance) || 0;
                     if (newBal !== balance) {
                         balance = newBal;
-                        updateBalance();
+                        updateBalance(true);
                         MemberAPI.saveSession(user, sessionToken, balance);
-                        // Push updated balance to Firebase
                         try { await database.ref('users/' + user.id + '/balance').set(balance); } catch (e) {}
                     }
                 }
@@ -2789,7 +2773,7 @@
             const result = await MemberAPI.updateBalance(user.id, sessionToken, amount);
             if (result.success) {
                 balance = Number(result.balance) || 0;
-                updateBalance();
+                updateBalance(true);
                 MemberAPI.saveSession(user, sessionToken, balance);
                 try {
                     await database.ref('users/' + user.id + '/balance').set(balance);
@@ -2816,21 +2800,7 @@
             });
             realtimeListeners.push({ ref: ticketRef, listener: ticketListener, event: 'value' });
 
-            // 2. Realtime listener for balance in Firebase (synced from Sheets)
-            const balRef = database.ref('users/' + user.id + '/balance');
-            const balListener = balRef.on('value', (snap) => {
-                if (snap.exists()) {
-                    const fbBal = Number(snap.val()) || 0;
-                    if (fbBal !== balance) {
-                        balance = fbBal;
-                        updateBalance();
-                        if (sessionToken) MemberAPI.saveSession(user, sessionToken, balance);
-                    }
-                }
-            });
-            realtimeListeners.push({ ref: balRef, listener: balListener, event: 'value' });
-
-            // 3. Realtime listener for global lottery result (updated by GAS server draw)
+            // 2. Realtime listener for global lottery result (updated by GAS server draw)
             const resultRef = database.ref('global/lastResult');
             const resultListener = resultRef.on('value', (snap) => {
                 if (snap.exists()) {
@@ -3674,9 +3644,8 @@
             `;
         }
 
-        function updateBalance() {
-            const safeBalance = Number(balance) || 0;
-            document.getElementById('balance').textContent = safeBalance.toLocaleString();
+        function updateBalance(fromGas) {
+            balance = BalanceUI.set('balance', balance, { gas: !!fromGas });
         }
 
         function getNextDrawTime() {

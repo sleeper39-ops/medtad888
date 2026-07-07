@@ -673,8 +673,6 @@
         let isRolling = false;
         let fishHistory = [];
         let balancePollInterval = null;
-        let balanceListener = null;
-        let balanceRef = null;
 
         // Symbols map: name -> emoji, face index (1-6)
         const SYMBOLS = [
@@ -712,25 +710,7 @@
                 showLoggedInUI();
                 startRealtimeBalance();
                 loadFishHistory();
-
-                // Refresh profile asynchronously to verify session
-                try {
-                    const profileRes = await MemberAPI.call('getProfile', {
-                        userId: user.id,
-                        sessionToken: cachedSession.sessionToken
-                    });
-                    if (profileRes.success) {
-                        balance = Number(profileRes.user.balance) || 0;
-                        user.name = profileRes.user.userId || user.name;
-                        MemberAPI.saveSession(user, cachedSession.sessionToken, balance);
-                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                        await database.ref('users/' + user.id + '/balance').set(balance);
-                    } else if (profileRes.reason === 'invalid_session') {
-                        logoutWithoutConfirm();
-                    }
-                } catch (e) {
-                    console.warn('Session refresh skipped:', e);
-                }
+                syncBalance(true);
             } else {
                 showGuestUI();
             }
@@ -804,8 +784,7 @@
             const netChange = won ? payout - betAmountInput : -betAmountInput;
 
             // Optimistically update local balance for instant UI feedback
-            balance = Math.max(0, balance + netChange);
-            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+            setBalanceDisplay(Math.max(0, balance + netChange));
 
             // Animate each die
             const diceIds = ['die1', 'die2', 'die3'];
@@ -839,8 +818,7 @@
                     MemberAPI.updateBalance(user.id, session.sessionToken, netChange)
                         .then(settleRes => {
                             if (settleRes.success) {
-                                balance = Number(settleRes.balance) || balance;
-                                document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                                setBalanceDisplay(settleRes.balance, true);
                                 MemberAPI.saveSession(user, session.sessionToken, balance);
                                 database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
                             }
@@ -905,31 +883,22 @@
             `).join('');
         }
 
-        // ===== Real-time Balance =====
+        // ===== Balance Sync (GAS = แหล่งหลัก) =====
         function startRealtimeBalance() {
             if (!user) return;
-            if (balanceRef) balanceRef.off('value', balanceListener);
-            balanceRef = database.ref('users/' + user.id + '/balance');
-            balanceListener = balanceRef.on('value', snap => {
-                if (snap.exists() && !isRolling) { // Prevent overwriting during gameplay
-                    balance = Number(snap.val()) || 0;
-                    document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
-                    const session = MemberAPI.getSession();
-                    if (session) MemberAPI.saveSession(user, session.sessionToken, balance);
-                }
-            });
-            balancePollInterval = setInterval(syncBalance, 10000);
+            stopRealtimeBalance();
+            balancePollInterval = setInterval(() => syncBalance(true), 15000);
         }
 
         function stopRealtimeBalance() {
-            if (balanceRef && balanceListener) { balanceRef.off('value', balanceListener); balanceRef = null; balanceListener = null; }
             if (balancePollInterval) { clearInterval(balancePollInterval); balancePollInterval = null; }
         }
 
-        async function syncBalance() {
-            if (!user || isRolling) return; // Prevent overwriting during gameplay
+        async function syncBalance(fromGas) {
+            if (!user || isRolling) return;
             try {
                 const session = MemberAPI.getSession();
+                if (!session) return;
                 const res = await MemberAPI.call('getProfile', {
                     userId: user.id,
                     sessionToken: session.sessionToken
@@ -937,13 +906,16 @@
                 if (res.success && !isRolling) {
                     const newBal = Number(res.user.balance) || 0;
                     if (newBal !== balance) {
-                        balance = newBal;
-                        document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+                        setBalanceDisplay(newBal, true);
                         MemberAPI.saveSession(user, session.sessionToken, balance);
-                        database.ref('users/' + user.id + '/balance').set(balance).catch(err => {});
+                        database.ref('users/' + user.id + '/balance').set(balance).catch(() => {});
                     }
+                } else if (res.reason === 'invalid_session') {
+                    logoutWithoutConfirm();
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn('Sync balance failed:', e);
+            }
         }
 
         // ===== Auth =====
@@ -961,7 +933,11 @@
             document.getElementById('gamePlayPanel').style.display = 'block';
             document.getElementById('historyPanel').style.display = 'block';
             document.getElementById('guestWarning').style.display = 'none';
-            document.getElementById('balanceDisplay').textContent = balance.toLocaleString() + ' บาท';
+            setBalanceDisplay(balance);
+        }
+
+        function setBalanceDisplay(amount, fromGas) {
+            balance = BalanceUI.set('balanceDisplay', amount, { suffix: ' บาท', gas: !!fromGas });
         }
 
         function showGuestUI() {
